@@ -1,0 +1,31 @@
+variables:
+  AWS_BUILD_SUBDIR: provider/dataset-registry-aws/build-aws
+  AWS_TEST_SUBDIR: testing/dataset-registry-test-aws
+  AWS_SERVICE: dataset-registry
+  AWS_ENVIRONMENT: dev
+
+include:
+  - project: "osdu/platform/ci-cd-pipelines"
+    file: "standard-setup.yml"
+
+  - project: "osdu/platform/ci-cd-pipelines"
+    file: "build/maven.yml"
+
+  # - project: "osdu/platform/ci-cd-pipelines"
+  #   file: "scanners/fossa.yml"
+
+  - project: 'osdu/platform/ci-cd-pipelines'
+    file: 'cloud-providers/aws.yml'
+
+  # - project: "osdu/platform/ci-cd-pipelines"
+  #   file: "cloud-providers/ibm.yml"
+
+  # - project: "osdu/platform/ci-cd-pipelines"
+  #   file: "scanners/gitlab-ultimate.yml"
+
+# disable the eslint scanner
+# I think this is being generated from the presence of an HTML file, but there
+# is no javascript to scan, so the job isn't helpful and just gets in the way
+eslint-sast:
+  rules:
+    - when: never
