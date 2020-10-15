@@ -1,3 +1,4 @@
+// Copyright © 2020 Amazon Web Services
 // Copyright 2017-2019, Schlumberger
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,20 +13,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.datasetregistry.response;
+//TODO: move this to os-core-common
+
+package org.opengroup.osdu.datasetregistry.storage;
 
 import java.util.List;
-
-import org.opengroup.osdu.core.common.model.storage.Record;
 
 import lombok.Data;
 
 @Data
-public class CreateUpdateDatasetRegistryResponse {
+public class CreateUpdateRecordsResponse {
 
-	private List<Record> datasetRegistries;
+	private Integer recordCount;
 
-	public CreateUpdateDatasetRegistryResponse(List<Record> datasetRegistries) {
-		this.datasetRegistries = datasetRegistries;
-	}
+	private List<String> recordIds;
+
+	private List<String> skippedRecordIds;
 }

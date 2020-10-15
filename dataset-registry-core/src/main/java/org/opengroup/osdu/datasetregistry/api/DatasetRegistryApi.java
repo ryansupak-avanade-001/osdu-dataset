@@ -18,14 +18,14 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.storage.Record;
 import org.opengroup.osdu.core.common.model.storage.StorageRole;
-import org.opengroup.osdu.core.common.model.storage.TransferInfo;
 import org.opengroup.osdu.core.common.model.storage.validation.ValidationDoc;
-import org.opengroup.osdu.core.common.storage.IngestionService;
+import org.opengroup.osdu.datasetregistry.model.CreateDatasetRegistryRequest;
 import org.opengroup.osdu.datasetregistry.response.CreateUpdateDatasetRegistryResponse;
 import org.opengroup.osdu.datasetregistry.service.DatasetRegistryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +36,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.annotation.RequestScope;
+
 
 @RestController
 @RequestMapping("registry")
@@ -55,11 +55,9 @@ public class DatasetRegistryApi {
 	@PutMapping()
 	@PreAuthorize("@authorizationFilter.hasRole('" + StorageRole.CREATOR + "', '" + StorageRole.ADMIN + "')")
 	public ResponseEntity<CreateUpdateDatasetRegistryResponse> createOrUpdateDatasetRegistry(
-			Record record) {
+		@RequestBody @Valid @NotNull CreateDatasetRegistryRequest request) {
 
-				// TransferInfo transfer = 
-		this.dataRegistryService.createOrUpdateDatasetRegistry(null);
-				CreateUpdateDatasetRegistryResponse transferResponse = new CreateUpdateDatasetRegistryResponse("asdf");
-		return new ResponseEntity<CreateUpdateDatasetRegistryResponse>(transferResponse, HttpStatus.CREATED);
+			CreateUpdateDatasetRegistryResponse response = this.dataRegistryService.createOrUpdateDatasetRegistry(request.datasetRegistries);				
+			return new ResponseEntity<CreateUpdateDatasetRegistryResponse>(response, HttpStatus.CREATED);
 	}
 }

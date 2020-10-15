@@ -1,4 +1,4 @@
-// Copyright 2017-2019, Schlumberger
+// Copyright © 2020 Amazon Web Services
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,20 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.datasetregistry.response;
+//TODO: move to os-core-common
+
+package org.opengroup.osdu.datasetregistry.storage;
 
 import java.util.List;
 
+import org.opengroup.osdu.core.common.model.storage.MultiRecordIds;
+import org.opengroup.osdu.core.common.model.storage.MultiRecordInfo;
 import org.opengroup.osdu.core.common.model.storage.Record;
+import org.opengroup.osdu.core.common.model.storage.Schema;
 
-import lombok.Data;
+public interface IStorageProvider {
 
-@Data
-public class CreateUpdateDatasetRegistryResponse {
+    CreateUpdateRecordsResponse createOrUpdateRecords(List<Record> records) throws StorageException;
 
-	private List<Record> datasetRegistries;
+    GetRecordsResponse getRecords(MultiRecordIds ids) throws StorageException;
 
-	public CreateUpdateDatasetRegistryResponse(List<Record> datasetRegistries) {
-		this.datasetRegistries = datasetRegistries;
-	}
+    Schema getSchema(String kind) throws StorageException;
+
+    
+
 }

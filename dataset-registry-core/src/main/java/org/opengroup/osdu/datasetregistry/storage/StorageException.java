@@ -1,3 +1,4 @@
+// Copyright © 2020 Amazon Web Services
 // Copyright 2017-2019, Schlumberger
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,20 +13,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.datasetregistry.response;
+//TODO: Move to os-core-common
 
-import java.util.List;
-
-import org.opengroup.osdu.core.common.model.storage.Record;
+package org.opengroup.osdu.datasetregistry.storage;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.opengroup.osdu.core.common.model.http.DpsException;
+import org.opengroup.osdu.core.common.http.HttpResponse;
 
 @Data
-public class CreateUpdateDatasetRegistryResponse {
+@EqualsAndHashCode(callSuper = false)
+public class StorageException extends DpsException {
 
-	private List<Record> datasetRegistries;
+    private static final long serialVersionUID = 9094949225576291097L;
 
-	public CreateUpdateDatasetRegistryResponse(List<Record> datasetRegistries) {
-		this.datasetRegistries = datasetRegistries;
-	}
+    public StorageException(String message, HttpResponse httpResponse) {
+        super(message, httpResponse);
+    }
 }

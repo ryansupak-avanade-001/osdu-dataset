@@ -1,3 +1,4 @@
+// Copyright © 2020 Amazon Web Services
 // Copyright 2017-2019, Schlumberger
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,20 +13,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.datasetregistry.response;
+//TODO: move to os-core-common
 
-import java.util.List;
+package org.opengroup.osdu.datasetregistry.storage;
 
-import org.opengroup.osdu.core.common.model.storage.Record;
-
+import lombok.Builder;
 import lombok.Data;
 
+@Builder
 @Data
-public class CreateUpdateDatasetRegistryResponse {
+public class StorageAPIConfig {
+    @Builder.Default
+    String rootUrl = "https://os-storage/api/legal/v1";
 
-	private List<Record> datasetRegistries;
+    String apiKey;
 
-	public CreateUpdateDatasetRegistryResponse(List<Record> datasetRegistries) {
-		this.datasetRegistries = datasetRegistries;
-	}
+    public static StorageAPIConfig Default() {
+        return StorageAPIConfig.builder().build();
+    }
 }

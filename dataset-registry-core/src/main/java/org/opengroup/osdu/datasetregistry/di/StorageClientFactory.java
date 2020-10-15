@@ -18,26 +18,29 @@ package org.opengroup.osdu.datasetregistry.di;
 import org.opengroup.osdu.core.common.legal.ILegalFactory;
 import org.opengroup.osdu.core.common.legal.LegalAPIConfig;
 import org.opengroup.osdu.core.common.legal.LegalFactory;
+import org.opengroup.osdu.datasetregistry.storage.IStorageFactory;
+import org.opengroup.osdu.datasetregistry.storage.StorageAPIConfig;
+import org.opengroup.osdu.datasetregistry.storage.StorageFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LegalClientFactory extends AbstractFactoryBean<ILegalFactory> {
+public class StorageClientFactory extends AbstractFactoryBean<IStorageFactory> {
 
-	@Value("${LEGALTAG_API}")
-	private String LEGALTAG_API;
+	@Value("${STORAGE_API}")
+	private String STORAGE_API;
 
 	@Override
 	public Class<?> getObjectType() {
-		return ILegalFactory.class;
+		return IStorageFactory.class;
 	}
 
 	@Override
-	protected ILegalFactory createInstance() throws Exception {
-		return new LegalFactory(LegalAPIConfig
+	protected IStorageFactory createInstance() throws Exception {
+		return new StorageFactory(StorageAPIConfig
 				.builder()
-				.rootUrl(LEGALTAG_API)
+				.rootUrl(STORAGE_API)
 				.build());
 	}
 }
