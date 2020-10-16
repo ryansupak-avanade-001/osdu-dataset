@@ -17,19 +17,15 @@ package org.opengroup.osdu.datasetregistry.service;
 import java.util.List;
 import java.util.Map;
 
-import com.google.api.client.http.HttpResponse;
+import javax.inject.Inject;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.opengroup.osdu.core.common.entitlements.IEntitlementsAndCacheService;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.storage.MultiRecordIds;
-import org.opengroup.osdu.core.common.model.storage.MultiRecordInfo;
 import org.opengroup.osdu.core.common.model.storage.Record;
-import org.opengroup.osdu.core.common.model.storage.RecordData;
 import org.opengroup.osdu.core.common.model.storage.Schema;
 import org.opengroup.osdu.core.common.model.storage.SchemaItem;
-import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.datasetregistry.model.DatasetRegistryValidationDoc;
 import org.opengroup.osdu.datasetregistry.response.CreateUpdateDatasetRegistryResponse;
 import org.opengroup.osdu.datasetregistry.storage.CreateUpdateRecordsResponse;
@@ -37,26 +33,21 @@ import org.opengroup.osdu.datasetregistry.storage.GetRecordsResponse;
 import org.opengroup.osdu.datasetregistry.storage.IStorageFactory;
 import org.opengroup.osdu.datasetregistry.storage.IStorageProvider;
 import org.opengroup.osdu.datasetregistry.storage.StorageException;
-import org.opengroup.osdu.datasetregistry.storage.StorageService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DatasetRegistryServiceImpl implements DatasetRegistryService {
 
-    @Autowired
-    private IEntitlementsAndCacheService entitlementsAndCacheService;
+    
+    final String DATASET_REGISTRY_DATASET_PROPERTIES_NAME = "DatasetProperties";
+    final String DATASET_REGISTRY_SCHEMA_FORMAT = "%s:osdu:dataset-registry:0.0.1";
 
-    // @Autowired
-    // private ILegalService legalService;
-
-    @Autowired
+    @Inject
     private DpsHeaders headers;
 
-    @Autowired
+    @Inject
     IStorageFactory storageFactory;
-
 
     @Override
     public void deleteDatasetRegistry(String datasetRegistryId) {
@@ -92,16 +83,10 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
                     HttpStatus.valueOf(e.getHttpResponse().getResponseCode()).getReasonPhrase(), e.getMessage());
         }
 
-        
-
-        CreateUpdateDatasetRegistryResponse response = new CreateUpdateDatasetRegistryResponse(getRecordsResponse.getRecords());
-        
+        CreateUpdateDatasetRegistryResponse response = new CreateUpdateDatasetRegistryResponse(getRecordsResponse.getRecords());        
 
         return response;
     }
-
-    final String DATASET_REGISTRY_DATASET_PROPERTIES_NAME = "DatasetProperties";
-    final String DATASET_REGISTRY_SCHEMA_FORMAT = "%s:osdu:dataset-registry:0.0.1";
 
     /**
      * Return a 400 Bad Request if any validation fails (one bad property on a single dataset registry fails all input dataset registries)

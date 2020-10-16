@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -28,12 +29,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.base.Strings;
+
 import org.apache.http.HttpStatus;
 import org.opengroup.osdu.core.common.http.ResponseHeaders;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.springframework.stereotype.Component;
 
 @Component
 public class DatasetRegistryFilter implements Filter {
@@ -43,7 +43,7 @@ public class DatasetRegistryFilter implements Filter {
 	private static final String FOR_HEADER_NAME = "frame-of-reference";
 
 
-	@Autowired
+	@Inject
 	private DpsHeaders dpsHeaders;
 
 	@Override

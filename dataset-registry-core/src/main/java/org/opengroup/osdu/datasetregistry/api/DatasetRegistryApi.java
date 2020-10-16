@@ -14,21 +14,15 @@
 
 package org.opengroup.osdu.datasetregistry.api;
 
-import java.util.List;
-
+import javax.inject.Inject;
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.common.model.storage.Record;
 import org.opengroup.osdu.core.common.model.storage.StorageRole;
-import org.opengroup.osdu.core.common.model.storage.validation.ValidationDoc;
 import org.opengroup.osdu.datasetregistry.model.CreateDatasetRegistryRequest;
 import org.opengroup.osdu.datasetregistry.response.CreateUpdateDatasetRegistryResponse;
 import org.opengroup.osdu.datasetregistry.service.DatasetRegistryService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -46,10 +40,10 @@ import org.springframework.web.context.annotation.RequestScope;
 @Validated
 public class DatasetRegistryApi {
 
-	@Autowired
+	@Inject
 	private DpsHeaders headers;
 
-	@Autowired
+	@Inject
 	private DatasetRegistryService dataRegistryService;
 
 	@PutMapping()

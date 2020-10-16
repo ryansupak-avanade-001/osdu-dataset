@@ -15,13 +15,14 @@
 
 package org.opengroup.osdu.datasetregistry.util;
 
+import javax.inject.Inject;
 import javax.validation.ValidationException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-import javassist.NotFoundException;
+
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.opengroup.osdu.core.common.model.http.AppException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -34,13 +35,14 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import org.opengroup.osdu.core.common.model.http.AppException;
+
+import javassist.NotFoundException;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 
-    @Autowired
+    @Inject
     private JaxRsDpsLog logger;
 
     @ExceptionHandler(AppException.class)

@@ -39,7 +39,4 @@ public class StorageFactory implements IStorageFactory {
         }
         return new StorageService(this.config, new HttpClient(), headers);
     }
-
-
-
 }

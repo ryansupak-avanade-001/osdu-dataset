@@ -15,27 +15,28 @@
 
 package org.opengroup.osdu.datasetregistry.service;
 
-import org.apache.http.HttpStatus;
-import org.opengroup.osdu.core.common.model.entitlements.Acl;
-import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.common.cache.ICache;
-import org.opengroup.osdu.core.common.model.storage.RecordMetadata;
-import org.opengroup.osdu.core.common.util.Crc32c;
-import org.opengroup.osdu.core.common.model.entitlements.EntitlementsException;
-import org.opengroup.osdu.core.common.model.entitlements.Groups;
-import org.opengroup.osdu.core.common.model.http.AppException;
-import org.opengroup.osdu.core.common.http.HttpResponse;
-import org.opengroup.osdu.core.common.entitlements.IEntitlementsFactory;
-import org.opengroup.osdu.core.common.entitlements.IEntitlementsService;
-import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
-import org.opengroup.osdu.core.common.entitlements.IEntitlementsAndCacheService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.inject.Inject;
+
+import org.apache.http.HttpStatus;
+import org.opengroup.osdu.core.common.cache.ICache;
+import org.opengroup.osdu.core.common.entitlements.IEntitlementsAndCacheService;
+import org.opengroup.osdu.core.common.entitlements.IEntitlementsFactory;
+import org.opengroup.osdu.core.common.entitlements.IEntitlementsService;
+import org.opengroup.osdu.core.common.http.HttpResponse;
+import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
+import org.opengroup.osdu.core.common.model.entitlements.Acl;
+import org.opengroup.osdu.core.common.model.entitlements.EntitlementsException;
+import org.opengroup.osdu.core.common.model.entitlements.Groups;
+import org.opengroup.osdu.core.common.model.http.AppException;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.core.common.model.storage.RecordMetadata;
+import org.opengroup.osdu.core.common.util.Crc32c;
+import org.springframework.stereotype.Service;
 
 @Service
 public class EntitlementsAndCacheServiceImpl implements IEntitlementsAndCacheService {
@@ -43,13 +44,13 @@ public class EntitlementsAndCacheServiceImpl implements IEntitlementsAndCacheSer
 	private static final String ERROR_REASON = "Access denied";
 	private static final String ERROR_MSG = "The user is not authorized to perform this action";
 
-	@Autowired
+	@Inject
 	private IEntitlementsFactory factory;
 
-	@Autowired
+	@Inject
 	private ICache<String, Groups> cache;
 
-	@Autowired
+	@Inject
 	private JaxRsDpsLog logger;
 
 	@Override

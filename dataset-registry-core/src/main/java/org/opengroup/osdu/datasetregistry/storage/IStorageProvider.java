@@ -19,7 +19,6 @@ package org.opengroup.osdu.datasetregistry.storage;
 import java.util.List;
 
 import org.opengroup.osdu.core.common.model.storage.MultiRecordIds;
-import org.opengroup.osdu.core.common.model.storage.MultiRecordInfo;
 import org.opengroup.osdu.core.common.model.storage.Record;
 import org.opengroup.osdu.core.common.model.storage.Schema;
 
@@ -30,7 +29,5 @@ public interface IStorageProvider {
     GetRecordsResponse getRecords(MultiRecordIds ids) throws StorageException;
 
     Schema getSchema(String kind) throws StorageException;
-
-    
 
 }

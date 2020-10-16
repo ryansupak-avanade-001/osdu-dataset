@@ -15,19 +15,21 @@
 
 package org.opengroup.osdu.datasetregistry.util;
 
+import javax.inject.Inject;
+
 import org.opengroup.osdu.core.common.entitlements.IEntitlementsAndCacheService;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
 @Component("authorizationFilter")
 @RequestScope
 public class AuthorizationFilter {
-    @Autowired
+    
+    @Inject
     private IEntitlementsAndCacheService entitlementsAndCacheService;
 
-    @Autowired
+    @Inject
     private DpsHeaders headers;
 
     public boolean hasRole(String... requiredRoles) {
