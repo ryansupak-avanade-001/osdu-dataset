@@ -19,6 +19,7 @@ import java.util.Map;
 
 import com.google.api.client.http.HttpResponse;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.opengroup.osdu.core.common.entitlements.IEntitlementsAndCacheService;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
@@ -51,9 +52,6 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
     // private ILegalService legalService;
 
     @Autowired
-    private TenantInfo tenant;
-
-    @Autowired
     private DpsHeaders headers;
 
     @Autowired
@@ -63,6 +61,7 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
     @Override
     public void deleteDatasetRegistry(String datasetRegistryId) {
         // todo: implement
+        throw new NotImplementedException("Delete is Not Yet Implemented");
     }
 
     @Override
@@ -113,6 +112,7 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
     */
     private boolean validateDatasetRegistries(IStorageProvider storageService, List<Record> datasetRegistries) {
 
+        //todo: consider moving dataset-registry schema into common partition
         String datasetRegistrySchemaName = String.format(DATASET_REGISTRY_SCHEMA_FORMAT, headers.getPartitionId());
         Schema datasetRegistrySchema = null;
         try {
