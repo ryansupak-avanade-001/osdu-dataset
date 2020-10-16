@@ -58,8 +58,9 @@ phases:
       # - cp ./provider/dataset-registry-aws/target/*spring-boot.jar ${OUTPUT_DIR}/bin # copy aws jars
       # - cp ./dataset-registry-core/target/*.jar ${OUTPUT_DIR}/bin # copy core jar
 
-      - echo "Building integration testing assemblies and gathering artifacts..."
-      - ./testing/dataset-registry-test-aws/build-aws/prepare-dist.sh
+       - echo "Skipping integration test build for now..."
+      # - echo "Building integration testing assemblies and gathering artifacts..."
+      # - ./testing/dataset-registry-test-aws/build-aws/prepare-dist.sh
 
       - echo "Building docker image..."
       - docker build -f provider/dataset-registry-aws/build-aws/Dockerfile -t ${ECR_IMAGE} .
