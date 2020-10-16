@@ -58,7 +58,7 @@ phases:
       # - cp ./provider/dataset-registry-aws/target/*spring-boot.jar ${OUTPUT_DIR}/bin # copy aws jars
       # - cp ./dataset-registry-core/target/*.jar ${OUTPUT_DIR}/bin # copy core jar
 
-       - echo "Skipping integration test build for now..."
+      - echo "Skipping integration test build for now..."
       # - echo "Building integration testing assemblies and gathering artifacts..."
       # - ./testing/dataset-registry-test-aws/build-aws/prepare-dist.sh
 
