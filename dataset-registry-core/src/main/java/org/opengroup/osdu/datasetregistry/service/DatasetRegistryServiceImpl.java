@@ -20,6 +20,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.apache.http.HttpException;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.storage.MultiRecordIds;
@@ -27,6 +28,7 @@ import org.opengroup.osdu.core.common.model.storage.Record;
 import org.opengroup.osdu.core.common.model.storage.Schema;
 import org.opengroup.osdu.core.common.model.storage.SchemaItem;
 import org.opengroup.osdu.datasetregistry.model.DatasetRegistryValidationDoc;
+import org.opengroup.osdu.datasetregistry.model.StorageExceptionResponse;
 import org.opengroup.osdu.datasetregistry.response.CreateUpdateDatasetRegistryResponse;
 import org.opengroup.osdu.datasetregistry.storage.CreateUpdateRecordsResponse;
 import org.opengroup.osdu.datasetregistry.storage.GetRecordsResponse;
@@ -66,8 +68,8 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
         try {
             storageResponse = storageService.createOrUpdateRecords(datasetRegistries);
         } catch (StorageException e) {
-            throw new AppException(e.getHttpResponse().getResponseCode(),
-                    HttpStatus.valueOf(e.getHttpResponse().getResponseCode()).getReasonPhrase(), e.getMessage());
+            StorageExceptionResponse body = e.getHttpResponse().parseBody(StorageExceptionResponse.class);
+            throw new AppException(body.getCode(), "Storage Service: " + body.getReason(), body.getMessage());
         }
 
         List<String> recordIds = storageResponse.getRecordIds();
@@ -79,8 +81,8 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
             getRecordsResponse = storageService.getRecords(multiRecordIds);
         }
         catch (StorageException e) {
-            throw new AppException(e.getHttpResponse().getResponseCode(),
-                    HttpStatus.valueOf(e.getHttpResponse().getResponseCode()).getReasonPhrase(), e.getMessage());
+            StorageExceptionResponse body = e.getHttpResponse().parseBody(StorageExceptionResponse.class);
+            throw new AppException(body.getCode(), "Storage Service: " + body.getReason(), body.getMessage());
         }
 
         CreateUpdateDatasetRegistryResponse response = new CreateUpdateDatasetRegistryResponse(getRecordsResponse.getRecords());        
@@ -128,7 +130,10 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
     private boolean validateDatasetRegistrySchema(Record datasetRegistry, Schema datasetRegistrySchema) {
 
         //kind matches expected schema kind
-        datasetRegistry.getKind().equals(datasetRegistrySchema.getKind());
+        if (!datasetRegistry.getKind().equals(datasetRegistrySchema.getKind())) {
+            throw new AppException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), 
+                String.format(DatasetRegistryValidationDoc.INVALID_DATASET_REGISTRY_SCHEMA_KIND, datasetRegistrySchema.getKind()));
+        }
 
         Map<String, Object> datasetRegistryData = datasetRegistry.getData();
         
@@ -136,7 +141,7 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
         for (SchemaItem schemaItem : datasetRegistrySchema.getSchema()) {
             if (!datasetRegistryData.containsKey(schemaItem.getPath())) {
                 throw new AppException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), 
-                String.format(DatasetRegistryValidationDoc.DATASET_REGISTRY_MISSING_PROPERTY_VALIDATION_FORMAT, schemaItem.getPath()));               
+                String.format(DatasetRegistryValidationDoc.DATASET_REGISTRY_MISSING_PROPERTY_VALIDATION_FORMAT, schemaItem.getPath()));
             }
 
             //TODO: Validate type of value matches

@@ -20,6 +20,7 @@ public class DatasetRegistryValidationDoc {
     // private constructor
   }
 
+  public static final String INVALID_DATASET_REGISTRY_SCHEMA_KIND = "Invalid schema kind for dataset registry. Kind must be: '%s'";
   public static final String MISSING_DATASET_PROPERTIES_VALIDATION = "DatasetProperties cannot be null";
   public static final String MISSING_DATASET_REGISTRIES_ARRAY = "datasetRegistries cannot be empty";
   public static final String MAX_DATASET_REGISTRIES_EXCEEDED = "Only 20 Dataset Registries can be ingested at a time";
