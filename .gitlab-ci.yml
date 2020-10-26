@@ -3,6 +3,7 @@ variables:
   AWS_TEST_SUBDIR: testing/dataset-registry-test-aws
   AWS_SERVICE: dataset-registry
   AWS_ENVIRONMENT: dev
+  AWS_SKIP_TESTS: 'true'
 
 include:
   - project: "osdu/platform/ci-cd-pipelines"
