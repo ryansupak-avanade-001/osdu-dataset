@@ -167,7 +167,7 @@
         </plugins>
     </build>
 
-    <!-- <repositories>
+    <repositories>
         <repository>
             <id>${gitlab-server}</id>
             <url>https://community.opengroup.org/api/v4/groups/17/-/packages/maven</url>
@@ -177,12 +177,12 @@
     <distributionManagement>
         <repository>
             <id>${gitlab-server}</id>
-            <url>https://community.opengroup.org/api/v4/projects/44/packages/maven</url>
+            <url>https://community.opengroup.org/api/v4/projects/378/packages/maven</url>
         </repository>
         <snapshotRepository>
             <id>${gitlab-server}</id>
-            <url>https://community.opengroup.org/api/v4/projects/44/packages/maven</url>
+            <url>https://community.opengroup.org/api/v4/projects/378/packages/maven</url>
         </snapshotRepository>
-    </distributionManagement> -->
+    </distributionManagement>
 
 </project>
