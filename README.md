@@ -3,7 +3,7 @@ The Dataset Registry Service is a Maven multi-module project with each cloud imp
 
 ### Other platforms
 
-1. Navigate to the module of the cloud of interest, for example, ```dataset-registry-aws```. Configure ```application.properties``` and optionally ```logback-spring.xml```. Intead of changing these files in the source, you can also provide external files at run time. 
+1. Navigate to the module of the cloud of interest, for example, ```dataset-aws```. Configure ```application.properties``` and optionally ```logback-spring.xml```. Intead of changing these files in the source, you can also provide external files at run time. 
 
 2. Navigate to the root of the dataset registry project, build and run unit tests in command line:
     ```bash
@@ -34,21 +34,21 @@ variables or user environment variables. User values will take precedence if bot
 Note that these values can be found in the IAM stack's export values in the AWS console. To 
 deploy resources to the AWS console, see the deployment section below.
 
-5. Run dataset-registry service in command line:
+1. Run dataset service in command line:
     ```bash
     # Running AWS:
-    java -jar provider\dataset-registry-aws\target\dataset-registry-aws-0.0.1-SNAPSHOT-spring-boot.jar
+    java -jar provider\dataset-aws\target\dataset-aws-0.0.1-SNAPSHOT-spring-boot.jar
     ```
 
-6. Access the service:
+2. Access the service:
 
     The port and path for the service endpoint can be configured in ```application.properties``` in the provider folder as following. If not specified, then  the web container (ex. Tomcat) default is used: 
     ```bash
-    server.servlet.contextPath=/api/dataset-registry/v1/
+    server.servlet.contextPath=/api/dataset/v1/
     server.port=8080
     ```
 
-7. Build and test in IntelliJ:
+3. Build and test in IntelliJ:
     1. Import the maven project from the root of this project. 
     2. Create a ```JAR Application``` in ```Run/Debug Configurations``` with the ```Path to JAR``` set to the target jar file. 
     3. To run unit tests, creat a ```JUnit``` configuration in ```Run/Debug Configurations```, specify, for example:

@@ -140,13 +140,13 @@
 					"raw": "{\n\t\"datasetRegistries\": [{\n\t\t\"kind\": \"{{data_partition_id}}:osdu:dataset-registry:0.0.1\",\n\t\t\"type\": \"dataset-registry\",\n\t\t\"data\": {\n\t\t\t\"ResourceID\": \"srn:osdu:file:dc556e0e3a554105a80cfcb19372a62d:\",\n\t\t\t\"ResourceTypeID\": \"srn:type:file/json:\",\n\t\t\t\"ResourceSecurityClassification\": \"srn:reference-data/ResourceSecurityClassification:RESTRICTED:\",\n\t\t\t\"ResourceSource\": \"Some Company App\",\n\t\t\t\"ResourceName\": \"trajectories - 1000.json\",\n            \"ResourceDescription\": \"Trajectory For Wellbore xyz\",\n\t\t\t\"DatasetProperties\": {\n\t\t\t\t\"FileSourceInfo\": {\n\t\t\t\t\t\"FileSource\": \"\",\n\t\t\t\t\t\"PreLoadFilePath\": \"s3://default_bucket/r1/data/provided/trajectories/1000.json\"\n\t\t\t\t}\n\t\t\t}\n\t\t},\n\t\t\"namespace\": \"{{data_partition_id}}:osdu\",\n\t\t\"legal\": {\n\t\t\t\"legaltags\": [\n\t\t\t\t\"{{data_partition_id}}-public-usa-dataset\"\n\t\t\t],\n\t\t\t\"otherRelevantDataCountries\": [\n\t\t\t\t\"US\"\n\t\t\t],\n\t\t\t\"status\": \"compliant\"\n\t\t},\n\t\t\"acl\": {\n\t\t\t\"viewers\": [\n\t\t\t\t\"data.default.viewers@{{data_partition_id}}.testing.com\"\n\t\t\t],\n\t\t\t\"owners\": [\n\t\t\t\t\"data.default.owners@{{data_partition_id}}.testing.com\"\n\t\t\t]\n\t\t}\n\n\t}]\n}"
 				},
 				"url": {
-					"raw": "{{osdu_api_base}}/api/dataset-registry/v1/registry",
+					"raw": "{{osdu_api_base}}/api/dataset/v1/registry",
 					"host": [
 						"{{osdu_api_base}}"
 					],
 					"path": [
 						"api",
-						"dataset-registry",
+						"dataset",
 						"v1",
 						"registry"
 					]
@@ -181,13 +181,13 @@
 					}
 				],
 				"url": {
-					"raw": "{{osdu_api_base}}/api/dataset-registry/v1/actuator/health",
+					"raw": "{{osdu_api_base}}/api/dataset/v1/actuator/health",
 					"host": [
 						"{{osdu_api_base}}"
 					],
 					"path": [
 						"api",
-						"dataset-registry",
+						"dataset",
 						"v1",
 						"actuator",
 						"health"

@@ -1,7 +1,7 @@
 variables:
-  AWS_BUILD_SUBDIR: provider/dataset-registry-aws/build-aws
-  AWS_TEST_SUBDIR: testing/dataset-registry-test-aws
-  AWS_SERVICE: dataset-registry
+  AWS_BUILD_SUBDIR: provider/dataset-aws/build-aws
+  AWS_TEST_SUBDIR: testing/dataset-test-aws
+  AWS_SERVICE: dataset
   AWS_ENVIRONMENT: dev
   AWS_SKIP_TESTS: 'true'
 

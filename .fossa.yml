@@ -8,15 +8,15 @@ cli:
   project: Dataset Registry
 analyze:
   modules:
-  - name: os-dataset-registry
+  - name: os-dataset
     type: mvn
     target: pom.xml
     path: .
-  - name: dataset-registry-core
+  - name: dataset-core
     type: mvn
-    target: dataset-registry-core/pom.xml
+    target: dataset-core/pom.xml
     path: .
-  - name: dataset-registry-aws
+  - name: dataset-aws
     type: mvn
-    target: provider/dataset-registry-aws/pom.xml
+    target: provider/dataset-aws/pom.xml
     path: .

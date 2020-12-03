@@ -1,0 +1,46 @@
+// Copyright © 2020 Amazon Web Services
+// Copyright 2017-2019, Schlumberger
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package org.opengroup.osdu.dataset.di;
+
+import org.opengroup.osdu.core.common.legal.ILegalFactory;
+import org.opengroup.osdu.core.common.legal.LegalAPIConfig;
+import org.opengroup.osdu.core.common.legal.LegalFactory;
+import org.opengroup.osdu.dataset.storage.IStorageFactory;
+import org.opengroup.osdu.dataset.storage.StorageAPIConfig;
+import org.opengroup.osdu.dataset.storage.StorageFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.AbstractFactoryBean;
+import org.springframework.stereotype.Component;
+
+@Component
+public class StorageClientFactory extends AbstractFactoryBean<IStorageFactory> {
+
+	@Value("${STORAGE_API}")
+	private String STORAGE_API;
+
+	@Override
+	public Class<?> getObjectType() {
+		return IStorageFactory.class;
+	}
+
+	@Override
+	protected IStorageFactory createInstance() throws Exception {
+		return new StorageFactory(StorageAPIConfig
+				.builder()
+				.rootUrl(STORAGE_API)
+				.build());
+	}
+}

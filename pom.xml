@@ -19,7 +19,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.opengroup.osdu</groupId>
-	<artifactId>os-dataset-registry</artifactId>
+	<artifactId>os-dataset</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<description>Root Dataset Registry Service project</description>
 
@@ -126,8 +126,8 @@
 
 
 	<modules>
-		<module>dataset-registry-core</module>
-		<module>provider/dataset-registry-aws</module>
+		<module>dataset-core</module>
+		<module>provider/dataset-aws</module>
 	</modules>
 
 </project>
