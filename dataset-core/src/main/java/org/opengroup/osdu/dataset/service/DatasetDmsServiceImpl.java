@@ -49,7 +49,7 @@ import org.springframework.stereotype.Service;
 public class DatasetDmsServiceImpl implements DatasetDmsService {
 
     public static final String RESOURCE_TYPE_ID_PROPERTY = "ResourceTypeID";
-    public static final String RESOURCE_TYPE_ID_PATTERN_REGEX = "\\w+:+\\w+:+\\[\\w-]+";
+    public static final String RESOURCE_TYPE_ID_PATTERN_REGEX = "\\w+:+\\w+:+[\\w-]+";    
 
     @Inject
     private DpsHeaders headers;
