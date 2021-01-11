@@ -26,6 +26,6 @@ import lombok.Data;
 @Data
 public class GetRecordsResponse {
     private List<Record> records;
-    private List<Record> invalidRecords;
-    private List<Record> retryRecords;
+    private List<String> invalidRecords;
+    private List<String> retryRecords;
 }

@@ -23,6 +23,9 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.storage.MultiRecordIds;
@@ -64,6 +67,8 @@ public class DatasetDmsServiceImpl implements DatasetDmsService {
     private IDatasetDmsServiceMap dmsServiceMap;
 
     Pattern resourceTypeIdPattern = Pattern.compile(RESOURCE_TYPE_ID_PATTERN_REGEX);
+
+    private ObjectMapper jsonObjectMapper = new ObjectMapper();
 
     public DatasetDmsServiceImpl() {
        
@@ -124,8 +129,13 @@ public class DatasetDmsServiceImpl implements DatasetDmsService {
             MultiRecordIds multiRecordIds = new MultiRecordIds(datasetRegistryIds, null);
             getRecordsResponse = storageService.getRecords(multiRecordIds);
 
-            if (getRecordsResponse.getInvalidRecords().size() > 0 || getRecordsResponse.getRetryRecords().size() > 0) {
-                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Storage Service: Invalid or Failed Record Get", "Invalid or Failed Record Get");
+            if (getRecordsResponse.getInvalidRecords().size() > 0 || getRecordsResponse.getRetryRecords().size() > 0) {                
+                try {
+                    throw new AppException(HttpStatus.BAD_REQUEST.value(), "Storage Service: Invalid or Failed Record Get", jsonObjectMapper.writeValueAsString(getRecordsResponse));
+                }                
+                catch (JsonProcessingException e) {
+                    throw new AppException(HttpStatus.BAD_REQUEST.value(), "Storage Service: Invalid or Failed Record Get", "Invalid or Failed Record Get");
+                }
             }
         }
         catch (StorageException e) {

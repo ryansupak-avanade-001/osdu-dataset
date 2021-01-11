@@ -20,9 +20,9 @@ import lombok.Data;
 
 @Data
 public class GetDatasetStorageInstructionsResponse {
-    Map<String, Object> storageProperties;
+    Map<String, Object> storageLocation;
 
-    public GetDatasetStorageInstructionsResponse(Map<String, Object> storageProperties) {
-        this.storageProperties = storageProperties;
+    public GetDatasetStorageInstructionsResponse(Map<String, Object> storageLocation) {
+        this.storageLocation = storageLocation;
     }
 }
