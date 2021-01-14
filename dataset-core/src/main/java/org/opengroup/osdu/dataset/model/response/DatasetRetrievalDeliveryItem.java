@@ -26,9 +26,12 @@ public class DatasetRetrievalDeliveryItem {
 
     Map<String, Object> retrievalProperties = new HashMap<>();
 
-    public DatasetRetrievalDeliveryItem(String datasetRegistryId, Map<String, Object> retrievalProperties) {
+    String providerKey;
+
+    public DatasetRetrievalDeliveryItem(String datasetRegistryId, Map<String, Object> retrievalProperties, String providerKey) {
         this.datasetRegistryId = datasetRegistryId;
         this.retrievalProperties = retrievalProperties;
+        this.providerKey = providerKey;
     }
     
 }

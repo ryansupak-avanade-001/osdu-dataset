@@ -70,7 +70,7 @@ public class DatasetDmsApiTest {
 
         String resourceType = "srn:type:file";
       
-        GetDatasetStorageInstructionsResponse expectedResponse = new GetDatasetStorageInstructionsResponse(new HashMap<String, Object>());
+        GetDatasetStorageInstructionsResponse expectedResponse = new GetDatasetStorageInstructionsResponse(new HashMap<String, Object>(), "DUMMY");
         when(this.datasetDmsService.getStorageInstructions(resourceType)).thenReturn(expectedResponse);
 
         ResponseEntity response = this.datasetDmsApi.getStorageInstructions(resourceType);

@@ -22,7 +22,10 @@ import lombok.Data;
 public class GetDatasetStorageInstructionsResponse {
     Map<String, Object> storageLocation;
 
-    public GetDatasetStorageInstructionsResponse(Map<String, Object> storageLocation) {
+    String providerKey;
+
+    public GetDatasetStorageInstructionsResponse(Map<String, Object> storageLocation, String providerKey) {
         this.storageLocation = storageLocation;
+        this.providerKey = providerKey;
     }
 }
