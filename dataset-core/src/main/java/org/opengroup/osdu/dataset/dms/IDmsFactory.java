@@ -19,5 +19,5 @@ package org.opengroup.osdu.dataset.dms;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 
 public interface IDmsFactory {
-    IDmsProvider create(DpsHeaders headers, String dmsServiceRoute);
+    IDmsProvider create(DpsHeaders headers, DmsServiceProperties dmsServiceRoute);
 }

@@ -14,7 +14,6 @@
 
 package org.opengroup.osdu.dataset.di;
 
-import org.opengroup.osdu.dataset.dms.DmsAPIConfig;
 import org.opengroup.osdu.dataset.dms.DmsFactory;
 import org.opengroup.osdu.dataset.dms.IDmsFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,9 +33,6 @@ public class DmsClientFactory extends AbstractFactoryBean<IDmsFactory> {
 
 	@Override
 	protected IDmsFactory createInstance() throws Exception {
-		return new DmsFactory(DmsAPIConfig
-				.builder()
-				.rootUrl(DMS_API_BASE)
-				.build());
+		return new DmsFactory();
 	}
 }

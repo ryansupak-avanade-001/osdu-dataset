@@ -21,22 +21,15 @@ import org.opengroup.osdu.core.common.http.HttpClient;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 
 public class DmsFactory implements IDmsFactory {
-    
-    private final DmsAPIConfig config;
 
-    public DmsFactory(DmsAPIConfig config) {
-        if (config == null) {
-            throw new IllegalArgumentException("DmsAPIConfig cannot be empty");
-        }
-
-        this.config = config;
+    public DmsFactory() {
     }
 
     @Override
-    public IDmsProvider create(DpsHeaders headers, String dmsServiceRoute) {
+    public IDmsProvider create(DpsHeaders headers, DmsServiceProperties dmsServiceProperties) {
         if (headers == null) {
             throw new NullPointerException("headers cannot be null");
         }
-        return new DmsService(this.config, dmsServiceRoute, new HttpClient(), headers);
+        return new DmsService(dmsServiceProperties, new HttpClient(), headers);
     }
 }

@@ -22,4 +22,5 @@ public class DmsValidationDoc {
     }
 
     public static final String RESOURCE_TYPE_NOT_REGISTERED_ERROR = "No DMS handler for resource type '%s' is registered";
+    public static final String DMS_STORAGE_NOT_SUPPORTED_ERROR = "The requested DMS (%s) does not support storage operations";
 }

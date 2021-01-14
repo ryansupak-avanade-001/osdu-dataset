@@ -16,8 +16,10 @@ package org.opengroup.osdu.dataset.provider.interfaces;
 
 import java.util.Map;
 
+import org.opengroup.osdu.dataset.dms.DmsServiceProperties;
+
 public interface IDatasetDmsServiceMap {
 
-   public Map<String, String> getResourceTypeToDmsServiceMap();
+   public Map<String, DmsServiceProperties> getResourceTypeToDmsServiceMap();
     
 }

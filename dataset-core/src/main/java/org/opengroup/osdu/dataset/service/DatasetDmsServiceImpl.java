@@ -31,6 +31,7 @@ import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.storage.MultiRecordIds;
 import org.opengroup.osdu.core.common.model.storage.Record;
 import org.opengroup.osdu.dataset.dms.DmsException;
+import org.opengroup.osdu.dataset.dms.DmsServiceProperties;
 import org.opengroup.osdu.dataset.dms.IDmsFactory;
 import org.opengroup.osdu.dataset.dms.IDmsProvider;
 import org.opengroup.osdu.dataset.model.request.DmsExceptionResponse;
@@ -77,19 +78,26 @@ public class DatasetDmsServiceImpl implements DatasetDmsService {
     @Override
     public GetDatasetStorageInstructionsResponse getStorageInstructions(String resourceType) {
 
-        Map<String,String> resourceTypeToDmsServiceMap = dmsServiceMap.getResourceTypeToDmsServiceMap();
+        Map<String,DmsServiceProperties> resourceTypeToDmsServiceMap = dmsServiceMap.getResourceTypeToDmsServiceMap();
 
-        if (!resourceTypeToDmsServiceMap.containsKey(resourceType)) {
+        DmsServiceProperties dmsServiceProperties = resourceTypeToDmsServiceMap.get(resourceType);
+
+        if (dmsServiceProperties == null) {
             throw new AppException(HttpStatus.BAD_REQUEST.value(), 
                 HttpStatus.BAD_REQUEST.getReasonPhrase(), 
                 String.format(DmsValidationDoc.RESOURCE_TYPE_NOT_REGISTERED_ERROR, resourceType));
+        }        
+
+        if (!dmsServiceProperties.isAllowStorage()) {
+            HttpStatus status = HttpStatus.METHOD_NOT_ALLOWED;            
+            throw new AppException(status.value(), "DMS - Storage Not Supported", String.format(DmsValidationDoc.DMS_STORAGE_NOT_SUPPORTED_ERROR, resourceType));
         }
 
         GetDatasetStorageInstructionsResponse response = null;
 
         try {
 
-            IDmsProvider dmsProvider = dmsFactory.create(headers, resourceTypeToDmsServiceMap.get(resourceType));
+            IDmsProvider dmsProvider = dmsFactory.create(headers, dmsServiceProperties);
             response = dmsProvider.getStorageInstructions();
             
         }
@@ -118,7 +126,7 @@ public class DatasetDmsServiceImpl implements DatasetDmsService {
     @Override
     public GetDatasetRetrievalInstructionsResponse getDatasetRetrievalInstructions(List<String> datasetRegistryIds) {
 
-        Map<String,String> resourceTypeToDmsServiceMap = dmsServiceMap.getResourceTypeToDmsServiceMap();
+        Map<String,DmsServiceProperties> resourceTypeToDmsServiceMap = dmsServiceMap.getResourceTypeToDmsServiceMap();
 
         GetRecordsResponse getRecordsResponse = null;
 

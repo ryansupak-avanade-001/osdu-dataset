@@ -19,23 +19,37 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
+import org.opengroup.osdu.dataset.dms.DmsServiceProperties;
 import org.opengroup.osdu.dataset.provider.interfaces.IDatasetDmsServiceMap;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap {
 
-     private Map<String,String> resourceTypeToDmsServiceMap = new HashMap<>();
+    @Value("${DMS_API_BASE}")
+	private String DMS_API_BASE;
+
+    private Map<String,DmsServiceProperties> resourceTypeToDmsServiceMap = new HashMap<>();
 
     @PostConstruct
     public void init() {
+       
         //todo: replace this with service discovery / registered db entries
-        resourceTypeToDmsServiceMap.put("srn:type:file", "/api/dms/file/v1/file");
-        resourceTypeToDmsServiceMap.put("srn:type:filecollection", "/api/dms/file/v1/file-collection");
+        resourceTypeToDmsServiceMap.put(
+            "srn:type:file", 
+            new DmsServiceProperties(StringUtils.join(DMS_API_BASE, "/api/dms/file/v1/file"))
+        );
+        
+        resourceTypeToDmsServiceMap.put(
+            "srn:type:file-collection", 
+            new DmsServiceProperties(StringUtils.join(DMS_API_BASE, "/api/dms/file/v1/file-collection"))
+        );
     }
 
     @Override
-    public Map<String, String> getResourceTypeToDmsServiceMap() {
+    public Map<String, DmsServiceProperties> getResourceTypeToDmsServiceMap() {
         return resourceTypeToDmsServiceMap;
     }
     

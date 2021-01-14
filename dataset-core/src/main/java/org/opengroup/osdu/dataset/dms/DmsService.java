@@ -17,41 +17,36 @@
 
 package org.opengroup.osdu.dataset.dms;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.google.gson.JsonSyntaxException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.opengroup.osdu.core.common.http.HttpRequest;
 import org.opengroup.osdu.core.common.http.HttpResponse;
 import org.opengroup.osdu.core.common.http.IHttpClient;
+import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.common.model.storage.MultiRecordIds;
-import org.opengroup.osdu.core.common.model.storage.MultiRecordInfo;
-import org.opengroup.osdu.core.common.model.storage.Record;
-import org.opengroup.osdu.core.common.model.storage.Schema;
 import org.opengroup.osdu.dataset.model.request.GetDatasetRegistryRequest;
 import org.opengroup.osdu.dataset.model.response.GetDatasetRetrievalInstructionsResponse;
 import org.opengroup.osdu.dataset.model.response.GetDatasetStorageInstructionsResponse;
+import org.springframework.http.HttpStatus;
 
 public class DmsService implements IDmsProvider {
-    private final String rootUrl;
-    private String dmsServiceRoute;
+    
+    private String dmsServiceUrl;
+    private DmsServiceProperties dmsServiceProperties;
     private final IHttpClient httpClient;
     private final DpsHeaders headers;
     
 
-    public DmsService(DmsAPIConfig config, String dmsServiceRoute, IHttpClient httpClient, DpsHeaders headers) {
+    public DmsService(DmsServiceProperties dmsServiceProperties, IHttpClient httpClient, DpsHeaders headers) {
 
-        this.dmsServiceRoute = dmsServiceRoute;
-        this.rootUrl = config.getRootUrl();
+        this.dmsServiceProperties = dmsServiceProperties;
+        this.dmsServiceUrl = dmsServiceProperties.getDmsServiceBaseUrl();        
         this.httpClient = httpClient;
         this.headers = headers;
 
-        if (config.apiKey != null) {
-            headers.put("AppKey", config.apiKey);
+        if (dmsServiceProperties.getApiKey() != null) {
+            headers.put("AppKey", dmsServiceProperties.getApiKey());
         }
 
     }
@@ -76,7 +71,7 @@ public class DmsService implements IDmsProvider {
 
 
     private String createUrl(String requestPathAndQuery) {
-        return StringUtils.join(this.rootUrl, this.dmsServiceRoute, requestPathAndQuery);
+        return StringUtils.join(this.dmsServiceUrl, requestPathAndQuery);
     }
 
     private <T> T getResult(HttpResponse result, Class<T> type) throws DmsException {
