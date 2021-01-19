@@ -65,7 +65,7 @@ phases:
 
       - echo "Skipping integration test build for now..."
       # - echo "Building integration testing assemblies and gathering artifacts..."
-      # - ./testing/dataset-test-aws/build-aws/prepare-dist.sh
+      - ./testing/dataset-test-aws/build-aws/prepare-dist.sh
 
       - echo "Logging into Docker Hub..."
       - docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
