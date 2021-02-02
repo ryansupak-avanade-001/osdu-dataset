@@ -38,12 +38,12 @@ public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap {
        
         //todo: replace this with service discovery / registered db entries
         resourceTypeToDmsServiceMap.put(
-            "srn:type:file", 
+            "dataset--File.*", 
             new DmsServiceProperties(StringUtils.join(DMS_API_BASE, "/api/dms/file/v1/file"))
         );
         
         resourceTypeToDmsServiceMap.put(
-            "srn:type:file-collection", 
+            "dataset--FileCollection.*", 
             new DmsServiceProperties(StringUtils.join(DMS_API_BASE, "/api/dms/file/v1/file-collection"))
         );
     }

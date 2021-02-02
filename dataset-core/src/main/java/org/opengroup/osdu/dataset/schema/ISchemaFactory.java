@@ -1,5 +1,4 @@
 // Copyright © 2020 Amazon Web Services
-// Copyright 2017-2019, Schlumberger
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,19 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//TODO: move this to os-core-common
+//TODO: move to os-core-common
 
-package org.opengroup.osdu.dataset.storage;
+package org.opengroup.osdu.dataset.schema;
 
-import java.util.List;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 
-import org.opengroup.osdu.core.common.model.storage.Record;
-
-import lombok.Data;
-
-@Data
-public class GetRecordsResponse {
-    private List<Record> records;
-    private List<String> invalidRecords;
-    private List<String> retryRecords;
+public interface ISchemaFactory {
+    ISchemaService create(DpsHeaders headers);
 }

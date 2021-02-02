@@ -16,9 +16,12 @@ package org.opengroup.osdu.dataset.model.response;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.Data;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class GetDatasetRetrievalInstructionsResponse {
 
     //Leave as an object.  This is different for each DMS
@@ -26,6 +29,10 @@ public class GetDatasetRetrievalInstructionsResponse {
 
     public GetDatasetRetrievalInstructionsResponse(List<DatasetRetrievalDeliveryItem> delivery) {
 		    this.delivery = delivery;
-	  }
+    }
+
+    public GetDatasetRetrievalInstructionsResponse() {
+        //default constructor for serialization/deserialization
+    }
     
 }

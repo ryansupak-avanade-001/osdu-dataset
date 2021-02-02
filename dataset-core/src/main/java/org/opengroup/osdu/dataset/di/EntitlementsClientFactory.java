@@ -15,15 +15,21 @@
 
 package org.opengroup.osdu.dataset.di;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.opengroup.osdu.core.common.entitlements.EntitlementsAPIConfig;
 import org.opengroup.osdu.core.common.entitlements.EntitlementsFactory;
 import org.opengroup.osdu.core.common.entitlements.IEntitlementsFactory;
+import org.opengroup.osdu.core.common.http.json.HttpResponseBodyMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.stereotype.Component;
 
 @Component
 public class EntitlementsClientFactory extends AbstractFactoryBean<IEntitlementsFactory> {
+
+	private final ObjectMapper objectMapper = new ObjectMapper();
+	private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper);
 
 	@Value("${AUTHORIZE_API}")
 	private String AUTHORIZE_API;
@@ -38,7 +44,8 @@ public class EntitlementsClientFactory extends AbstractFactoryBean<IEntitlements
 				.builder()
 				.rootUrl(AUTHORIZE_API)
 				.apiKey(AUTHORIZE_API_KEY)
-				.build());
+				.build(),
+				bodyMapper);
 	}
 
 	@Override

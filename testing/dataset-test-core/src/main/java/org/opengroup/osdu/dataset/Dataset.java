@@ -54,20 +54,20 @@ public abstract class Dataset extends TestBase {
 
 	public static void classSetup(String token) throws Exception {
 		// make sure schema is created
-		String datasetRegistrySchema = "{\n" +
-				"    \"kind\": \"opendes:osdu:dataset-registry:0.0.1\",\n" +
-				"    \"schema\": [{\"path\":\"ResourceTypeID\",\"kind\":\"string\",\"ext\":{}},\n" +
-				"        {\"path\":\"ResourceID\",\"kind\":\"string\",\"ext\":{}},\n" +
-				"        {\"path\":\"ResourceSecurityClassification\",\"kind\":\"string\",\"ext\":{}},\n" +
-				"        {\"path\":\"ResourceName\",\"kind\":\"string\",\"ext\":{}},\n" +
-				"        {\"path\":\"ResourceDescription\",\"kind\":\"string\",\"ext\":{}},\n" +
-				"        {\"path\":\"ResourceSource\",\"kind\":\"string\",\"ext\":{}}]\n" +
-				"}";
-		ClientResponse response = TestUtils.send(TestUtils.storageBaseUrl, "schemas", "POST",
-				HeaderUtils.getHeaders(TenantUtils.getTenantName(), token),
-				datasetRegistrySchema, "");
+		// String datasetRegistrySchema = "{\n" +
+		// 		"    \"kind\": \"osdu:wks:dataset-registry:0.0.1\",\n" +
+		// 		"    \"schema\": [{\"path\":\"ResourceTypeID\",\"kind\":\"string\",\"ext\":{}},\n" +
+		// 		"        {\"path\":\"ResourceID\",\"kind\":\"string\",\"ext\":{}},\n" +
+		// 		"        {\"path\":\"ResourceSecurityClassification\",\"kind\":\"string\",\"ext\":{}},\n" +
+		// 		"        {\"path\":\"ResourceName\",\"kind\":\"string\",\"ext\":{}},\n" +
+		// 		"        {\"path\":\"ResourceDescription\",\"kind\":\"string\",\"ext\":{}},\n" +
+		// 		"        {\"path\":\"ResourceSource\",\"kind\":\"string\",\"ext\":{}}]\n" +
+		// 		"}";
+		// ClientResponse response = TestUtils.send(TestUtils.storageBaseUrl, "schemas", "POST",
+		// 		HeaderUtils.getHeaders(TenantUtils.getTenantName(), token),
+		// 		datasetRegistrySchema, "");
 
-		Assert.assertTrue(response.getStatus() == 201 || response.getStatus() == 409);
+		// Assert.assertTrue(response.getStatus() == 201 || response.getStatus() == 409);
 
 		// make sure legaltag is created
 		String legalBody = "{\t\n" +
@@ -90,31 +90,7 @@ public abstract class Dataset extends TestBase {
 				HeaderUtils.getHeaders(TenantUtils.getTenantName(), token),
 				legalBody, "");
 
-		Assert.assertTrue(legalResponse.getStatus() == 201 || legalResponse.getStatus() == 409);
-
-		// // make sure acl groups are created
-		// String viewerBody = "{\n" +
-		// 		"    \"name\": \"data.default.viewers\",\n" +
-		// 		"    \"description\": \"Meant for testing\"\n" +
-		// 		"}";
-		// String ownerBody = "{\n" +
-		// 		"    \"name\": \"data.default.owners\",\n" +
-		// 		"    \"description\": \"Meant for testing\"\n" +
-		// 		"}";
-
-		// ClientResponse viewersResponse = TestUtils.send(TestUtils.entitlementsBaseUrl, "groups", "POST",
-		// 		HeaderUtils.getHeaders(TenantUtils.getTenantName(), token),
-		// 		viewerBody, "");
-
-		// String r = response.getEntity(String.class);
-
-		// Assert.assertTrue(viewersResponse.getStatus() == 200);
-
-		// ClientResponse ownersResponse = TestUtils.send(TestUtils.entitlementsBaseUrl, "groups", "POST",
-		// 		HeaderUtils.getHeaders(TenantUtils.getTenantName(), token),
-		// 		ownerBody, "");
-
-		// Assert.assertTrue(ownersResponse.getStatus() == 200);
+		Assert.assertTrue(legalResponse.getStatus() == 201 || legalResponse.getStatus() == 409);		
 	}
 
 	public static void classTearDown(String token) throws Exception {
@@ -136,14 +112,12 @@ public abstract class Dataset extends TestBase {
 			System.out.println(String.format("Deleting Dataset Registry Response Code: %s", storageResponse.getStatus()));
 			
 		}
-
-		
 	}
 
 	@Test
 	public void should_getUploadLocation() throws Exception {
 		ClientResponse response = TestUtils.send("getStorageInstructions", "GET",
-				HeaderUtils.getHeaders(TenantUtils.getTenantName(), testUtils.getToken()), "", "?resourceType=srn:type:file");
+				HeaderUtils.getHeaders(TenantUtils.getTenantName(), testUtils.getToken()), "", "?kindSubType=dataset--File.Generic");
 		Assert.assertEquals(200, response.getStatus());
 		
 		// JsonObject json = new JsonParser().parse(response.getEntity(String.class)).getAsJsonObject();
@@ -160,10 +134,12 @@ public abstract class Dataset extends TestBase {
 
 	@Test
 	public void upload_file_register_it_and_retrieve_it() throws Exception {
+
+		String kindSubType = "dataset--File.Generic";
 		
 		//Step 1: Get Storage Instructions for File
 		ClientResponse getStorageInstClientResp = TestUtils.send("getStorageInstructions", "GET",
-				HeaderUtils.getHeaders(TenantUtils.getTenantName(), testUtils.getToken()), "", "?resourceType=srn:type:file");
+				HeaderUtils.getHeaders(TenantUtils.getTenantName(), testUtils.getToken()), "", String.format("?kindSubType=%s", kindSubType));
 		
 		Assert.assertEquals(200, getStorageInstClientResp.getStatus());
 
@@ -181,7 +157,7 @@ public abstract class Dataset extends TestBase {
 
 		//Step 3: Register File
 		String uuid = UUID.randomUUID().toString().replace("-", "");
-		String datasetRegistryId = String.format("%s:doc:%s", TenantUtils.getTenantName(), uuid);
+		String datasetRegistryId = String.format("%s:%s:%s", TenantUtils.getTenantName(),kindSubType, uuid);
 		Record datasetRegistry = createDatasetRegistry(datasetRegistryId, fileName, unsignedUploadUrl);
 
 		TestGetCreateUpdateDatasetRegistryRequest datasetRegistryRequest = new TestGetCreateUpdateDatasetRegistryRequest(new ArrayList<>());
@@ -234,7 +210,7 @@ public abstract class Dataset extends TestBase {
 		Record datasetRegistry = new Record();
 
 		datasetRegistry.setId(id);
-		datasetRegistry.setKind(String.format("%s:osdu:dataset-registry:0.0.1", TenantUtils.getTenantName()));		
+		datasetRegistry.setKind("osdu:wks:dataset--File.Generic:1.0.0");		
 		
 		//set legal
 		Legal legal = new Legal();

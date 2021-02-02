@@ -14,20 +14,12 @@
 
 //TODO: move to os-core-common
 
-package org.opengroup.osdu.dataset.storage;
+package org.opengroup.osdu.dataset.schema;
 
-import java.util.List;
+import org.opengroup.osdu.core.common.model.http.DpsException;
 
-import org.opengroup.osdu.core.common.model.storage.MultiRecordIds;
-import org.opengroup.osdu.core.common.model.storage.Record;
-import org.opengroup.osdu.core.common.model.storage.Schema;
+public interface ISchemaService {
 
-public interface IStorageProvider {
-
-    CreateUpdateRecordsResponse createOrUpdateRecords(List<Record> records) throws StorageException;
-
-    GetRecordsResponse getRecords(MultiRecordIds ids) throws StorageException;
-
-    Schema getSchema(String kind) throws StorageException;
+    Object getSchema(String kind) throws DpsException;
 
 }

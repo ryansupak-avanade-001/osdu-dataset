@@ -15,28 +15,31 @@
 
 //TODO: move to os-core-common
 
-package org.opengroup.osdu.dataset.storage;
+package org.opengroup.osdu.dataset.schema;
 
 import org.opengroup.osdu.core.common.http.HttpClient;
+import org.opengroup.osdu.core.common.http.json.HttpResponseBodyMapper;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 
-public class StorageFactory implements IStorageFactory {
+public class SchemaFactory implements ISchemaFactory {
     
-    private final StorageAPIConfig config;
+    private final SchemaAPIConfig config;
+    private final HttpResponseBodyMapper bodyMapper;
 
-    public StorageFactory(StorageAPIConfig config) {
+    public SchemaFactory(SchemaAPIConfig config, HttpResponseBodyMapper bodyMapper) {
         if (config == null) {
-            throw new IllegalArgumentException("StorageAPIConfig cannot be empty");
+            throw new IllegalArgumentException("SchemaAPIConfig cannot be empty");
         }
 
         this.config = config;
+        this.bodyMapper = bodyMapper;
     }
 
     @Override
-    public IStorageProvider create(DpsHeaders headers) {
+    public ISchemaService create(DpsHeaders headers) {
         if (headers == null) {
             throw new NullPointerException("headers cannot be null");
         }
-        return new StorageService(this.config, new HttpClient(), headers);
+        return new SchemaService(this.config, new HttpClient(), headers, bodyMapper);
     }
 }

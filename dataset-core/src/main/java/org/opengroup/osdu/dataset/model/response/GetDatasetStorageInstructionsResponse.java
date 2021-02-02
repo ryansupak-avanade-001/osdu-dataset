@@ -16,9 +16,12 @@ package org.opengroup.osdu.dataset.model.response;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.Data;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class GetDatasetStorageInstructionsResponse {
     Map<String, Object> storageLocation;
 
@@ -27,5 +30,9 @@ public class GetDatasetStorageInstructionsResponse {
     public GetDatasetStorageInstructionsResponse(Map<String, Object> storageLocation, String providerKey) {
         this.storageLocation = storageLocation;
         this.providerKey = providerKey;
+    }
+
+    public GetDatasetStorageInstructionsResponse() {
+        //default constructor for serialization/deserialization
     }
 }
