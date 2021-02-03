@@ -9,6 +9,20 @@ The following software have components provided under the terms of this license:
 
 - ASM Core (from )
 - ASM based accessors helper used by json-smart (from )
+- AWS Event Stream (from https://github.com/awslabs/aws-eventstream-java)
+- AWS Java SDK :: AWS Core (from https://aws.amazon.com/sdkforjava)
+- AWS Java SDK :: Annotations (from )
+- AWS Java SDK :: Auth (from https://aws.amazon.com/sdkforjava)
+- AWS Java SDK :: Core :: Protocols :: AWS Json Protocol (from https://aws.amazon.com/sdkforjava)
+- AWS Java SDK :: Core :: Protocols :: Protocol Core (from https://aws.amazon.com/sdkforjava)
+- AWS Java SDK :: HTTP Client Interface (from )
+- AWS Java SDK :: HTTP Clients :: Apache (from )
+- AWS Java SDK :: HTTP Clients :: Netty Non-Blocking I/O (from )
+- AWS Java SDK :: Profiles (from https://aws.amazon.com/sdkforjava)
+- AWS Java SDK :: Regions (from )
+- AWS Java SDK :: SDK Core (from https://aws.amazon.com/sdkforjava)
+- AWS Java SDK :: Services :: AWS Simple Systems Management (SSM) (from https://aws.amazon.com/sdkforjava)
+- AWS Java SDK :: Utilities (from )
 - AWS Java SDK for AWS Amplify (from https://aws.amazon.com/sdkforjava)
 - AWS Java SDK for AWS App Mesh (from https://aws.amazon.com/sdkforjava)
 - AWS Java SDK for AWS AppSync (from https://aws.amazon.com/sdkforjava)
@@ -200,6 +214,7 @@ The following software have components provided under the terms of this license:
 - Apache Commons Logging (from http://commons.apache.org/proper/commons-logging/)
 - Apache HttpAsyncClient (from http://hc.apache.org/httpcomponents-asyncclient)
 - Apache HttpClient (from http://hc.apache.org/httpcomponents-client)
+- Apache HttpClient Cache (from http://hc.apache.org/httpcomponents-client)
 - Apache HttpCore (from http://hc.apache.org/httpcomponents-core-ga)
 - Apache HttpCore NIO (from http://hc.apache.org/httpcomponents-core-ga)
 - Apache Log4j API (from )
@@ -258,17 +273,21 @@ The following software have components provided under the terms of this license:
 - Lucene Spatial Extras (from )
 - Lucene Suggest (from )
 - MapStruct Core (from )
+- Mockito (from http://www.mockito.org)
 - Mockito (from http://mockito.org)
 - Mockito (from http://mockito.org)
 - Mockito (from http://www.mockito.org)
-- Mockito (from http://www.mockito.org)
+- Netty Reactive Streams HTTP support (from )
+- Netty Reactive Streams Implementation (from )
 - Netty/Buffer (from http://netty.io/)
 - Netty/Codec (from )
 - Netty/Codec/HTTP (from )
+- Netty/Codec/HTTP2 (from )
 - Netty/Common (from )
 - Netty/Handler (from )
 - Netty/Resolver (from )
 - Netty/Transport (from http://netty.io/)
+- Netty/Transport/Native/Unix/Common (from )
 - Nimbus JOSE+JWT (from https://bitbucket.org/connect2id/nimbus-jose-jwt)
 - Nimbus LangTag (from https://bitbucket.org/connect2id/nimbus-language-tags)
 - OAuth 2.0 SDK with OpenID Connect extensions (from https://bitbucket.org/connect2id/oauth-2.0-sdk-with-openid-connect-extensions)
@@ -308,6 +327,7 @@ The following software have components provided under the terms of this license:
 - Spring Web MVC (from https://github.com/spring-projects/spring-framework)
 - T-Digest (from https://github.com/tdunning/t-digest)
 - aggs-matrix-stats (from https://github.com/elastic/elasticsearch)
+- aws-ssm-java-caching-client (from https://github.com/awslabs/aws-ssm-java-caching-client)
 - cli (from https://github.com/elastic/elasticsearch)
 - compiler (from http://github.com/spullara/mustache.java)
 - elasticsearch-core (from https://github.com/elastic/elasticsearch)
@@ -393,6 +413,13 @@ CC-BY-2.5
 The following software have components provided under the terms of this license:
 
 - FindBugs-jsr305 (from http://findbugs.sourceforge.net/)
+
+========================================================================
+CC0-1.0
+========================================================================
+The following software have components provided under the terms of this license:
+
+- reactive-streams (from http://www.reactive-streams.org/)
 
 ========================================================================
 CDDL-1.0
@@ -581,6 +608,7 @@ public-domain
 ========================================================================
 The following software have components provided under the terms of this license:
 
+- AWS Java SDK :: SDK Core (from https://aws.amazon.com/sdkforjava)
 - AWS SDK for Java - Models (from https://aws.amazon.com/sdkforjava)
 - Guava: Google Core Libraries for Java (from https://github.com/google/guava.git)
 - HdrHistogram (from http://hdrhistogram.github.io/HdrHistogram/)
@@ -589,6 +617,7 @@ The following software have components provided under the terms of this license:
 - Project Lombok (from https://projectlombok.org)
 - Project Lombok (from https://projectlombok.org)
 - Spring Web (from https://github.com/spring-projects/spring-framework)
+- reactive-streams (from http://www.reactive-streams.org/)
 
 ========================================================================
 unknown
