@@ -17,12 +17,16 @@
 
 package org.opengroup.osdu.dataset.dms;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonSyntaxException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.opengroup.osdu.core.common.http.HttpRequest;
 import org.opengroup.osdu.core.common.http.HttpResponse;
 import org.opengroup.osdu.core.common.http.IHttpClient;
+import org.opengroup.osdu.core.common.http.json.HttpResponseBodyMapper;
+import org.opengroup.osdu.core.common.http.json.HttpResponseBodyParsingException;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.dataset.model.request.GetDatasetRegistryRequest;
@@ -31,17 +35,19 @@ import org.opengroup.osdu.dataset.model.response.GetDatasetStorageInstructionsRe
 import org.springframework.http.HttpStatus;
 
 public class DmsService implements IDmsProvider {
-    
+
     private String dmsServiceUrl;
     private DmsServiceProperties dmsServiceProperties;
     private final IHttpClient httpClient;
     private final DpsHeaders headers;
-    
+
+    private final ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
+    private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper);
 
     public DmsService(DmsServiceProperties dmsServiceProperties, IHttpClient httpClient, DpsHeaders headers) {
 
         this.dmsServiceProperties = dmsServiceProperties;
-        this.dmsServiceUrl = dmsServiceProperties.getDmsServiceBaseUrl();        
+        this.dmsServiceUrl = dmsServiceProperties.getDmsServiceBaseUrl();
         this.httpClient = httpClient;
         this.headers = headers;
 
@@ -61,14 +67,14 @@ public class DmsService implements IDmsProvider {
     }
 
     @Override
-    public GetDatasetRetrievalInstructionsResponse getDatasetRetrievalInstructions(GetDatasetRegistryRequest datasetRegistryRequest) throws DmsException {
+    public GetDatasetRetrievalInstructionsResponse getDatasetRetrievalInstructions(
+            GetDatasetRegistryRequest datasetRegistryRequest) throws DmsException {
 
         String url = this.createUrl("/getRetrievalInstructions");
         HttpResponse result = this.httpClient
                 .send(HttpRequest.post(datasetRegistryRequest).url(url).headers(this.headers.getHeaders()).build());
         return this.getResult(result, GetDatasetRetrievalInstructionsResponse.class);
     }
-
 
     private String createUrl(String requestPathAndQuery) {
         return StringUtils.join(this.dmsServiceUrl, requestPathAndQuery);
@@ -77,8 +83,8 @@ public class DmsService implements IDmsProvider {
     private <T> T getResult(HttpResponse result, Class<T> type) throws DmsException {
         if (result.isSuccessCode()) {
             try {
-                return result.parseBody(type);
-            } catch (JsonSyntaxException e) {
+                return bodyMapper.parseBody(result, type);
+            } catch (JsonSyntaxException | HttpResponseBodyParsingException e) {
                 throw new DmsException("Error parsing response. Check the inner HttpResponse for more info.",
                         result);
             }

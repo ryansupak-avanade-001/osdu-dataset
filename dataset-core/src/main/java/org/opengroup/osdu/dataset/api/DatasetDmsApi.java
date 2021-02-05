@@ -54,9 +54,9 @@ public class DatasetDmsApi {
     @GetMapping("/getStorageInstructions")	
 	@PreAuthorize("@authorizationFilter.hasRole('" + DeliveryRole.VIEWER + "')")
 	public ResponseEntity<GetDatasetStorageInstructionsResponse> getStorageInstructions( 
-		@RequestParam(value = "resourceType") String resourceType) {
+		@RequestParam(value = "kindSubType") String kindSubType) {
 
-			GetDatasetStorageInstructionsResponse response = this.datasetDmsService.getStorageInstructions(resourceType);				
+			GetDatasetStorageInstructionsResponse response = this.datasetDmsService.getStorageInstructions(kindSubType);				
 			return new ResponseEntity<GetDatasetStorageInstructionsResponse>(response, HttpStatus.OK);
 	}
 	

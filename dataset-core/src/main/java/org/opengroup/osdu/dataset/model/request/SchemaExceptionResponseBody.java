@@ -12,12 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//TODO: move to os-core-common
+package org.opengroup.osdu.dataset.model.request;
 
-package org.opengroup.osdu.dataset.storage;
+import java.util.ArrayList;
 
-import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import lombok.Data;
 
-public interface IStorageFactory {
-    IStorageProvider create(DpsHeaders headers);
+@Data
+public class SchemaExceptionResponseBody {
+
+    private Integer code;    
+    private String message;
+    private ArrayList<Object> errors;   
+    
 }

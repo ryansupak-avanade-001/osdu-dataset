@@ -18,32 +18,32 @@ package org.opengroup.osdu.dataset.di;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.opengroup.osdu.core.common.http.json.HttpResponseBodyMapper;
-import org.opengroup.osdu.core.common.storage.IStorageFactory;
-import org.opengroup.osdu.core.common.storage.StorageAPIConfig;
-import org.opengroup.osdu.core.common.storage.StorageFactory;
+import org.opengroup.osdu.dataset.schema.ISchemaFactory;
+import org.opengroup.osdu.dataset.schema.SchemaAPIConfig;
+import org.opengroup.osdu.dataset.schema.SchemaFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.stereotype.Component;
 
 @Component
-public class StorageClientFactory extends AbstractFactoryBean<IStorageFactory> {
+public class SchemaClientFactory extends AbstractFactoryBean<ISchemaFactory> {
 
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper);
 
-	@Value("${STORAGE_API}")
-	private String STORAGE_API;
+	@Value("${SCHEMA_API}")
+	private String SCHEMA_API;
 
 	@Override
 	public Class<?> getObjectType() {
-		return IStorageFactory.class;
+		return ISchemaFactory.class;
 	}
 
 	@Override
-	protected IStorageFactory createInstance() throws Exception {
-		return new StorageFactory(StorageAPIConfig
+	protected ISchemaFactory createInstance() throws Exception {
+		return new SchemaFactory(SchemaAPIConfig
 				.builder()
-				.rootUrl(STORAGE_API)				
+				.rootUrl(SCHEMA_API)
 				.build(),
 				bodyMapper);
 	}

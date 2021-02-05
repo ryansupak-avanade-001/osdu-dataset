@@ -1,5 +1,4 @@
 // Copyright © 2020 Amazon Web Services
-// Copyright 2017-2019, Schlumberger
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,22 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//TODO: move to os-core-common
+package org.opengroup.osdu.dataset.model.request;
 
-package org.opengroup.osdu.dataset.storage;
-
-import lombok.Builder;
 import lombok.Data;
 
-@Builder
 @Data
-public class StorageAPIConfig {
-    @Builder.Default
-    String rootUrl = "https://os-storage/api/legal/v1";
+public class SchemaExceptionResponse {
 
-    String apiKey;
+    private SchemaExceptionResponseBody error;
 
-    public static StorageAPIConfig Default() {
-        return StorageAPIConfig.builder().build();
-    }
+    /** example:
+     * "{"error":{"code":404,"message":"Schema is not present","errors":[{"domain":"global","reason":"notFound","message":"Schema is not present"}]}}"
+     */
+    
 }

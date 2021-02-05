@@ -14,36 +14,50 @@
 
 package org.opengroup.osdu.dataset.service;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.NotImplementedException;
-import org.apache.http.HttpException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.opengroup.osdu.core.common.http.json.HttpResponseBodyMapper;
+import org.opengroup.osdu.core.common.http.json.HttpResponseBodyParsingException;
 import org.opengroup.osdu.core.common.model.http.AppException;
+import org.opengroup.osdu.core.common.model.http.DpsException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.common.model.storage.MultiRecordIds;
+import org.opengroup.osdu.core.common.model.storage.MultiRecordInfo;
 import org.opengroup.osdu.core.common.model.storage.Record;
-import org.opengroup.osdu.core.common.model.storage.Schema;
-import org.opengroup.osdu.core.common.model.storage.SchemaItem;
-import org.opengroup.osdu.dataset.model.validation.DatasetRegistryValidationDoc;
+import org.opengroup.osdu.core.common.model.storage.StorageException;
+import org.opengroup.osdu.core.common.model.storage.UpsertRecords;
+import org.opengroup.osdu.core.common.storage.IStorageFactory;
+import org.opengroup.osdu.core.common.storage.IStorageService;
+import org.opengroup.osdu.dataset.model.request.SchemaExceptionResponse;
+import org.opengroup.osdu.dataset.model.request.SchemaExceptionResponseBody;
 import org.opengroup.osdu.dataset.model.request.StorageExceptionResponse;
 import org.opengroup.osdu.dataset.model.response.GetCreateUpdateDatasetRegistryResponse;
-import org.opengroup.osdu.dataset.storage.CreateUpdateRecordsResponse;
-import org.opengroup.osdu.dataset.storage.GetRecordsResponse;
-import org.opengroup.osdu.dataset.storage.IStorageFactory;
-import org.opengroup.osdu.dataset.storage.IStorageProvider;
-import org.opengroup.osdu.dataset.storage.StorageException;
+import org.opengroup.osdu.dataset.schema.ISchemaFactory;
+import org.opengroup.osdu.dataset.schema.ISchemaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DatasetRegistryServiceImpl implements DatasetRegistryService {
 
-    
-    final String DATASET_REGISTRY_DATASET_PROPERTIES_NAME = "DatasetProperties";
-    final String DATASET_REGISTRY_SCHEMA_FORMAT = "%s:osdu:dataset-registry:0.0.1";
+    /**
+     * Dataset Kind Regex is tied to the R3 Data Definitions official REGEX format,
+     * but with the stricter enforcement that the groupType is a dataset.
+     * example: dataset--File.Generic
+     * Official Dataset Kinds: https://community.opengroup.org/osdu/data/data-definitions/-/tree/master/E-R/dataset
+     * Regex defined per ADR: https://community.opengroup.org/osdu/platform/system/storage/-/issues/26
+     * 
+     */
+    final String DATASET_KIND_REGEX = "^[\\w\\-\\.]+:[\\w\\-\\.]+:dataset--+[\\w\\-\\.]+:[0-9]+.[0-9]+.[0-9]+$";
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper);
 
     @Inject
     private DpsHeaders headers;
@@ -51,125 +65,175 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
     @Inject
     IStorageFactory storageFactory;
 
+    @Inject
+    ISchemaFactory schemaFactory;
+
+    Pattern datasetKindPattern = Pattern.compile(DATASET_KIND_REGEX);
+
     @Override
     public void deleteDatasetRegistry(String datasetRegistryId) {
-        // todo: implement
-        throw new NotImplementedException("Delete is Not Yet Implemented");
+
+        IStorageService storageService = this.storageFactory.create(headers);
+        try {
+            storageService.deleteRecord(datasetRegistryId);
+        } catch (StorageException e) {
+            try {
+                StorageExceptionResponse body = bodyMapper.parseBody(e.getHttpResponse(), StorageExceptionResponse.class);
+                throw new AppException(body.getCode(), "Storage Service: " + body.getReason(), body.getMessage());
+            } catch (HttpResponseBodyParsingException e1) {
+                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                        HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                        "Failed to parse error from Storage Service");
+            }
+        }
     }
 
     @Override
     public GetCreateUpdateDatasetRegistryResponse createOrUpdateDatasetRegistry(List<Record> datasetRegistries) {
-        
-        IStorageProvider storageService = this.storageFactory.create(headers);
 
-        this.validateDatasetRegistries(storageService, datasetRegistries);
+        IStorageService storageService = this.storageFactory.create(headers);
+        ISchemaService schemaService = this.schemaFactory.create(headers);
 
-        CreateUpdateRecordsResponse storageResponse = null;
+        this.validateDatasets(schemaService, datasetRegistries);
+
+        UpsertRecords storageResponse = null;
         try {
-            storageResponse = storageService.createOrUpdateRecords(datasetRegistries);
+            storageResponse = storageService.upsertRecord((datasetRegistries.toArray(new Record[0])));
         } catch (StorageException e) {
-            StorageExceptionResponse body = e.getHttpResponse().parseBody(StorageExceptionResponse.class);
-            throw new AppException(body.getCode(), "Storage Service: " + body.getReason(), body.getMessage());
+            try {
+                StorageExceptionResponse body = bodyMapper.parseBody(e.getHttpResponse(), StorageExceptionResponse.class);
+                throw new AppException(body.getCode(), "Storage Service: " + body.getReason(), body.getMessage());
+            } catch (HttpResponseBodyParsingException e2) {
+
+            }
+
         }
 
         List<String> recordIds = storageResponse.getRecordIds();
 
-        GetRecordsResponse getRecordsResponse = null;
+        MultiRecordInfo getRecordsResponse = null;
 
         try {
-            MultiRecordIds multiRecordIds = new MultiRecordIds(recordIds, null);
-            getRecordsResponse = storageService.getRecords(multiRecordIds);
-        }
-        catch (StorageException e) {
-            StorageExceptionResponse body = e.getHttpResponse().parseBody(StorageExceptionResponse.class);
-            throw new AppException(body.getCode(), "Storage Service: " + body.getReason(), body.getMessage());
+            getRecordsResponse = storageService.getRecords(recordIds);
+        } catch (StorageException e) {
+            try {
+                StorageExceptionResponse body = bodyMapper.parseBody(e.getHttpResponse(), StorageExceptionResponse.class);
+                throw new AppException(body.getCode(), "Storage Service: " + body.getReason(), body.getMessage());
+            } catch (HttpResponseBodyParsingException e1) {
+                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                        HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                        "Failed to parse error from Storage Service");
+            }
         }
 
-        GetCreateUpdateDatasetRegistryResponse response = new GetCreateUpdateDatasetRegistryResponse(getRecordsResponse.getRecords());        
+        GetCreateUpdateDatasetRegistryResponse response = new GetCreateUpdateDatasetRegistryResponse(
+                getRecordsResponse.getRecords());
 
         return response;
     }
 
     public GetCreateUpdateDatasetRegistryResponse getDatasetRegistries(List<String> datasetRegistryIds) {
-        
-        GetRecordsResponse getRecordsResponse = null;
+
+        MultiRecordInfo getRecordsResponse = null;
 
         try {
 
-            IStorageProvider storageService = this.storageFactory.create(headers);
+            IStorageService storageService = this.storageFactory.create(headers);
 
-            MultiRecordIds multiRecordIds = new MultiRecordIds(datasetRegistryIds, null);
-            getRecordsResponse = storageService.getRecords(multiRecordIds);
-        }
-        catch (StorageException e) {
-            StorageExceptionResponse body = e.getHttpResponse().parseBody(StorageExceptionResponse.class);
-            throw new AppException(body.getCode(), "Storage Service: " + body.getReason(), body.getMessage());
+            getRecordsResponse = storageService.getRecords(datasetRegistryIds);
+
+        } catch (StorageException e) {
+
+            try {
+                StorageExceptionResponse body = bodyMapper.parseBody(e.getHttpResponse(), StorageExceptionResponse.class);
+                throw new AppException(body.getCode(), "Storage Service: " + body.getReason(), body.getMessage());
+            } catch (HttpResponseBodyParsingException e1) {
+                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                        HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                        "Failed to parse error from Storage Service");
+            }
         }
 
-        GetCreateUpdateDatasetRegistryResponse response = new GetCreateUpdateDatasetRegistryResponse(getRecordsResponse.getRecords()); 
+        GetCreateUpdateDatasetRegistryResponse response = new GetCreateUpdateDatasetRegistryResponse(
+                getRecordsResponse.getRecords());
 
         return response;
     }
 
-    /**
-     * Return a 400 Bad Request if any validation fails (one bad property on a single dataset registry fails all input dataset registries)
-     * in the event of bad input, nothing gets persisted (sent to storage service)
-     * validate that 'DatasetProperties' exists as an object under the 'data' section. 
-     * validate known ResourceTypeIDs against DatasetProperties. 
-     * Future: validate property types match schema definitions
-    */
-    private boolean validateDatasetRegistries(IStorageProvider storageService, List<Record> datasetRegistries) {
+    private boolean validateDatasets(ISchemaService schemaService, List<Record> datasets) {
 
-        //todo: consider moving dataset schema into common partition
-        String datasetRegistrySchemaName = String.format(DATASET_REGISTRY_SCHEMA_FORMAT, headers.getPartitionId());
-        Schema datasetRegistrySchema = null;
-        try {
-            datasetRegistrySchema = storageService.getSchema(datasetRegistrySchemaName);
-            if (datasetRegistrySchema == null) {
-                throw new StorageException("schema null", null);
+        HashMap<String, Object> schemaKindsCache = new HashMap<>();
+
+        for (Record dataset : datasets) {
+
+            
+            String datasetKind = dataset.getKind();
+
+            if (dataset.getId() != null && !Record.isRecordIdValid(dataset.getId(), headers.getPartitionId(), datasetKind)) {
+                String msg = String.format(
+							"The record '%s' does not have a valid ID",	dataset.getId());
+					throw new AppException(HttpStatus.BAD_REQUEST.value(), "Invalid record id", msg);
             }
-        }
-        catch (StorageException e) {
-            throw new AppException(HttpStatus.BAD_REQUEST.value(), 
-                HttpStatus.BAD_REQUEST.getReasonPhrase(), 
-                String.format(DatasetRegistryValidationDoc.MISSING_DATASET_REGISTRY_SCHEMA_ERROR_FORMAT, datasetRegistrySchemaName));
-        }
-        
-        for (Record datasetRegistry : datasetRegistries) {
+
+            if (!this.validateKindIsValidAndGroupTypeIsDataset(datasetKind)) {
+                throw new AppException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                        "One or more records has an invalid Kind. Must use 'dataset' group type");
+            }
+
+            Object schema = schemaKindsCache.get(datasetKind);
+
+            if (schema == null) { //schema was not found in cache
+                try {
+                    schema = schemaService.getSchema(datasetKind); //make sure schema is valid and store it
+                    schemaKindsCache.put(datasetKind, schema);
+                } catch (DpsException e) {
+                    try {
+                        SchemaExceptionResponse ser = bodyMapper.parseBody(e.getHttpResponse(), SchemaExceptionResponse.class);
+                        SchemaExceptionResponseBody body = ser.getError();
+                        throw new AppException(body.getCode(), String.format("Schema Service: get '%s'", datasetKind), body.getMessage());
+                    } catch (HttpResponseBodyParsingException | NullPointerException e1) {
+                        throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                                "Failed to parse error from Schema Service");
+                    }
+                }
+            }           
+
+
+            /* TODO: The R3 schema object is not yet available, 
+             * it will be hard to validate the properties without it, 
+             * so skipping further validation for now            
+            */
 
             //validate record against schema
-            this.validateDatasetRegistrySchema(datasetRegistry, datasetRegistrySchema);
+            //this.validateDatasetRegistrySchema(dataset, datasetRegistrySchema);
             
             //validate dataset properties field exists
-            if (!datasetRegistry.getData().containsKey(DATASET_REGISTRY_DATASET_PROPERTIES_NAME))
-                throw new AppException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), DatasetRegistryValidationDoc.MISSING_DATASET_PROPERTIES_VALIDATION);
+            // if (!dataset.getData().containsKey(DATASET_REGISTRY_DATASET_PROPERTIES_NAME))
+            //     throw new AppException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), DatasetRegistryValidationDoc.MISSING_DATASET_PROPERTIES_VALIDATION);
         }
 
         return true;
+
     }
 
-    private boolean validateDatasetRegistrySchema(Record datasetRegistry, Schema datasetRegistrySchema) {
+    private boolean validateKindIsValidAndGroupTypeIsDataset(String kind) {
 
-        //kind matches expected schema kind
-        if (!datasetRegistry.getKind().equals(datasetRegistrySchema.getKind())) {
-            throw new AppException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), 
-                String.format(DatasetRegistryValidationDoc.INVALID_DATASET_REGISTRY_SCHEMA_KIND, datasetRegistrySchema.getKind()));
-        }
+        Matcher matcher = datasetKindPattern.matcher(kind);
+        boolean matchFound = matcher.find();            
 
-        Map<String, Object> datasetRegistryData = datasetRegistry.getData();
-        
-        //All required properties in schema
-        for (SchemaItem schemaItem : datasetRegistrySchema.getSchema()) {
-            if (!datasetRegistryData.containsKey(schemaItem.getPath())) {
-                throw new AppException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), 
-                String.format(DatasetRegistryValidationDoc.DATASET_REGISTRY_MISSING_PROPERTY_VALIDATION_FORMAT, schemaItem.getPath()));
-            }
+        return matchFound;        
 
-            //TODO: Validate type of value matches
+    }
 
-        }
+    private String getKindSubtype(String kind) {
 
-        return true;
+        String[] kindSplitByColon = kind.split(":");
+
+        String kindSubType = kindSplitByColon[2]; //grab GroupType/IndividualType
+
+        return kindSubType;
+
     }
 
 }

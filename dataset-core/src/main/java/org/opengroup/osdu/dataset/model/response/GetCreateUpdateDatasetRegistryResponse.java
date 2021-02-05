@@ -28,4 +28,8 @@ public class GetCreateUpdateDatasetRegistryResponse {
 	public GetCreateUpdateDatasetRegistryResponse(List<Record> datasetRegistries) {
 		this.datasetRegistries = datasetRegistries;
 	}
+
+	public GetCreateUpdateDatasetRegistryResponse() {
+		//Default constuctor for serialization/deserialization
+	}
 }

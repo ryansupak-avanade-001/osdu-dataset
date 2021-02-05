@@ -17,9 +17,12 @@ package org.opengroup.osdu.dataset.model.response;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.Data;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DatasetRetrievalDeliveryItem {
 
     String datasetRegistryId;
@@ -32,6 +35,10 @@ public class DatasetRetrievalDeliveryItem {
         this.datasetRegistryId = datasetRegistryId;
         this.retrievalProperties = retrievalProperties;
         this.providerKey = providerKey;
+    }
+
+    public DatasetRetrievalDeliveryItem() {
+        //default constructor for serialization/deserialization
     }
     
 }

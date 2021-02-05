@@ -13,22 +13,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//TODO: Move to os-core-common
+//TODO: move to os-core-common
 
-package org.opengroup.osdu.dataset.storage;
+package org.opengroup.osdu.dataset.schema;
 
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import org.opengroup.osdu.core.common.model.http.DpsException;
-import org.opengroup.osdu.core.common.http.HttpResponse;
 
+@Builder
 @Data
-@EqualsAndHashCode(callSuper = false)
-public class StorageException extends DpsException {
+public class SchemaAPIConfig {
+    @Builder.Default
+    String rootUrl = "https://os-schema/api/schema-service/v2";
 
-    private static final long serialVersionUID = 9094949225576291097L;
+    String apiKey;
 
-    public StorageException(String message, HttpResponse httpResponse) {
-        super(message, httpResponse);
+    public static SchemaAPIConfig Default() {
+        return SchemaAPIConfig.builder().build();
     }
 }
