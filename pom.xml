@@ -126,6 +126,7 @@
 	<modules>
 		<module>dataset-core</module>
 		<module>provider/dataset-aws</module>
+		<module>provider/dataset-gcp</module>
 	</modules>
 
 </project>
