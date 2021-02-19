@@ -17,15 +17,19 @@
 
 package org.opengroup.osdu.dataset.provider.gcp.service.instructions.downscoped;
 
+import com.google.auth.oauth2.GoogleCredentials;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 public class DownScopedCredentialsService {
-    public DownScopedCredentials getDownScopedCredentials(
-            DownScopedOptions downScopedOptions) {
-        log.debug("getDownScopedCredentials invoked with {}", downScopedOptions);
-        return new DownScopedCredentials(downScopedOptions);
-    }
+
+	public DownScopedCredentials getDownScopedCredentials(
+		GoogleCredentials sourceCredentials,
+		DownScopedOptions downScopedOptions) {
+		log.debug("getDownScopedCredentials invoked for {}", sourceCredentials);
+		log.debug("getDownScopedCredentials invoked with {}", downScopedOptions);
+		return new DownScopedCredentials(sourceCredentials, downScopedOptions);
+	}
 }

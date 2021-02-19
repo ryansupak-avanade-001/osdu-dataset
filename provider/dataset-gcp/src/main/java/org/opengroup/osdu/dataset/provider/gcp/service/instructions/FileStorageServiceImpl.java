@@ -32,23 +32,26 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.gcp.multitenancy.TenantFactory;
-import org.opengroup.osdu.dataset.provider.gcp.service.instructions.interfaces.IFileStorageService;
 import org.opengroup.osdu.dataset.provider.gcp.model.FileInstructionsItem;
 import org.opengroup.osdu.dataset.provider.gcp.model.FileInstructionsItem.FileInstructionsItemBuilder;
 import org.opengroup.osdu.dataset.provider.gcp.properties.GcpPropertiesConfig;
+import org.opengroup.osdu.dataset.provider.gcp.service.instructions.interfaces.IFileStorageService;
+import org.opengroup.osdu.dataset.provider.gcp.util.GoogleStorageBucketUtil;
 import org.opengroup.osdu.dataset.provider.gcp.util.InstantHelper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
-@Service
 @Slf4j
+@RequiredArgsConstructor
+@Service
 public class FileStorageServiceImpl implements IFileStorageService {
 
 	public static final String MALFORMED_URL = "Malformed URL";
@@ -56,24 +59,27 @@ public class FileStorageServiceImpl implements IFileStorageService {
 	private static final String INVALID_GS_PATH_REASON = "Unsigned url invalid, needs to be full GS path";
 	private static final HttpMethod signedUrlMethod = HttpMethod.GET;
 
-	@Autowired
-	private Storage storage;
+//	private final IStorageFactory storageFactory;
 
-	@Autowired
-	private DpsHeaders headers;
+	private final Storage storage;
 
-	@Autowired
-	private InstantHelper instantHelper;
+	private final DpsHeaders headers;
 
-	@Autowired
-	private GcpPropertiesConfig config;
+	private final InstantHelper instantHelper;
 
+	private final GcpPropertiesConfig config;
 
-	@Autowired
-	TenantFactory tenantFactory;
+	private final GoogleStorageBucketUtil bucketUtil;
+
+	private final TenantFactory tenantFactory;
 
 	@Override
-	public FileInstructionsItem createDeliveryItem(String unsignedUrl, String fileName) {
+	public FileInstructionsItem createFileDeliveryItem(String unsignedUrl) {
+		TenantInfo tenantInfo = tenantFactory.getTenantInfo(headers.getPartitionId());
+		//TODO Need for multitenant support
+//		Storage storage = storageFactory
+//			.getStorage(this.headers.getUserEmail(), tenantInfo.getServiceAccount(), tenantInfo.getProjectId(),
+//				tenantInfo.getName(), true);
 		Instant now = instantHelper.getCurrentInstant();
 
 		String[] gsPathParts = unsignedUrl.split("gs://");
@@ -98,20 +104,28 @@ public class FileStorageServiceImpl implements IFileStorageService {
 		BlobId blobId = BlobId.of(bucketName, filePath);
 		Blob blob = storage.get(blobId);
 
-		if (Objects.nonNull(blob)) {
-			log.debug("resource is a blob. get SignedUrl");
-			URL url = generateSignedGcURL(blobId);
-			instructionsItemBuilder.url(url).unsignedUrl(unsignedUrl).createdAt(now);
+		if (Objects.isNull(blob)) {
+			log.error("Resource is not a blob, cannot proceed with signed url generation.");
+			throw new AppException(org.apache.http.HttpStatus.SC_BAD_REQUEST, MALFORMED_URL,
+				URI_EXCEPTION_REASON);
 		}
+		log.debug("resource is a blob. get SignedUrl");
+		URL url = generateSignedGcURL(blobId, storage);
+		instructionsItemBuilder.url(url).unsignedUrl(unsignedUrl).createdAt(now);
 		return instructionsItemBuilder.build();
 	}
 
 	@Override
-	public FileInstructionsItem getUploadLocation() {
+	public FileInstructionsItem getFileUploadItem() {
+		TenantInfo tenantInfo = tenantFactory.getTenantInfo(headers.getPartitionId());
+		//TODO Need for multitenant support
+//		Storage storage = storageFactory
+//			.getStorage(this.headers.getUserEmail(), tenantInfo.getServiceAccount(), tenantInfo.getProjectId(),
+//				tenantInfo.getName(), true);
 		Instant now = Instant.now(Clock.systemUTC());
 
 		String filepath = getRelativePath();
-		String bucketName = config.getUploadBucket();
+		String bucketName = bucketUtil.getBucketPath(tenantInfo);
 
 		log.debug("Creating the signed blob for fileName : {}. PartitionID : {}",
 			filepath, headers.getPartitionId());
@@ -131,17 +145,12 @@ public class FileStorageServiceImpl implements IFileStorageService {
 		log.debug("Signed URL for created storage object. Object ID : {} , Signed URL : {}",
 			blob.getGeneratedId(), signedUrl);
 
-		String fileSource = "gs://" + config.getUploadBucket() + "/" + filepath;
+		String fileSource = "gs://" + bucketName + "/" + filepath;
 
 		return FileInstructionsItem.builder().url(signedUrl).unsignedUrl(fileSource).createdAt(now).build();
 	}
 
-	@Override
-	public String getProviderKey() {
-		return null;
-	}
-
-	private URL generateSignedGcURL(BlobId blobId) {
+	private URL generateSignedGcURL(BlobId blobId, Storage storage) {
 
 		BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
 			.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE)

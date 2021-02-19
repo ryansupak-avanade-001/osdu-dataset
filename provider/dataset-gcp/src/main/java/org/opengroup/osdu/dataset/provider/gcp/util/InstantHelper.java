@@ -22,7 +22,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class InstantHelper {
-    public Instant getCurrentInstant() {
-        return Instant.now();
-    }
+
+	public Instant getCurrentInstant() {
+		return Instant.now();
+	}
 }

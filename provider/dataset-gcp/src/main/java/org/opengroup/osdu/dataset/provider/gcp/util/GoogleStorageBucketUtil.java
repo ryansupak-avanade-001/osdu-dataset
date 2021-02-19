@@ -15,19 +15,27 @@
  * limitations under the License.
  */
 
-package org.opengroup.osdu.dataset.provider.gcp.service.instructions.downscoped;
+package org.opengroup.osdu.dataset.provider.gcp.util;
 
-import java.io.Serializable;
-import java.util.List;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
+import org.opengroup.osdu.dataset.provider.gcp.properties.GcpPropertiesConfig;
+import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
-@ToString
-@Getter
-public class AccessBoundary implements Serializable {
+@Component
+public class GoogleStorageBucketUtil {
 
-	private static final long serialVersionUID = 1147589172954290279L;
-	private final List<AccessBoundaryRule> accessBoundaryRules;
+	private final GcpPropertiesConfig gcpPropertiesConfig;
+
+	public String getBucketPath(TenantInfo tenantInfo) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder
+			.append(tenantInfo.getProjectId())
+			.append('-')
+			.append(tenantInfo.getDataPartitionId())
+			.append('-')
+			.append(gcpPropertiesConfig.getFileBucket());
+		return stringBuilder.toString();
+	}
 }

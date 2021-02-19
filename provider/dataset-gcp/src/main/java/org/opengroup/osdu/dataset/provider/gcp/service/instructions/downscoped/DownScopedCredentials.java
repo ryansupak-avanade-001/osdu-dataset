@@ -40,7 +40,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -50,110 +49,98 @@ import lombok.extern.slf4j.Slf4j;
 @ToString
 public class DownScopedCredentials extends GoogleCredentials {
 
-  private static final long serialVersionUID = -2133257318957488431L;
-  private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
-  private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-  private static final String CLOUD_PLATFORM_SCOPE = "https://www.googleapis.com/auth/cloud-platform";
-  private static final String IDENTITY_TOKEN_ENDPOINT = "https://sts.googleapis.com/v1beta/token";
+	private static final long serialVersionUID = -2133257318957488431L;
+	private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
+	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+	private static final String CLOUD_PLATFORM_SCOPE = "https://www.googleapis.com/auth/cloud-platform";
+	private static final String IDENTITY_TOKEN_ENDPOINT = "https://sts.googleapis.com/v1beta/token";
 
-  private static final String TOKEN_INFO_ENDPOINT = "https://www.googleapis.com/oauth2/v3/tokeninfo";
-  public static final String EXPIRES_IN = "expires_in";
+	private static final String TOKEN_INFO_ENDPOINT = "https://www.googleapis.com/oauth2/v3/tokeninfo";
+	public static final String EXPIRES_IN = "expires_in";
 
-  private GoogleCredentials finiteCredentials;
-  private final DownScopedOptions downScopedOptions;
+	private final GoogleCredentials finiteCredentials;
+	private final DownScopedOptions downScopedOptions;
 
-  public DownScopedCredentials(DownScopedOptions downScopedOptions) {
-    this.downScopedOptions = downScopedOptions;
-  }
+	public DownScopedCredentials(GoogleCredentials sourceCredentials, DownScopedOptions downScopedOptions) {
+		this.finiteCredentials = sourceCredentials.createScoped(Collections.singletonList(CLOUD_PLATFORM_SCOPE));
+		this.downScopedOptions = downScopedOptions;
+	}
 
-  @Override
-  public AccessToken refreshAccessToken() throws IOException {
+	@Override
+	public AccessToken refreshAccessToken() throws IOException {
+		log.debug("refreshAccessToken invoked for {}", this);
+		try {
+			this.finiteCredentials.refreshIfExpired();
+		} catch (IOException e) {
+			throw new IOException("Unable to refresh sourceCredentials", e);
+		}
 
-    setUpFiniteCredentials();
+		AccessToken tok = this.finiteCredentials.getAccessToken();
 
-    log.debug("refreshAccessToken invoked for {}", this);
-    try {
-      this.finiteCredentials.refreshIfExpired();
-    } catch (IOException e) {
-      throw new IOException("Unable to refresh sourceCredentials", e);
-    }
-
-    AccessToken tok = this.finiteCredentials.getAccessToken();
-
-    return getDownScopedToken(tok);
-  }
+		return getDownScopedToken(tok);
+	}
 
 
-  private AccessToken getDownScopedToken(AccessToken tok) throws IOException {
-    JsonObjectParser parser = new JsonObjectParser(JSON_FACTORY);
+	private AccessToken getDownScopedToken(AccessToken tok) throws IOException {
+		JsonObjectParser parser = new JsonObjectParser(JSON_FACTORY);
 
-    HttpRequestFactory requestFactory = HTTP_TRANSPORT.createRequestFactory();
-    GenericUrl url = new GenericUrl(IDENTITY_TOKEN_ENDPOINT);
+		HttpRequestFactory requestFactory = HTTP_TRANSPORT.createRequestFactory();
+		GenericUrl url = new GenericUrl(IDENTITY_TOKEN_ENDPOINT);
 
-    String jsonPayload = getJsonPayload();
+		String jsonPayload = getJsonPayload();
 
-    Map<String, String> params = new HashMap<>();
-    params.put("grant_type", "urn:ietf:params:oauth:grant-type:token-exchange");
-    params.put("subject_token_type", "urn:ietf:params:oauth:token-type:access_token");
-    params.put("requested_token_type", "urn:ietf:params:oauth:token-type:access_token");
-    params.put("subject_token", tok.getTokenValue());
-    params.put("options", jsonPayload);
-    HttpContent content = new UrlEncodedContent(params);
+		Map<String, String> params = new HashMap<>();
+		params.put("grant_type", "urn:ietf:params:oauth:grant-type:token-exchange");
+		params.put("subject_token_type", "urn:ietf:params:oauth:token-type:access_token");
+		params.put("requested_token_type", "urn:ietf:params:oauth:token-type:access_token");
+		params.put("subject_token", tok.getTokenValue());
+		params.put("options", jsonPayload);
+		HttpContent content = new UrlEncodedContent(params);
 
-    HttpRequest request = requestFactory.buildPostRequest(url, content);
-    request.setParser(parser);
+		HttpRequest request = requestFactory.buildPostRequest(url, content);
+		request.setParser(parser);
 
-    HttpResponse response;
-    try {
-      response = request.execute();
-    } catch (IOException e) {
-      throw new IOException("Error requesting access token " + e.getMessage(), e);
-    }
+		HttpResponse response;
+		try {
+			response = request.execute();
+		} catch (IOException e) {
+			throw new IOException("Error requesting access token " + e.getMessage(), e);
+		}
 
-    if (response.getStatusCode() != HttpStatusCodes.STATUS_CODE_OK) {
-      throw new IOException("Error getting access token " + response.toString());
-    }
+		if (response.getStatusCode() != HttpStatusCodes.STATUS_CODE_OK) {
+			throw new IOException("Error getting access token " + response.toString());
+		}
 
-    GenericData responseData = response.parseAs(GenericData.class);
-    response.disconnect();
+		GenericData responseData = response.parseAs(GenericData.class);
+		response.disconnect();
 
-    String accessToken = (String) responseData.get("access_token");
+		String accessToken = (String) responseData.get("access_token");
 
-    Calendar cal = Calendar.getInstance();
-    cal.setTime(new Date());
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
 
-    if (responseData.containsKey(EXPIRES_IN)) {
-      cal.add(Calendar.SECOND, ((BigDecimal) responseData.get(EXPIRES_IN)).intValue());
-    } else {
-      GenericUrl genericUrl = new GenericUrl(TOKEN_INFO_ENDPOINT);
-      genericUrl.put("access_token", tok.getTokenValue());
-      HttpRequest tokenRequest = requestFactory.buildGetRequest(genericUrl);
-      tokenRequest.setParser(parser);
-      HttpResponse tokenResponse = tokenRequest.execute();
-      if (tokenResponse.getStatusCode() != HttpStatusCodes.STATUS_CODE_OK) {
-        throw new IOException("Error getting access_token expiration " + response.toString());
-      }
-      responseData = tokenResponse.parseAs(GenericData.class);
-      tokenResponse.disconnect();
-      cal.add(Calendar.SECOND, Integer.parseInt(responseData.get(EXPIRES_IN).toString()));
-    }
-    return new AccessToken(accessToken, cal.getTime());
-  }
+		if (responseData.containsKey(EXPIRES_IN)) {
+			cal.add(Calendar.SECOND, ((BigDecimal) responseData.get(EXPIRES_IN)).intValue());
+		} else {
+			GenericUrl genericUrl = new GenericUrl(TOKEN_INFO_ENDPOINT);
+			genericUrl.put("access_token", tok.getTokenValue());
+			HttpRequest tokenRequest = requestFactory.buildGetRequest(genericUrl);
+			tokenRequest.setParser(parser);
+			HttpResponse tokenResponse = tokenRequest.execute();
+			if (tokenResponse.getStatusCode() != HttpStatusCodes.STATUS_CODE_OK) {
+				throw new IOException("Error getting access_token expiration " + response.toString());
+			}
+			responseData = tokenResponse.parseAs(GenericData.class);
+			tokenResponse.disconnect();
+			cal.add(Calendar.SECOND, Integer.parseInt(responseData.get(EXPIRES_IN).toString()));
+		}
+		return new AccessToken(accessToken, cal.getTime());
+	}
 
-  private void setUpFiniteCredentials() throws IOException {
-    if (Objects.isNull(finiteCredentials)) {
-      GoogleCredentials applicationDefault = GoogleCredentials
-          .getApplicationDefault();
-      finiteCredentials =
-          applicationDefault.createScopedRequired() ? applicationDefault.createScoped(
-              Collections.singletonList(CLOUD_PLATFORM_SCOPE)) : applicationDefault;
-    }
-  }
-
-  private String getJsonPayload() {
-    String jsonPayload;
-    Gson gson = new Gson();
-    jsonPayload = gson.toJson(this.downScopedOptions);
-    return jsonPayload;
-  }
+	private String getJsonPayload() {
+		String jsonPayload;
+		Gson gson = new Gson();
+		jsonPayload = gson.toJson(this.downScopedOptions);
+		return jsonPayload;
+	}
 }

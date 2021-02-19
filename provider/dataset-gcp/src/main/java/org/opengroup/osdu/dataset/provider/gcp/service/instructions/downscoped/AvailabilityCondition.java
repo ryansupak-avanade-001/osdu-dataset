@@ -24,7 +24,8 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @ToString
 public class AvailabilityCondition implements Serializable {
-    private static final long serialVersionUID = 867012348194731672L;
-    private final String title;
-    private final String expression;
+
+	private static final long serialVersionUID = 867012348194731672L;
+	private final String title;
+	private final String expression;
 }

@@ -17,72 +17,71 @@
 
 package org.opengroup.osdu.dataset.provider.gcp.service.instructions;
 
+import com.google.auth.Credentials;
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.HttpMethod;
 import com.google.cloud.storage.Storage;
 import java.io.IOException;
-import java.time.Clock;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
+import org.opengroup.osdu.core.gcp.multitenancy.IStorageFactory;
 import org.opengroup.osdu.core.gcp.multitenancy.TenantFactory;
+import org.opengroup.osdu.dataset.provider.gcp.model.FileCollectionInstructionsItem;
+import org.opengroup.osdu.dataset.provider.gcp.model.FileCollectionInstructionsItem.FileCollectionInstructionsItemBuilder;
 import org.opengroup.osdu.dataset.provider.gcp.service.instructions.downscoped.AccessBoundaryRule;
 import org.opengroup.osdu.dataset.provider.gcp.service.instructions.downscoped.AvailabilityCondition;
 import org.opengroup.osdu.dataset.provider.gcp.service.instructions.downscoped.DownScopedCredentials;
 import org.opengroup.osdu.dataset.provider.gcp.service.instructions.downscoped.DownScopedCredentialsService;
 import org.opengroup.osdu.dataset.provider.gcp.service.instructions.downscoped.DownScopedOptions;
 import org.opengroup.osdu.dataset.provider.gcp.service.instructions.interfaces.IFileCollectionStorageService;
-import org.opengroup.osdu.dataset.provider.gcp.model.FileCollectionInstructionsItem;
-import org.opengroup.osdu.dataset.provider.gcp.model.FileCollectionInstructionsItem.FileCollectionInstructionsItemBuilder;
-import org.opengroup.osdu.dataset.provider.gcp.properties.GcpPropertiesConfig;
+import org.opengroup.osdu.dataset.provider.gcp.util.GoogleStorageBucketUtil;
 import org.opengroup.osdu.dataset.provider.gcp.util.InstantHelper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-@Service
 @Slf4j
+@Service
+@RequiredArgsConstructor
 public class FileCollectionStorageService implements IFileCollectionStorageService {
 
-	public static final String AVAILABILITY_CONDITION_EXPRESSION =
+	private static final String AVAILABILITY_CONDITION_EXPRESSION =
 		"resource.name.startsWith('projects/_/buckets/<<bucket>>/objects/<<folder>>/') " +
 			"|| api.getAttribute('storage.googleapis.com/objectListPrefix', '').startsWith('<<folder>>')";
 
-	public static final String MALFORMED_URL = "Malformed URL";
+	private static final String MALFORMED_URL = "Malformed URL";
 	private static final String URI_EXCEPTION_REASON = "Exception creating signed url";
 	private static final String INVALID_GS_PATH_REASON = "Unsigned url invalid, needs to be full GS path";
-	private static final HttpMethod signedUrlMethod = HttpMethod.GET;
+	public static final String STORAGE_OBJECT_VIEWER = "storage.objectViewer";
+	public static final String STORAGE_OBJECT_CREATOR = "storage.objectCreator";
 
-	@Autowired
-	private Storage storage;
+	private final IStorageFactory storageFactory;
 
-	@Autowired
-	private InstantHelper instantHelper;
+	private final InstantHelper instantHelper;
 
-	@Autowired
-	private DpsHeaders headers;
+	private final DpsHeaders headers;
 
-	@Autowired
-	private GcpPropertiesConfig config;
+	private final TenantFactory tenantFactory;
 
-	@Autowired
-	TenantFactory tenantFactory;
+	private final GoogleStorageBucketUtil bucketUtil;
 
-	@Autowired
-	private DownScopedCredentialsService downscopedCredentialsService;
+	private final DownScopedCredentialsService downscopedCredentialsService;
 
 	@Override
-	public FileCollectionInstructionsItem createDeliveryItem(String unsignedUrl) {
+	public FileCollectionInstructionsItem createCollectionDeliveryItem(String unsignedUrl) {
 		Instant now = instantHelper.getCurrentInstant();
+		TenantInfo tenantInfo = tenantFactory.getTenantInfo(headers.getPartitionId());
+		Storage storage = getStorage(tenantInfo);
 
 		String[] gsPathParts = unsignedUrl.split("gs://");
 
@@ -100,8 +99,9 @@ public class FileCollectionStorageService implements IFileCollectionStorageServi
 		String bucketName = gsObjectKeyParts[0];
 		String filePath = String
 			.join("/", Arrays.copyOfRange(gsObjectKeyParts, 1, gsObjectKeyParts.length));
+
 		FileCollectionInstructionsItemBuilder instructionsItemBuilder = FileCollectionInstructionsItem
-			.builder().createdAt(now).unsignedUrl(filePath);
+			.builder().createdAt(now).unsignedUrl(unsignedUrl);
 
 		BlobId blobId = BlobId.of(bucketName, filePath);
 		Blob blob = storage.get(blobId);
@@ -112,7 +112,7 @@ public class FileCollectionStorageService implements IFileCollectionStorageServi
 				URI_EXCEPTION_REASON);
 		} else {
 			DownScopedCredentials downScopedCredentials = getDownScopedCredentials(bucketName, filePath,
-				"storage.objectViewer");
+				STORAGE_OBJECT_VIEWER, storage.getOptions().getCredentials());
 			try {
 				instructionsItemBuilder
 					.connectionString(downScopedCredentials.refreshAccessToken().getTokenValue());
@@ -125,16 +125,16 @@ public class FileCollectionStorageService implements IFileCollectionStorageServi
 		return instructionsItemBuilder.build();
 	}
 
-
 	@Override
-	public FileCollectionInstructionsItem getUploadLocation() {
+	public FileCollectionInstructionsItem getCollectionUploadItem() {
 		TenantInfo tenantInfo = tenantFactory.getTenantInfo(headers.getPartitionId());
-		Instant now = Instant.now(Clock.systemUTC());
+		Storage storage = getStorage(tenantInfo);
+		Instant now = instantHelper.getCurrentInstant();
 
 		String filePath = getRelativePath();
-		String bucketName = config.getUploadBucket();
+		String bucketName = bucketUtil.getBucketPath(tenantInfo);
 
-		log.debug("Creating the signed blob for fileName : {}. PartitionID : {}",
+		log.debug("Creating the folder for name : {}. PartitionID : {}",
 			filePath, headers.getPartitionId());
 
 		BlobId blobId = BlobId.of(bucketName, filePath + "/");
@@ -144,14 +144,14 @@ public class FileCollectionStorageService implements IFileCollectionStorageServi
 
 		storage.create(blobInfo, ArrayUtils.EMPTY_BYTE_ARRAY);
 
-		String fileSource = "gs://" + config.getUploadBucket() + "/" + filePath + "/";
+		String fileSource = "gs://" + bucketName + "/" + filePath + "/";
 
 		FileCollectionInstructionsItemBuilder instructionsItemBuilder = FileCollectionInstructionsItem
 			.builder().createdAt(now)
 			.unsignedUrl(fileSource);
 
 		DownScopedCredentials downScopedCredentials = getDownScopedCredentials(bucketName, filePath,
-			"storage.objectCreator");
+			STORAGE_OBJECT_CREATOR, storage.getOptions().getCredentials());
 		try {
 			instructionsItemBuilder
 				.connectionString(downScopedCredentials.refreshAccessToken().getTokenValue());
@@ -164,13 +164,14 @@ public class FileCollectionStorageService implements IFileCollectionStorageServi
 		return instructionsItemBuilder.build();
 	}
 
-	@Override
-	public String getProviderKey() {
-		return null;
+	private Storage getStorage(TenantInfo tenantInfo) {
+		return storageFactory
+			.getStorage(this.headers.getUserEmail(), tenantInfo.getServiceAccount(), tenantInfo.getProjectId(),
+				tenantInfo.getName(), true);
 	}
 
-
-	private DownScopedCredentials getDownScopedCredentials(String bucketName, String filePath, String storageRole) {
+	private DownScopedCredentials getDownScopedCredentials(String bucketName, String filePath, String storageRole,
+		Credentials credentials) {
 		log.debug("resource is not a blob. assume it is a folder. get DownScoped token");
 
 		String availabilityConditionExpression = AVAILABILITY_CONDITION_EXPRESSION
@@ -186,7 +187,7 @@ public class FileCollectionStorageService implements IFileCollectionStorageServi
 
 		DownScopedOptions downScopedOptions = new DownScopedOptions(Collections.singletonList(abr));
 		return downscopedCredentialsService
-			.getDownScopedCredentials(downScopedOptions);
+			.getDownScopedCredentials((GoogleCredentials) credentials, downScopedOptions);
 	}
 
 	private String getRelativePath() {

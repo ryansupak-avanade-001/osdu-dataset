@@ -31,7 +31,7 @@ public class FileInstructionsItem {
 	@JsonProperty("unsignedUrl")
 	String unsignedUrl;
 
-	@JsonProperty("SignedUrl")
+	@JsonProperty("signedUrl")
 	URL url;
 
 	@JsonProperty("createdAt")

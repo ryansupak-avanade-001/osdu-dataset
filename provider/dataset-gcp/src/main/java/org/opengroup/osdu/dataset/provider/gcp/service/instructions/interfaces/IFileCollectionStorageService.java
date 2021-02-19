@@ -22,9 +22,7 @@ import org.opengroup.osdu.dataset.provider.gcp.model.FileCollectionInstructionsI
 
 public interface IFileCollectionStorageService {
 
-	FileCollectionInstructionsItem createDeliveryItem(String unsignedUrl);
+	FileCollectionInstructionsItem createCollectionDeliveryItem(String unsignedUrl);
 
-	String getProviderKey();
-
-	FileCollectionInstructionsItem getUploadLocation();
+	FileCollectionInstructionsItem getCollectionUploadItem();
 }

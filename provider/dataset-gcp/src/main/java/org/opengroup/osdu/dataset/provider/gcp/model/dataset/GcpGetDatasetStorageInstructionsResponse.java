@@ -25,8 +25,7 @@ public class GcpGetDatasetStorageInstructionsResponse extends GetDatasetStorageI
 
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
-	public GcpGetDatasetStorageInstructionsResponse(Object uploadLocation,
-		String providerKey) {
-		super(objectMapper.convertValue(uploadLocation, Map.class), providerKey);
+	public GcpGetDatasetStorageInstructionsResponse(Object uploadLocation) {
+		super(objectMapper.convertValue(uploadLocation, Map.class), "GCP");
 	}
 }

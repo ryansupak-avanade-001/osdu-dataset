@@ -26,7 +26,7 @@ public class GcpDatasetRetrievalDeliveryItem extends DatasetRetrievalDeliveryIte
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	public GcpDatasetRetrievalDeliveryItem(String datasetRegistryId,
-		Object deliveryObject, String providerKey) {
-		super(datasetRegistryId, objectMapper.convertValue(deliveryObject, Map.class), providerKey);
+		Object deliveryObject) {
+		super(datasetRegistryId, objectMapper.convertValue(deliveryObject, Map.class), "GCP");
 	}
 }

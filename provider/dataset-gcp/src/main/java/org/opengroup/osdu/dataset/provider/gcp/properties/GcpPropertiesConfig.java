@@ -25,8 +25,8 @@ import org.springframework.stereotype.Component;
 @Data
 public class GcpPropertiesConfig {
 
-	@Value("${gcp.upload.bucket}")
-	private String uploadBucket;
+	@Value("${gcp.file.dms.bucket}")
+	private String fileBucket;
 
 	@Value("${gcp.expiration.days}")
 	private Integer expirationDays;

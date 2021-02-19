@@ -21,7 +21,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.opengroup.osdu.dataset.dms.DmsServiceProperties;
-import org.opengroup.osdu.dataset.provider.gcp.model.dataset.DataSetType;
 
 @Data
 @NoArgsConstructor

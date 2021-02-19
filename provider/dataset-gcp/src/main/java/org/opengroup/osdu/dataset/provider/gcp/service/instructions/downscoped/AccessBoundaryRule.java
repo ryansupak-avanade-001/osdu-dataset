@@ -27,8 +27,9 @@ import lombok.ToString;
 @ToString
 @Getter
 public class AccessBoundaryRule implements Serializable {
-    private static final long serialVersionUID = 5901811574228556396L;
-    private final String availableResource;
-    private final List<String> availablePermissions;
-    private final AvailabilityCondition availabilityCondition;
+
+	private static final long serialVersionUID = 5901811574228556396L;
+	private final String availableResource;
+	private final List<String> availablePermissions;
+	private final AvailabilityCondition availabilityCondition;
 }

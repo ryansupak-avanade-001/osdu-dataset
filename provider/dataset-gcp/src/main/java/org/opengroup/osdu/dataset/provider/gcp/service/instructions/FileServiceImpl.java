@@ -21,7 +21,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.inject.Inject;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
 import org.opengroup.osdu.core.common.http.json.HttpResponseBodyMapper;
 import org.opengroup.osdu.core.common.http.json.HttpResponseBodyParsingException;
@@ -37,43 +38,40 @@ import org.opengroup.osdu.dataset.model.request.StorageExceptionResponse;
 import org.opengroup.osdu.dataset.model.response.DatasetRetrievalDeliveryItem;
 import org.opengroup.osdu.dataset.model.response.GetDatasetRetrievalInstructionsResponse;
 import org.opengroup.osdu.dataset.model.response.GetDatasetStorageInstructionsResponse;
-import org.opengroup.osdu.dataset.provider.gcp.service.instructions.interfaces.IFileCollectionStorageService;
-import org.opengroup.osdu.dataset.provider.gcp.service.instructions.interfaces.IFileService;
-import org.opengroup.osdu.dataset.provider.gcp.service.instructions.interfaces.IFileStorageService;
 import org.opengroup.osdu.dataset.provider.gcp.model.FileCollectionInstructionsItem;
 import org.opengroup.osdu.dataset.provider.gcp.model.FileInstructionsItem;
 import org.opengroup.osdu.dataset.provider.gcp.model.dataset.GcpDatasetRetrievalDeliveryItem;
 import org.opengroup.osdu.dataset.provider.gcp.model.dataset.GcpGetDatasetStorageInstructionsResponse;
+import org.opengroup.osdu.dataset.provider.gcp.service.instructions.interfaces.IFileCollectionStorageService;
+import org.opengroup.osdu.dataset.provider.gcp.service.instructions.interfaces.IFileService;
+import org.opengroup.osdu.dataset.provider.gcp.service.instructions.interfaces.IFileStorageService;
 import org.springframework.stereotype.Service;
 
+@Slf4j
+@RequiredArgsConstructor
 @Service
 public class FileServiceImpl implements IFileService {
 
-	@Inject
-	private IFileStorageService fileStorageService;
-
-	@Inject
-	private IFileCollectionStorageService collectionStorageService;
-
-	@Inject
-	private IStorageFactory storageFactory;
-
-	@Inject
-	private DpsHeaders headers;
-
 	private final ObjectMapper objectMapper = new ObjectMapper();
+
 	private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper);
+
+	private final IFileStorageService fileStorageService;
+
+	private final IFileCollectionStorageService collectionStorageService;
+
+	private final IStorageFactory storageFactory;
+
+	private final DpsHeaders headers;
 
 	@Override
 	public GetDatasetStorageInstructionsResponse getFileUploadInstructions() {
-		return new GcpGetDatasetStorageInstructionsResponse(fileStorageService.getUploadLocation(),
-			fileStorageService.getProviderKey());
+		return new GcpGetDatasetStorageInstructionsResponse(fileStorageService.getFileUploadItem());
 	}
 
 	@Override
 	public GetDatasetStorageInstructionsResponse getCollectionUploadInstructions() {
-		return new GcpGetDatasetStorageInstructionsResponse(collectionStorageService.getUploadLocation(),
-			collectionStorageService.getProviderKey());
+		return new GcpGetDatasetStorageInstructionsResponse(collectionStorageService.getCollectionUploadItem());
 	}
 
 	@Override
@@ -82,20 +80,15 @@ public class FileServiceImpl implements IFileService {
 
 		MultiRecordInfo getRecordsResponse = getMultiRecordInfo(getDatasetRegistryRequest);
 		List<DatasetRetrievalDeliveryItem> delivery = getFileDelivery(getRecordsResponse.getRecords());
-		GetDatasetRetrievalInstructionsResponse response = new GetDatasetRetrievalInstructionsResponse(delivery);
-
-		return response;
+		return new GetDatasetRetrievalInstructionsResponse(delivery);
 	}
 
 	@Override
 	public GetDatasetRetrievalInstructionsResponse getCollectionRetrievalInstructions(
 		GetDatasetRegistryRequest getDatasetRegistryRequest) {
-
 		MultiRecordInfo getRecordsResponse = getMultiRecordInfo(getDatasetRegistryRequest);
 		List<DatasetRetrievalDeliveryItem> delivery = getFileCollectionDelivery(getRecordsResponse.getRecords());
-		GetDatasetRetrievalInstructionsResponse response = new GetDatasetRetrievalInstructionsResponse(delivery);
-
-		return response;
+		return new GetDatasetRetrievalInstructionsResponse(delivery);
 	}
 
 	private MultiRecordInfo getMultiRecordInfo(GetDatasetRegistryRequest getDatasetRegistryRequest) {
@@ -130,12 +123,10 @@ public class FileServiceImpl implements IFileService {
 					"Invalid File Path - Filename cannot contain trailing '/'");
 			}
 
-			String fileName = getFileName(datasetRegistryRecord);
-			FileInstructionsItem fileInstructionsItem = fileStorageService.createDeliveryItem(preLoadFilePath, fileName);
-			String providerKey = fileStorageService.getProviderKey();
+			FileInstructionsItem fileInstructionsItem = fileStorageService.createFileDeliveryItem(preLoadFilePath);
 
 			GcpDatasetRetrievalDeliveryItem resp = new GcpDatasetRetrievalDeliveryItem(datasetRegistryRecord.getId(),
-				fileInstructionsItem, providerKey);
+				fileInstructionsItem);
 
 			delivery.add(resp);
 		}
@@ -148,27 +139,14 @@ public class FileServiceImpl implements IFileService {
 			String fileCollectionPath = getFileCollectionPath(datasetRegistryRecord);
 
 			FileCollectionInstructionsItem collectionInstructionsItem = collectionStorageService
-				.createDeliveryItem(fileCollectionPath);
-
-			String providerKey = collectionStorageService.getProviderKey();
+				.createCollectionDeliveryItem(fileCollectionPath);
 
 			GcpDatasetRetrievalDeliveryItem resp = new GcpDatasetRetrievalDeliveryItem(datasetRegistryRecord.getId(),
-				collectionInstructionsItem, providerKey);
+				collectionInstructionsItem);
 
 			delivery.add(resp);
 		}
 		return delivery;
-	}
-
-	private String getFileName(Record datasetRegistryRecord) {
-		String fileName;
-		try {
-			fileName = (String) datasetRegistryRecord.getData().get("ResourceName");
-		} catch (Exception e) {
-			throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Error finding file's name on record",
-				e.getMessage(), e);
-		}
-		return fileName;
 	}
 
 	private String getPreLoadFilePath(Record datasetRegistryRecord) {
@@ -176,7 +154,7 @@ public class FileServiceImpl implements IFileService {
 		try {
 			Map<String, Object> datasetProperties = (Map) datasetRegistryRecord.getData().get("DatasetProperties");
 			Map<String, String> fileSourceInfo = (Map) datasetProperties.get("FileSourceInfo");
-			preLoadFilePath = (String) datasetRegistryRecord.getData().get("PreLoadFilePath");
+			preLoadFilePath = fileSourceInfo.get("PreloadFilePath");
 		} catch (Exception e) {
 			throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR,
 				"Error finding unsigned path on record for signing",
@@ -189,8 +167,7 @@ public class FileServiceImpl implements IFileService {
 		String fileCollectionPath;
 		try {
 			Map<String, Object> datasetProperties = (Map) datasetRegistryRecord.getData().get("DatasetProperties");
-			Map<String, String> fileSourceInfo = (Map) datasetProperties.get("FileCollectionSourceInfo");
-			fileCollectionPath = fileSourceInfo.get("FileCollectionPath");
+			fileCollectionPath = (String) datasetProperties.get("FileCollectionPath");
 		} catch (Exception e) {
 			throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Error finding file collection path on record",
 				e.getMessage(), e);

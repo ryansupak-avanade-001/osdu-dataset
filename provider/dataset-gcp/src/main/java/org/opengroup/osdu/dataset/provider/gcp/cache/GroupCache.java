@@ -19,8 +19,6 @@ package org.opengroup.osdu.dataset.provider.gcp.cache;
 
 import org.opengroup.osdu.core.common.cache.RedisCache;
 import org.opengroup.osdu.core.common.model.entitlements.Groups;
-import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.common.util.Crc32c;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -31,14 +29,4 @@ public class GroupCache extends RedisCache<String, Groups> {
 		super(host, port, 30, String.class, Groups.class);
 	}
 
-	public static String getGroupCacheKey(DpsHeaders headers) {
-		String key = String.format("entitlement-groups:%s:%s", headers.getPartitionIdWithFallbackToAccountId(),
-			headers.getAuthorization());
-		return Crc32c.hashToBase64EncodedString(key);
-	}
-
-	public static String getPartitionGroupsCacheKey(String dataPartitionId) {
-		String key = String.format("entitlement-groups:data-partition:%s", dataPartitionId);
-		return Crc32c.hashToBase64EncodedString(key);
-	}
 }

@@ -22,9 +22,8 @@ import org.opengroup.osdu.dataset.provider.gcp.model.FileInstructionsItem;
 
 public interface IFileStorageService {
 
-	FileInstructionsItem createDeliveryItem(String unsignedUrl, String fileName);
+	FileInstructionsItem createFileDeliveryItem(String unsignedUrl);
 
-	FileInstructionsItem getUploadLocation();
+	FileInstructionsItem getFileUploadItem();
 
-	String getProviderKey();
 }

@@ -22,11 +22,21 @@ import org.opengroup.osdu.core.gcp.multitenancy.credentials.GcsCredential;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+//TODO Need for multitenant support
 @Component
 public class GcsCache extends RedisCache<String, GcsCredential> {
 
-	public GcsCache(@Value("${redis.group.host}") String host, @Value("${redis.group.port}") int port) {
+	public GcsCache(@Value("${redis.storage.host}") String host, @Value("${redis.storage.port}") int port) {
 		super(host, port, 30, String.class, GcsCredential.class);
 	}
 
+	@Override
+	public GcsCredential get(String key) {
+		return null;
+	}
+
+	@Override
+	public void put(String key, GcsCredential value) {
+		//Currently do nothing because multitenancy not solved for signed urls
+	}
 }

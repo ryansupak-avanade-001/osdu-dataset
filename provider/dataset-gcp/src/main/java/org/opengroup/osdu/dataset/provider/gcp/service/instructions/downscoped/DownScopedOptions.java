@@ -27,11 +27,12 @@ import lombok.extern.java.Log;
 @Getter
 @ToString
 public class DownScopedOptions implements Serializable {
-    private static final long serialVersionUID = 7827449965185981719L;
-    private final AccessBoundary accessBoundary;
 
-    public DownScopedOptions(List<AccessBoundaryRule> accessBoundaryRules){
-        this.accessBoundary = new AccessBoundary(accessBoundaryRules);
-    }
+	private static final long serialVersionUID = 7827449965185981719L;
+	private final AccessBoundary accessBoundary;
+
+	public DownScopedOptions(List<AccessBoundaryRule> accessBoundaryRules) {
+		this.accessBoundary = new AccessBoundary(accessBoundaryRules);
+	}
 
 }

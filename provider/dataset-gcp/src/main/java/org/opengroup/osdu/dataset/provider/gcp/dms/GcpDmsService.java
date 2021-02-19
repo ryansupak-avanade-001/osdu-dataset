@@ -17,24 +17,23 @@
 
 package org.opengroup.osdu.dataset.provider.gcp.dms;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.http.HttpStatus;
+import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.dataset.dms.DmsException;
 import org.opengroup.osdu.dataset.dms.IDmsProvider;
 import org.opengroup.osdu.dataset.model.request.GetDatasetRegistryRequest;
 import org.opengroup.osdu.dataset.model.response.GetDatasetRetrievalInstructionsResponse;
 import org.opengroup.osdu.dataset.model.response.GetDatasetStorageInstructionsResponse;
-import org.opengroup.osdu.dataset.provider.gcp.service.instructions.interfaces.IFileService;
 import org.opengroup.osdu.dataset.provider.gcp.model.dataset.GcpDmsServiceProperties;
+import org.opengroup.osdu.dataset.provider.gcp.service.instructions.interfaces.IFileService;
 
+@RequiredArgsConstructor
 public class GcpDmsService implements IDmsProvider {
 
 	private final IFileService fileDmsService;
-	private GcpDmsServiceProperties dmsServiceProperties;
 
-	public GcpDmsService(IFileService fileDmsService,
-		GcpDmsServiceProperties dmsServiceProperties) {
-		this.fileDmsService = fileDmsService;
-		this.dmsServiceProperties = dmsServiceProperties;
-	}
+	private final GcpDmsServiceProperties dmsServiceProperties;
 
 	@Override
 	public GetDatasetStorageInstructionsResponse getStorageInstructions() throws DmsException {
@@ -44,7 +43,7 @@ public class GcpDmsService implements IDmsProvider {
 			case FILE_COLLECTION:
 				return fileDmsService.getCollectionUploadInstructions();
 			default:
-				return null;
+				throw new AppException(HttpStatus.SC_BAD_REQUEST, "Bad request", "Invalid dataset provided");
 		}
 	}
 
@@ -57,7 +56,7 @@ public class GcpDmsService implements IDmsProvider {
 			case FILE_COLLECTION:
 				return fileDmsService.getCollectionRetrievalInstructions(request);
 			default:
-				return null;
+				throw new AppException(HttpStatus.SC_BAD_REQUEST, "Bad request", "Invalid dataset provided");
 		}
 	}
 }

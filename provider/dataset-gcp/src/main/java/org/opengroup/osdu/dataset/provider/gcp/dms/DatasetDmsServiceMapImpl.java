@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.opengroup.osdu.dataset.provider.gcp.service;
+package org.opengroup.osdu.dataset.provider.gcp.dms;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap {
 
-	private Map<String, DmsServiceProperties> resourceTypeToDmsServiceMap = new HashMap<>();
+	private final Map<String, DmsServiceProperties> resourceTypeToDmsServiceMap = new HashMap<>();
 
 	@Override
 	public Map<String, DmsServiceProperties> getResourceTypeToDmsServiceMap() {
