@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.opengroup.osdu.dataset.provider.gcp.properties;
+package org.opengroup.osdu.dataset.provider.gcp.config;
 
+import java.util.ArrayList;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -30,4 +31,10 @@ public class GcpPropertiesConfig {
 
 	@Value("${gcp.expiration.days}")
 	private Integer expirationDays;
+
+	@Value("${file.location.sequence}")
+	private ArrayList<String> fileLocationSequence;
+
+	@Value("${file.collection.location.sequence}")
+	private ArrayList<String> fileCollectionLocationSequence;
 }

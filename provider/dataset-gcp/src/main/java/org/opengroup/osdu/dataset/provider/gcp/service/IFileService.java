@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.opengroup.osdu.dataset.provider.gcp.service.instructions.interfaces;
+package org.opengroup.osdu.dataset.provider.gcp.service;
 
 
 import org.opengroup.osdu.dataset.model.request.GetDatasetRegistryRequest;

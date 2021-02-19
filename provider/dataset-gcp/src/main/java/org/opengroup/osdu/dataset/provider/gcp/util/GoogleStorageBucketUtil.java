@@ -19,7 +19,7 @@ package org.opengroup.osdu.dataset.provider.gcp.util;
 
 import lombok.RequiredArgsConstructor;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
-import org.opengroup.osdu.dataset.provider.gcp.properties.GcpPropertiesConfig;
+import org.opengroup.osdu.dataset.provider.gcp.config.GcpPropertiesConfig;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor

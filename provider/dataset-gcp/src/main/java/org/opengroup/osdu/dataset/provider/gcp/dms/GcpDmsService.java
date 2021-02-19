@@ -26,7 +26,7 @@ import org.opengroup.osdu.dataset.model.request.GetDatasetRegistryRequest;
 import org.opengroup.osdu.dataset.model.response.GetDatasetRetrievalInstructionsResponse;
 import org.opengroup.osdu.dataset.model.response.GetDatasetStorageInstructionsResponse;
 import org.opengroup.osdu.dataset.provider.gcp.model.dataset.GcpDmsServiceProperties;
-import org.opengroup.osdu.dataset.provider.gcp.service.instructions.interfaces.IFileService;
+import org.opengroup.osdu.dataset.provider.gcp.service.IFileService;
 
 @RequiredArgsConstructor
 public class GcpDmsService implements IDmsProvider {

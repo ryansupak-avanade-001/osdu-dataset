@@ -2,7 +2,6 @@ package org.opengroup.osdu.dataset.provider.gcp.service.instructions.downscoped;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyCollectionOf;
-import static org.powermock.api.mockito.PowerMockito.*;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.verifyPrivate;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -27,37 +26,37 @@ import org.springframework.test.context.junit4.SpringRunner;
 @PrepareForTest(DownScopedCredentials.class)
 public class DownScopedCredentialsTest {
 
-    @Mock
-    DownScopedOptions downScopedOptions;
+	@Mock
+	DownScopedOptions downScopedOptions;
 
-    @Mock
+	@Mock
 	ServiceAccountCredentials sourceCredentials;
 
-    @Mock
+	@Mock
 	GoogleCredentials finiteCredentials;
 
-    @Mock
+	@Mock
 	AccessToken accessToken;
-    @Mock
+	@Mock
 	AccessToken downScopedToken;
 
-    @Mock
-    HttpResponse httpResponse;
+	@Mock
+	HttpResponse httpResponse;
 
-    DownScopedCredentials downScopedCredentials;
+	DownScopedCredentials downScopedCredentials;
 
-    @Test
-    public void givenDownScopedCredentials_whenInvoked_thenRequestsToken() throws Exception {
+	@Test
+	public void givenDownScopedCredentials_whenInvoked_thenRequestsToken() throws Exception {
 
-        Whitebox.setInternalState(sourceCredentials, "scopes", Collections.EMPTY_LIST);
-        when(sourceCredentials.createScoped(anyCollectionOf(String.class))).thenReturn(finiteCredentials);
-        downScopedCredentials = spy(new DownScopedCredentials(sourceCredentials, downScopedOptions));
-        Whitebox.setInternalState(finiteCredentials, "temporaryAccess", accessToken);
-        PowerMockito.doReturn(downScopedToken).when(downScopedCredentials, "getDownScopedToken", accessToken);
+		Whitebox.setInternalState(sourceCredentials, "scopes", Collections.EMPTY_LIST);
+		when(sourceCredentials.createScoped(anyCollectionOf(String.class))).thenReturn(finiteCredentials);
+		downScopedCredentials = spy(new DownScopedCredentials(sourceCredentials, downScopedOptions));
+		Whitebox.setInternalState(finiteCredentials, "temporaryAccess", accessToken);
+		PowerMockito.doReturn(downScopedToken).when(downScopedCredentials, "getDownScopedToken", accessToken);
 
-        AccessToken returnedDownScopedToken = downScopedCredentials.refreshAccessToken();
+		AccessToken returnedDownScopedToken = downScopedCredentials.refreshAccessToken();
 
-        verifyPrivate(downScopedCredentials).invoke("getDownScopedToken", accessToken);
-        assertEquals(downScopedToken, returnedDownScopedToken);
-    }
+		verifyPrivate(downScopedCredentials).invoke("getDownScopedToken", accessToken);
+		assertEquals(downScopedToken, returnedDownScopedToken);
+	}
 }

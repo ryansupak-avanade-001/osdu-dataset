@@ -20,7 +20,7 @@ package org.opengroup.osdu.dataset.provider.gcp.di;
 import lombok.RequiredArgsConstructor;
 import org.opengroup.osdu.dataset.dms.IDmsFactory;
 import org.opengroup.osdu.dataset.provider.gcp.dms.GcpDmsFactory;
-import org.opengroup.osdu.dataset.provider.gcp.service.instructions.interfaces.IFileService;
+import org.opengroup.osdu.dataset.provider.gcp.service.IFileService;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;

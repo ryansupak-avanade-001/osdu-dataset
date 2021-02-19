@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.opengroup.osdu.dataset.provider.gcp.service.instructions;
+package org.opengroup.osdu.dataset.provider.gcp.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
@@ -38,12 +38,12 @@ import org.opengroup.osdu.dataset.model.request.StorageExceptionResponse;
 import org.opengroup.osdu.dataset.model.response.DatasetRetrievalDeliveryItem;
 import org.opengroup.osdu.dataset.model.response.GetDatasetRetrievalInstructionsResponse;
 import org.opengroup.osdu.dataset.model.response.GetDatasetStorageInstructionsResponse;
+import org.opengroup.osdu.dataset.provider.gcp.config.GcpPropertiesConfig;
 import org.opengroup.osdu.dataset.provider.gcp.model.FileCollectionInstructionsItem;
 import org.opengroup.osdu.dataset.provider.gcp.model.FileInstructionsItem;
 import org.opengroup.osdu.dataset.provider.gcp.model.dataset.GcpDatasetRetrievalDeliveryItem;
 import org.opengroup.osdu.dataset.provider.gcp.model.dataset.GcpGetDatasetStorageInstructionsResponse;
 import org.opengroup.osdu.dataset.provider.gcp.service.instructions.interfaces.IFileCollectionStorageService;
-import org.opengroup.osdu.dataset.provider.gcp.service.instructions.interfaces.IFileService;
 import org.opengroup.osdu.dataset.provider.gcp.service.instructions.interfaces.IFileStorageService;
 import org.springframework.stereotype.Service;
 
@@ -61,6 +61,8 @@ public class FileServiceImpl implements IFileService {
 	private final IFileCollectionStorageService collectionStorageService;
 
 	private final IStorageFactory storageFactory;
+
+	private final GcpPropertiesConfig propertiesConfig;
 
 	private final DpsHeaders headers;
 
@@ -150,29 +152,32 @@ public class FileServiceImpl implements IFileService {
 	}
 
 	private String getPreLoadFilePath(Record datasetRegistryRecord) {
-		String preLoadFilePath;
 		try {
-			Map<String, Object> datasetProperties = (Map) datasetRegistryRecord.getData().get("DatasetProperties");
-			Map<String, String> fileSourceInfo = (Map) datasetProperties.get("FileSourceInfo");
-			preLoadFilePath = fileSourceInfo.get("PreloadFilePath");
+			return getLocationFromMap(datasetRegistryRecord.getData(), propertiesConfig.getFileLocationSequence());
 		} catch (Exception e) {
 			throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR,
 				"Error finding unsigned path on record for signing",
 				e.getMessage(), e);
 		}
-		return preLoadFilePath;
 	}
 
 	private String getFileCollectionPath(Record datasetRegistryRecord) {
-		String fileCollectionPath;
 		try {
-			Map<String, Object> datasetProperties = (Map) datasetRegistryRecord.getData().get("DatasetProperties");
-			fileCollectionPath = (String) datasetProperties.get("FileCollectionPath");
+			return getLocationFromMap(datasetRegistryRecord.getData(),
+				propertiesConfig.getFileCollectionLocationSequence());
 		} catch (Exception e) {
 			throw new AppException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Error finding file collection path on record",
 				e.getMessage(), e);
 		}
-		return fileCollectionPath;
+	}
+
+	private String getLocationFromMap(Map<String, Object> datasetProperties, List<String> locationSequence) {
+		Object node = datasetProperties.get(locationSequence.get(0));
+		if (locationSequence.size() == 1) {
+			return (String) node;
+		} else {
+			return getLocationFromMap((Map) node, locationSequence.subList(1, locationSequence.size()));
+		}
 	}
 
 }
