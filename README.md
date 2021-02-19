@@ -63,6 +63,10 @@ This section describes the deployment process for each cloud provider.
 
 ### AWS
  TODO
+ 
+### GCP
+
+All documentation for the GCP implementation of `os-dataset` lives [here](./provider/dataset-gcp/README.md)
 
 
 ## Running integration tests
@@ -72,6 +76,10 @@ Integration tests are located in a separate project for each cloud in the ```tes
 ### AWS
 
 TODO
+
+### GCP
+
+All documentation for the GCP implementation of `os-dataset` lives [here](./provider/dataset-gcp/README.md)
 
 ## License
 Copyright © 2020 Amazon Web Services
