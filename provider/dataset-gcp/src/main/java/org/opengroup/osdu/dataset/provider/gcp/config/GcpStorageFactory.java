@@ -19,6 +19,7 @@ package org.opengroup.osdu.dataset.provider.gcp.config;
 
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
+import org.opengroup.osdu.core.gcp.multitenancy.GcsMultiTenantAccess;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -28,5 +29,10 @@ public class GcpStorageFactory {
 	@Bean
 	public Storage googleCloudStorage() {
 		return StorageOptions.getDefaultInstance().getService();
+	}
+
+	@Bean
+	public GcsMultiTenantAccess gcsMultiTenantAccess() {
+		return new GcsMultiTenantAccess();
 	}
 }

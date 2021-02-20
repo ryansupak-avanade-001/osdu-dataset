@@ -40,7 +40,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
-import org.opengroup.osdu.core.gcp.multitenancy.IStorageFactory;
+import org.opengroup.osdu.core.gcp.multitenancy.GcsMultiTenantAccess;
 import org.opengroup.osdu.core.gcp.multitenancy.TenantFactory;
 import org.opengroup.osdu.dataset.provider.gcp.model.FileCollectionInstructionsItem;
 import org.opengroup.osdu.dataset.provider.gcp.service.instructions.downscoped.DownScopedCredentials;
@@ -52,7 +52,7 @@ import org.opengroup.osdu.dataset.provider.gcp.util.InstantHelper;
 public class FileCollectionStorageServiceTest {
 
 	@Mock
-	private IStorageFactory storageFactory;
+	private GcsMultiTenantAccess gcsMultiTenantAccess;
 
 	@Mock
 	private Storage storage;
@@ -101,7 +101,7 @@ public class FileCollectionStorageServiceTest {
 		when(tenantFactory.getTenantInfo(any())).thenReturn(tenantInfo);
 		when(storage.getOptions()).thenReturn(storageOptions);
 		when(storageOptions.getCredentials()).thenReturn(googleCredentials);
-		when(storageFactory.getStorage(any(), any(), any(), any(), any())).thenReturn(storage);
+		when(gcsMultiTenantAccess.get(any())).thenReturn(storage);
 		when(downScopedCredentialsService
 			.getDownScopedCredentials(any(), any()))
 			.thenReturn(downScopedCredentials);

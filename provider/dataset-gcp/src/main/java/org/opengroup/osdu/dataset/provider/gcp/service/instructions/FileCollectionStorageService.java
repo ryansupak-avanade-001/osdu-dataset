@@ -35,7 +35,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
-import org.opengroup.osdu.core.gcp.multitenancy.IStorageFactory;
+import org.opengroup.osdu.core.gcp.multitenancy.GcsMultiTenantAccess;
 import org.opengroup.osdu.core.gcp.multitenancy.TenantFactory;
 import org.opengroup.osdu.dataset.provider.gcp.model.FileCollectionInstructionsItem;
 import org.opengroup.osdu.dataset.provider.gcp.model.FileCollectionInstructionsItem.FileCollectionInstructionsItemBuilder;
@@ -65,7 +65,7 @@ public class FileCollectionStorageService implements IFileCollectionStorageServi
 	public static final String STORAGE_OBJECT_VIEWER = "storage.objectViewer";
 	public static final String STORAGE_OBJECT_CREATOR = "storage.objectCreator";
 
-	private final IStorageFactory storageFactory;
+	private final GcsMultiTenantAccess gcsMultiTenantAccess;
 
 	private final InstantHelper instantHelper;
 
@@ -165,9 +165,7 @@ public class FileCollectionStorageService implements IFileCollectionStorageServi
 	}
 
 	private Storage getStorage(TenantInfo tenantInfo) {
-		return storageFactory
-			.getStorage(this.headers.getUserEmail(), tenantInfo.getServiceAccount(), tenantInfo.getProjectId(),
-				tenantInfo.getName(), true);
+		return gcsMultiTenantAccess.get(tenantInfo);
 	}
 
 	private DownScopedCredentials getDownScopedCredentials(String bucketName, String filePath, String storageRole,

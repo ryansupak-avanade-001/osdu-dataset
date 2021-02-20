@@ -66,7 +66,7 @@ This section describes the deployment process for each cloud provider.
  
 ### GCP
 
-All documentation for the GCP implementation of `os-dataset` lives [here](./provider/dataset-gcp/README.md)
+All documentation for the GCP implementation of `os-dataset` can be found [here](./provider/dataset-gcp/README.md)
 
 
 ## Running integration tests
@@ -79,7 +79,7 @@ TODO
 
 ### GCP
 
-All documentation for the GCP implementation of `os-dataset` lives [here](./provider/dataset-gcp/README.md)
+All documentation for the GCP implementation of `os-dataset` can be found [here](./provider/dataset-gcp/README.md)
 
 ## License
 Copyright © 2020 Amazon Web Services
