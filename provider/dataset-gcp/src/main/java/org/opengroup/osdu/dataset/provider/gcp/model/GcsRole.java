@@ -15,17 +15,13 @@
  * limitations under the License.
  */
 
-package org.opengroup.osdu.dataset.provider.gcp.model.dataset;
+package org.opengroup.osdu.dataset.provider.gcp.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.opengroup.osdu.dataset.dms.DmsServiceProperties;
+public class GcsRole {
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class GcpDmsServiceProperties extends DmsServiceProperties {
+	public static final String STORAGE_OBJECT_VIEWER = "storage.objectViewer";
+	public static final String STORAGE_OBJECT_CREATOR = "storage.objectCreator";
 
-	private DataSetType dataSetType;
+	private GcsRole() {
+	}
 }

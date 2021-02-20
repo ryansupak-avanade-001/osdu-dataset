@@ -39,6 +39,7 @@ import org.opengroup.osdu.core.gcp.multitenancy.GcsMultiTenantAccess;
 import org.opengroup.osdu.core.gcp.multitenancy.TenantFactory;
 import org.opengroup.osdu.dataset.provider.gcp.model.FileCollectionInstructionsItem;
 import org.opengroup.osdu.dataset.provider.gcp.model.FileCollectionInstructionsItem.FileCollectionInstructionsItemBuilder;
+import org.opengroup.osdu.dataset.provider.gcp.model.GcsRole;
 import org.opengroup.osdu.dataset.provider.gcp.service.instructions.downscoped.AccessBoundaryRule;
 import org.opengroup.osdu.dataset.provider.gcp.service.instructions.downscoped.AvailabilityCondition;
 import org.opengroup.osdu.dataset.provider.gcp.service.instructions.downscoped.DownScopedCredentials;
@@ -62,8 +63,6 @@ public class FileCollectionStorageService implements IFileCollectionStorageServi
 	private static final String MALFORMED_URL = "Malformed URL";
 	private static final String URI_EXCEPTION_REASON = "Exception creating signed url";
 	private static final String INVALID_GS_PATH_REASON = "Unsigned url invalid, needs to be full GS path";
-	public static final String STORAGE_OBJECT_VIEWER = "storage.objectViewer";
-	public static final String STORAGE_OBJECT_CREATOR = "storage.objectCreator";
 
 	private final GcsMultiTenantAccess gcsMultiTenantAccess;
 
@@ -112,7 +111,7 @@ public class FileCollectionStorageService implements IFileCollectionStorageServi
 				URI_EXCEPTION_REASON);
 		} else {
 			DownScopedCredentials downScopedCredentials = getDownScopedCredentials(bucketName, filePath,
-				STORAGE_OBJECT_VIEWER, storage.getOptions().getCredentials());
+				GcsRole.STORAGE_OBJECT_VIEWER, storage.getOptions().getCredentials());
 			try {
 				instructionsItemBuilder
 					.connectionString(downScopedCredentials.refreshAccessToken().getTokenValue());
@@ -151,7 +150,7 @@ public class FileCollectionStorageService implements IFileCollectionStorageServi
 			.unsignedUrl(fileSource);
 
 		DownScopedCredentials downScopedCredentials = getDownScopedCredentials(bucketName, filePath,
-			STORAGE_OBJECT_CREATOR, storage.getOptions().getCredentials());
+			GcsRole.STORAGE_OBJECT_CREATOR, storage.getOptions().getCredentials());
 		try {
 			instructionsItemBuilder
 				.connectionString(downScopedCredentials.refreshAccessToken().getTokenValue());

@@ -57,7 +57,6 @@ public class FileStorageServiceImpl implements IFileStorageService {
 	public static final String MALFORMED_URL = "Malformed URL";
 	private static final String URI_EXCEPTION_REASON = "Exception creating signed url";
 	private static final String INVALID_GS_PATH_REASON = "Unsigned url invalid, needs to be full GS path";
-	private static final HttpMethod signedUrlMethod = HttpMethod.GET;
 
 //	private final IStorageFactory storageFactory;
 
@@ -110,7 +109,7 @@ public class FileStorageServiceImpl implements IFileStorageService {
 				URI_EXCEPTION_REASON);
 		}
 		log.debug("resource is a blob. get SignedUrl");
-		URL url = generateSignedGcURL(blobId, storage);
+		URL url = generateSignedGcURL(blobId, storage,HttpMethod.GET);
 		instructionsItemBuilder.url(url).unsignedUrl(unsignedUrl).createdAt(now);
 		return instructionsItemBuilder.build();
 	}
@@ -138,9 +137,7 @@ public class FileStorageServiceImpl implements IFileStorageService {
 
 		Blob blob = storage.create(blobInfo, ArrayUtils.EMPTY_BYTE_ARRAY);
 
-		URL signedUrl = storage.signUrl(blobInfo, 7L, TimeUnit.DAYS,
-			SignUrlOption.httpMethod(HttpMethod.PUT),
-			SignUrlOption.withV4Signature());
+		URL signedUrl = generateSignedGcURL(blobId,storage,HttpMethod.PUT);
 
 		log.debug("Signed URL for created storage object. Object ID : {} , Signed URL : {}",
 			blob.getGeneratedId(), signedUrl);
@@ -150,7 +147,7 @@ public class FileStorageServiceImpl implements IFileStorageService {
 		return FileInstructionsItem.builder().url(signedUrl).unsignedUrl(fileSource).createdAt(now).build();
 	}
 
-	private URL generateSignedGcURL(BlobId blobId, Storage storage) {
+	private URL generateSignedGcURL(BlobId blobId, Storage storage, HttpMethod httpMethod) {
 
 		BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
 			.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE)
@@ -158,7 +155,7 @@ public class FileStorageServiceImpl implements IFileStorageService {
 
 		return storage.signUrl(blobInfo,
 			config.getExpirationDays(), TimeUnit.DAYS,
-			SignUrlOption.httpMethod(signedUrlMethod),
+			SignUrlOption.httpMethod(httpMethod),
 			SignUrlOption.withV4Signature());
 	}
 

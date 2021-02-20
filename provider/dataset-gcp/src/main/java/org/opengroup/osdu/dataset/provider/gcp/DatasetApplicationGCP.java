@@ -22,10 +22,12 @@ import org.opengroup.osdu.dataset.DatasetApplication;
 import org.opengroup.osdu.dataset.di.DmsClientFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 
 @SpringBootApplication
+@ConfigurationPropertiesScan(basePackages = "org.opengroup")
 @ComponentScan(value = {"org.opengroup.osdu"}, excludeFilters = {
 	@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = {DmsClientFactory.class,
 		DatasetApplication.class, IStorageFactory.class})})

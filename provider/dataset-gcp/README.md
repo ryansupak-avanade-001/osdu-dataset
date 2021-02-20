@@ -76,7 +76,7 @@ gcloud config set project <YOUR-PROJECT-ID>
 gcloud auth application-default login
 ```
 
-* Navigate to Dataset service's root folder and run:
+* Navigate to Dataset service root folder and run:
 
 ```bash
 mvn clean install   

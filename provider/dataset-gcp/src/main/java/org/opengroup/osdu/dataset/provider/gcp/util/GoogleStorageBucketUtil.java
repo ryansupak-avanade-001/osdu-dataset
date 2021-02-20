@@ -35,7 +35,7 @@ public class GoogleStorageBucketUtil {
 			.append('-')
 			.append(tenantInfo.getDataPartitionId())
 			.append('-')
-			.append(gcpPropertiesConfig.getFileBucket());
+			.append(gcpPropertiesConfig.getFileDmsBucket());
 		return stringBuilder.toString();
 	}
 }

@@ -56,7 +56,7 @@ public class DownScopedCredentials extends GoogleCredentials {
 	private static final String IDENTITY_TOKEN_ENDPOINT = "https://sts.googleapis.com/v1beta/token";
 
 	private static final String TOKEN_INFO_ENDPOINT = "https://www.googleapis.com/oauth2/v3/tokeninfo";
-	public static final String EXPIRES_IN = "expires_in";
+	private static final String EXPIRES_IN = "expires_in";
 
 	private final GoogleCredentials finiteCredentials;
 	private final DownScopedOptions downScopedOptions;

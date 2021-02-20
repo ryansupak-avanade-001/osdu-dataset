@@ -22,17 +22,16 @@ import java.time.Instant;
 import lombok.Builder;
 import lombok.Data;
 
-
 @Data
 @Builder
 public class FileCollectionInstructionsItem {
 
 	@JsonProperty("unsignedUrl")
-	String unsignedUrl;
+	private String unsignedUrl;
 
 	@JsonProperty("connectionString")
-	String connectionString;
+	private String connectionString;
 
 	@JsonProperty("createdAt")
-	Instant createdAt;
+	private Instant createdAt;
 }

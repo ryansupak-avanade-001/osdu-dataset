@@ -23,18 +23,17 @@ import java.time.Instant;
 import lombok.Builder;
 import lombok.Data;
 
-
 @Data
 @Builder
 public class FileInstructionsItem {
 
 	@JsonProperty("unsignedUrl")
-	String unsignedUrl;
+	private String unsignedUrl;
 
 	@JsonProperty("signedUrl")
-	URL url;
+	private URL url;
 
 	@JsonProperty("createdAt")
-	Instant createdAt;
+	private Instant createdAt;
 
 }
