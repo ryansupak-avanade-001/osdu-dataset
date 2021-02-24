@@ -1,4 +1,4 @@
-// Copyright © 2020 Amazon Web Services
+// Copyright © 2021 Amazon Web Services
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,43 +14,96 @@
 
 package org.opengroup.osdu.dataset.provider.aws;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelper;
+import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
+import org.opengroup.osdu.core.common.model.http.AppException;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.dataset.dms.DmsServiceProperties;
+import org.opengroup.osdu.dataset.provider.aws.cache.DmsRegistrationCache;
+import org.opengroup.osdu.dataset.provider.aws.model.DynamoDmsRegistration;
+import org.opengroup.osdu.dataset.provider.aws.model.DmsRegistrations;
 import org.opengroup.osdu.dataset.provider.interfaces.IDatasetDmsServiceMap;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap {
 
     @Value("${DMS_API_BASE}")
-	private String DMS_API_BASE;
+    private String DMS_API_BASE;
 
-    private Map<String,DmsServiceProperties> resourceTypeToDmsServiceMap = new HashMap<>();
+    @Value("${aws.dynamodb.table.prefix}")
+    String tablePrefix;
+
+    @Value("${aws.region}")
+    String dynamoDbRegion;
+
+    @Value("${aws.dynamodb.endpoint}")
+    String dynamoDbEndpoint;
+
+    @Inject
+    DmsRegistrationCache cache;
+
+    @Inject
+    DpsHeaders headers;
+
+    @Inject
+	private JaxRsDpsLog logger;
+
+    private DynamoDBQueryHelper queryHelper;
 
     @PostConstruct
     public void init() {
-       
-        //todo: replace this with service discovery / registered db entries
-        resourceTypeToDmsServiceMap.put(
-            "dataset--File.*", 
-            new DmsServiceProperties(StringUtils.join(DMS_API_BASE, "/api/dms/file/v1/file"))
-        );
-        
-        resourceTypeToDmsServiceMap.put(
-            "dataset--FileCollection.*", 
-            new DmsServiceProperties(StringUtils.join(DMS_API_BASE, "/api/dms/file/v1/file-collection"))
-        );
+
+        queryHelper = new DynamoDBQueryHelper(dynamoDbEndpoint, dynamoDbRegion, tablePrefix);
     }
 
     @Override
     public Map<String, DmsServiceProperties> getResourceTypeToDmsServiceMap() {
-        return resourceTypeToDmsServiceMap;
+
+        DmsRegistrations dmsRegistrations = getServicesInfoFromCacheOrDynamo(headers);       
+
+        return dmsRegistrations.getDynamoDmsRegistrations();
     }
+
+    protected DmsRegistrations getServicesInfoFromCacheOrDynamo(DpsHeaders headers) {
+		String cacheKey = DmsRegistrationCache.getCacheKey(headers);
+		DmsRegistrations dmsRegistrations = this.cache.get(cacheKey);
+
+		if (dmsRegistrations == null) {			
+			try {
+                ArrayList<DynamoDmsRegistration> test = queryHelper.scanTable(DynamoDmsRegistration.class);
+        
+                HashMap<String, DmsServiceProperties> resourceTypeToDmsServiceMap = new HashMap<>();                
+        
+                for (DynamoDmsRegistration reg : test) {
+                    resourceTypeToDmsServiceMap.put(reg.getDatasetKind(), new DmsServiceProperties(
+                        StringUtils.join(DMS_API_BASE, reg.getRoute()),
+                        reg.getIsStorageAllowed()
+                    ));
+                }
+
+                dmsRegistrations = new DmsRegistrations(resourceTypeToDmsServiceMap);
+
+				this.cache.put(cacheKey, dmsRegistrations);
+				this.logger.info("DMS Registration cache miss");
+
+			} catch (Exception e) {
+				e.printStackTrace();				
+				throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), "Failed to get DMS Service Registrations");
+			}
+		}
+
+		return dmsRegistrations;
+	}
     
 }

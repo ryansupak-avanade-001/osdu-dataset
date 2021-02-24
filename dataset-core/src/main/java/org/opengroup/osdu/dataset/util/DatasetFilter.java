@@ -1,4 +1,4 @@
-// Copyright © 2020 Amazon Web Services
+// Copyright © 2021 Amazon Web Services
 // Copyright 2017-2019, Schlumberger
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,8 +31,9 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.common.base.Strings;
 
 import org.apache.http.HttpStatus;
-import org.opengroup.osdu.core.common.http.ResponseHeaders;
+import org.opengroup.osdu.core.common.http.ResponseHeadersFactory;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -45,6 +46,12 @@ public class DatasetFilter implements Filter {
 
 	@Inject
 	private DpsHeaders dpsHeaders;
+
+	private ResponseHeadersFactory responseHeadersFactory = new ResponseHeadersFactory();
+
+	// defaults to * for any front-end, string must be comma-delimited if more than one domain
+	@Value("${ACCESS_CONTROL_ALLOW_ORIGIN_DOMAINS:*}")
+	String ACCESS_CONTROL_ALLOW_ORIGIN_DOMAINS;
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -68,9 +75,9 @@ public class DatasetFilter implements Filter {
 
 		this.dpsHeaders.addCorrelationIdIfMissing();
 
-		Map<String, List<Object>> standardHeaders = ResponseHeaders.STANDARD_RESPONSE_HEADERS;
-		for (Map.Entry<String, List<Object>> header : standardHeaders.entrySet()) {
-			httpResponse.addHeader(header.getKey(), header.getValue().toString());
+		Map<String, String> responseHeaders = responseHeadersFactory.getResponseHeaders(ACCESS_CONTROL_ALLOW_ORIGIN_DOMAINS);
+		for(Map.Entry<String, String> header : responseHeaders.entrySet()){
+			httpResponse.setHeader(header.getKey(), header.getValue());
 		}
 		httpResponse.addHeader(DpsHeaders.CORRELATION_ID, this.dpsHeaders.getCorrelationId());
 
