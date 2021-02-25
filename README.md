@@ -82,7 +82,7 @@ TODO
 All documentation for the GCP implementation of `os-dataset` can be found [here](./provider/dataset-gcp/README.md)
 
 ## License
-Copyright © 2020 Amazon Web Services
+Copyright © 2021 Amazon Web Services
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

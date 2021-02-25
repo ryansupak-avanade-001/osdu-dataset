@@ -15,26 +15,23 @@
 package org.opengroup.osdu.dataset.provider.aws.cache;
 
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-import org.opengroup.osdu.core.common.model.entitlements.Groups;
+
 import org.opengroup.osdu.core.common.cache.RedisCache;
 import org.opengroup.osdu.core.common.util.Crc32c;
+import org.opengroup.osdu.dataset.provider.aws.model.DmsRegistrations;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GroupCache extends RedisCache<String, Groups> {
-    public GroupCache(@Value("${aws.elasticache.cluster.endpoint}") final String REDIS_GROUP_HOST, @Value("${aws.elasticache.cluster.port}") final String REDIS_GROUP_PORT) {
-        super(REDIS_GROUP_HOST, Integer.parseInt(REDIS_GROUP_PORT), 60, String.class, Groups.class);
+public class DmsRegistrationCache extends RedisCache<String, DmsRegistrations> {
+    public DmsRegistrationCache(@Value("${aws.elasticache.cluster.endpoint}") final String REDIS_HOST, @Value("${aws.elasticache.cluster.port}") final String REDIS_PORT) {
+        super(REDIS_HOST, Integer.parseInt(REDIS_PORT), 300, String.class, DmsRegistrations.class);
     }
 
-    public static String getGroupCacheKey(DpsHeaders headers) {
-        String key = String.format("entitlement-groups:%s:%s", headers.getPartitionIdWithFallbackToAccountId(),
+    public static String getCacheKey(DpsHeaders headers) {
+        String key = String.format("dms-registration:%s:%s", headers.getPartitionIdWithFallbackToAccountId(),
                 headers.getAuthorization());
         return Crc32c.hashToBase64EncodedString(key);
     }
 
-    public static String getPartitionGroupsCacheKey(String dataPartitionId) {
-        String key = String.format("entitlement-groups:data-partition:%s", dataPartitionId);
-        return Crc32c.hashToBase64EncodedString(key);
-    }
 }
