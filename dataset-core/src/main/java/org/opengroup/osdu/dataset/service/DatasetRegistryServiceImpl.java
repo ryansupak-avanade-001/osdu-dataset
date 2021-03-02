@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.opengroup.osdu.core.common.http.json.HttpResponseBodyMapper;
@@ -56,8 +57,8 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
      */
     final String DATASET_KIND_REGEX = "^[\\w\\-\\.]+:[\\w\\-\\.]+:dataset--+[\\w\\-\\.]+:[0-9]+.[0-9]+.[0-9]+$";
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper);
+    private final ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
+    private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper);                                                            
 
     @Inject
     private DpsHeaders headers;
@@ -104,7 +105,9 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
                 StorageExceptionResponse body = bodyMapper.parseBody(e.getHttpResponse(), StorageExceptionResponse.class);
                 throw new AppException(body.getCode(), "Storage Service: " + body.getReason(), body.getMessage());
             } catch (HttpResponseBodyParsingException e2) {
-
+                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                "Failed to parse error from Storage Service");
             }
 
         }

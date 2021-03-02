@@ -21,6 +21,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.opengroup.osdu.core.common.http.json.HttpResponseBodyMapper;
@@ -54,7 +55,7 @@ public class DatasetDmsServiceImpl implements DatasetDmsService {
     @Inject
     private IDatasetDmsServiceMap dmsServiceMap;
 
-    private ObjectMapper jsonObjectMapper = new ObjectMapper();
+    private ObjectMapper jsonObjectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
     private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(jsonObjectMapper);
 
     public DatasetDmsServiceImpl() {
