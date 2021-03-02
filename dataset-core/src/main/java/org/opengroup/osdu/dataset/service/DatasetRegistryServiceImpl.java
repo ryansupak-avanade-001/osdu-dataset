@@ -172,7 +172,7 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
             
             String datasetKind = dataset.getKind();
 
-            if (dataset.getId() != null && !Record.isRecordIdValid(dataset.getId(), headers.getPartitionId(), datasetKind)) {
+            if (dataset.getId() != null && !Record.isOsduRecordIdValid(dataset.getId(), headers.getPartitionId(), datasetKind)) {
                 String msg = String.format(
 							"The record '%s' does not have a valid ID",	dataset.getId());
 					throw new AppException(HttpStatus.BAD_REQUEST.value(), "Invalid record id", msg);
