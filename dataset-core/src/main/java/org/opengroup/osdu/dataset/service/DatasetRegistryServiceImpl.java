@@ -163,6 +163,26 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
         return response;
     }
 
+    //this should be in os-core-common, but placing here until it's able to be put inside the Record class
+    private boolean isOsduRecordIdValid(String recordId, String tenant, String kind) {        
+		
+            //Check format and tenant
+            if (!Record.isRecordIdValid(recordId, tenant, kind))
+                return false;
+    
+            //id should be split by colons. ex: tenant:groupType--individualType:uniqueId
+            String[] recordIdSplitByColon = recordId.split(":");
+    
+            //make sure groupType/individualType is correct
+            String[] kindSplitByColon = kind.split(":");
+            String kindSubType = kindSplitByColon[2]; //grab GroupType/IndividualType
+    
+            if (!recordIdSplitByColon[1].equalsIgnoreCase(kindSubType))
+                return false;
+                
+            return true;		        
+    }
+
     private boolean validateDatasets(ISchemaService schemaService, List<Record> datasets) {
 
         HashMap<String, Object> schemaKindsCache = new HashMap<>();
@@ -172,7 +192,7 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
             
             String datasetKind = dataset.getKind();
 
-            if (dataset.getId() != null && !Record.isOsduRecordIdValid(dataset.getId(), headers.getPartitionId(), datasetKind)) {
+            if (dataset.getId() != null && !isOsduRecordIdValid(dataset.getId(), headers.getPartitionId(), datasetKind)) {
                 String msg = String.format(
 							"The record '%s' does not have a valid ID",	dataset.getId());
 					throw new AppException(HttpStatus.BAD_REQUEST.value(), "Invalid record id", msg);
