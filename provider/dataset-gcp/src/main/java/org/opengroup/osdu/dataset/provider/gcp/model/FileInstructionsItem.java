@@ -20,18 +20,22 @@ package org.opengroup.osdu.dataset.provider.gcp.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.net.URL;
 import java.time.Instant;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class FileInstructionsItem {
 
 	@JsonProperty("unsignedUrl")
 	private String unsignedUrl;
 
 	@JsonProperty("signedUrl")
-	private URL url;
+	private URL signedUrl;
 
 	@JsonProperty("createdAt")
 	private Instant createdAt;

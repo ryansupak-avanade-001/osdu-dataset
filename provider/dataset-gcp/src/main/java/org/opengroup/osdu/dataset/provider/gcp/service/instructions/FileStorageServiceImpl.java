@@ -26,7 +26,6 @@ import com.google.cloud.storage.HttpMethod;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.Storage.SignUrlOption;
 import java.net.URL;
-import java.time.Clock;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Objects;
@@ -109,8 +108,8 @@ public class FileStorageServiceImpl implements IFileStorageService {
 				URI_EXCEPTION_REASON);
 		}
 		log.debug("resource is a blob. get SignedUrl");
-		URL url = generateSignedGcURL(blobId, storage,HttpMethod.GET);
-		instructionsItemBuilder.url(url).unsignedUrl(unsignedUrl).createdAt(now);
+		URL url = generateSignedGcURL(blobId, storage, HttpMethod.GET);
+		instructionsItemBuilder.signedUrl(url).unsignedUrl(unsignedUrl).createdAt(now);
 		return instructionsItemBuilder.build();
 	}
 
@@ -121,7 +120,7 @@ public class FileStorageServiceImpl implements IFileStorageService {
 //		Storage storage = storageFactory
 //			.getStorage(this.headers.getUserEmail(), tenantInfo.getServiceAccount(), tenantInfo.getProjectId(),
 //				tenantInfo.getName(), true);
-		Instant now = Instant.now(Clock.systemUTC());
+		Instant now = instantHelper.getCurrentInstant();
 
 		String filepath = getRelativePath();
 		String bucketName = bucketUtil.getBucketPath(tenantInfo);
@@ -137,14 +136,14 @@ public class FileStorageServiceImpl implements IFileStorageService {
 
 		Blob blob = storage.create(blobInfo, ArrayUtils.EMPTY_BYTE_ARRAY);
 
-		URL signedUrl = generateSignedGcURL(blobId,storage,HttpMethod.PUT);
+		URL signedUrl = generateSignedGcURL(blobId, storage, HttpMethod.PUT);
 
 		log.debug("Signed URL for created storage object. Object ID : {} , Signed URL : {}",
 			blob.getGeneratedId(), signedUrl);
 
 		String fileSource = "gs://" + bucketName + "/" + filepath;
 
-		return FileInstructionsItem.builder().url(signedUrl).unsignedUrl(fileSource).createdAt(now).build();
+		return FileInstructionsItem.builder().signedUrl(signedUrl).unsignedUrl(fileSource).createdAt(now).build();
 	}
 
 	private URL generateSignedGcURL(BlobId blobId, Storage storage, HttpMethod httpMethod) {
@@ -153,10 +152,13 @@ public class FileStorageServiceImpl implements IFileStorageService {
 			.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE)
 			.build();
 
-		return storage.signUrl(blobInfo,
-			config.getExpirationDays(), TimeUnit.DAYS,
+		return storage.signUrl(
+			blobInfo,
+			config.getExpirationDays(),
+			TimeUnit.DAYS,
 			SignUrlOption.httpMethod(httpMethod),
-			SignUrlOption.withV4Signature());
+			SignUrlOption.withV4Signature()
+		);
 	}
 
 	private String getRelativePath() {

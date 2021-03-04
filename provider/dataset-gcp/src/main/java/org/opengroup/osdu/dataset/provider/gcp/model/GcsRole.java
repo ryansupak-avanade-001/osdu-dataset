@@ -20,7 +20,7 @@ package org.opengroup.osdu.dataset.provider.gcp.model;
 public class GcsRole {
 
 	public static final String STORAGE_OBJECT_VIEWER = "storage.objectViewer";
-	public static final String STORAGE_OBJECT_CREATOR = "storage.objectCreator";
+	public static final String STORAGE_OBJECT_ADMIN = "storage.objectAdmin";
 
 	private GcsRole() {
 	}

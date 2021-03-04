@@ -33,6 +33,7 @@
 	<modules>
 		<module>dataset-test-core</module>
 		<module>dataset-test-aws</module>
+		<module>dataset-test-gcp</module>
 	</modules>
 
 	<profiles>

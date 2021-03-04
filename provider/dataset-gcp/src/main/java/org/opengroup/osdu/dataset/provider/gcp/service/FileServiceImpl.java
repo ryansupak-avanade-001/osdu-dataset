@@ -52,9 +52,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class FileServiceImpl implements IFileService {
 
-	private final ObjectMapper objectMapper = new ObjectMapper();
+	private final HttpResponseBodyMapper bodyMapper;
 
-	private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper);
+	private final ObjectMapper objectMapper;
 
 	private final IFileStorageService fileStorageService;
 
@@ -68,12 +68,13 @@ public class FileServiceImpl implements IFileService {
 
 	@Override
 	public GetDatasetStorageInstructionsResponse getFileUploadInstructions() {
-		return new GcpGetDatasetStorageInstructionsResponse(fileStorageService.getFileUploadItem());
+		return new GcpGetDatasetStorageInstructionsResponse(fileStorageService.getFileUploadItem(), objectMapper);
 	}
 
 	@Override
 	public GetDatasetStorageInstructionsResponse getCollectionUploadInstructions() {
-		return new GcpGetDatasetStorageInstructionsResponse(collectionStorageService.getCollectionUploadItem());
+		return new GcpGetDatasetStorageInstructionsResponse(collectionStorageService.getCollectionUploadItem(),
+			objectMapper);
 	}
 
 	@Override
@@ -128,7 +129,7 @@ public class FileServiceImpl implements IFileService {
 			FileInstructionsItem fileInstructionsItem = fileStorageService.createFileDeliveryItem(preLoadFilePath);
 
 			GcpDatasetRetrievalDeliveryItem resp = new GcpDatasetRetrievalDeliveryItem(datasetRegistryRecord.getId(),
-				fileInstructionsItem);
+				fileInstructionsItem, objectMapper);
 
 			delivery.add(resp);
 		}
@@ -144,7 +145,7 @@ public class FileServiceImpl implements IFileService {
 				.createCollectionDeliveryItem(fileCollectionPath);
 
 			GcpDatasetRetrievalDeliveryItem resp = new GcpDatasetRetrievalDeliveryItem(datasetRegistryRecord.getId(),
-				collectionInstructionsItem);
+				collectionInstructionsItem, objectMapper);
 
 			delivery.add(resp);
 		}

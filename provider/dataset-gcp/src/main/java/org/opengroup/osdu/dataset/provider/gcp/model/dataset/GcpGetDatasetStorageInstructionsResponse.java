@@ -23,9 +23,7 @@ import org.opengroup.osdu.dataset.model.response.GetDatasetStorageInstructionsRe
 
 public class GcpGetDatasetStorageInstructionsResponse extends GetDatasetStorageInstructionsResponse {
 
-	private static final ObjectMapper objectMapper = new ObjectMapper();
-
-	public GcpGetDatasetStorageInstructionsResponse(Object uploadLocation) {
+	public GcpGetDatasetStorageInstructionsResponse(Object uploadLocation, ObjectMapper objectMapper) {
 		super(objectMapper.convertValue(uploadLocation, Map.class), "GCP");
 	}
 }

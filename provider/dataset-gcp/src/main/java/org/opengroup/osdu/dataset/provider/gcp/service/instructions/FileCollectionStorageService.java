@@ -150,7 +150,7 @@ public class FileCollectionStorageService implements IFileCollectionStorageServi
 			.unsignedUrl(fileSource);
 
 		DownScopedCredentials downScopedCredentials = getDownScopedCredentials(bucketName, filePath,
-			GcsRole.STORAGE_OBJECT_CREATOR, storage.getOptions().getCredentials());
+			GcsRole.STORAGE_OBJECT_ADMIN, storage.getOptions().getCredentials());
 		try {
 			instructionsItemBuilder
 				.connectionString(downScopedCredentials.refreshAccessToken().getTokenValue());

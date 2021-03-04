@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.opengroup.osdu.dataset.provider.gcp.cache;
+package org.opengroup.osdu.dataset.configuration;
 
-import org.opengroup.osdu.core.common.cache.RedisCache;
-import org.opengroup.osdu.core.common.model.entitlements.Groups;
-import org.opengroup.osdu.dataset.provider.gcp.config.GcpPropertiesConfig;
-import org.springframework.stereotype.Component;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import java.util.Objects;
 
-@Component
-public class GroupCache extends RedisCache<String, Groups> {
+public class MapperConfig {
 
-	public GroupCache(GcpPropertiesConfig propertiesConfig) {
-		super(propertiesConfig.getRedisGroupHost(), propertiesConfig.getRedisGroupPort(), 30, String.class,
-			Groups.class);
+	private static ObjectMapper objectMapper;
+
+	public static ObjectMapper getObjectMapper() {
+		if (Objects.isNull(objectMapper)) {
+			objectMapper = new ObjectMapper().findAndRegisterModules()
+				.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+		}
+		return objectMapper;
 	}
-
 }
