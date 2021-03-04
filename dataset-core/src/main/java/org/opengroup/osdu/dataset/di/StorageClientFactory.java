@@ -15,9 +15,7 @@
 
 package org.opengroup.osdu.dataset.di;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import lombok.RequiredArgsConstructor;
 import org.opengroup.osdu.core.common.http.json.HttpResponseBodyMapper;
 import org.opengroup.osdu.core.common.storage.IStorageFactory;
 import org.opengroup.osdu.core.common.storage.StorageAPIConfig;
@@ -27,10 +25,10 @@ import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class StorageClientFactory extends AbstractFactoryBean<IStorageFactory> {
 
-	private final ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
-	private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper);
+	private final HttpResponseBodyMapper bodyMapper;
 
 	@Value("${STORAGE_API}")
 	private String STORAGE_API;
@@ -44,7 +42,7 @@ public class StorageClientFactory extends AbstractFactoryBean<IStorageFactory> {
 	protected IStorageFactory createInstance() throws Exception {
 		return new StorageFactory(StorageAPIConfig
 				.builder()
-				.rootUrl(STORAGE_API)				
+				.rootUrl(STORAGE_API)
 				.build(),
 				bodyMapper);
 	}

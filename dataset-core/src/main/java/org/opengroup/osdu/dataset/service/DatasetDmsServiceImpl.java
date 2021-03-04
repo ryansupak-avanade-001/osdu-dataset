@@ -18,12 +18,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.inject.Inject;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import lombok.RequiredArgsConstructor;
 import org.opengroup.osdu.core.common.http.json.HttpResponseBodyMapper;
 import org.opengroup.osdu.core.common.http.json.HttpResponseBodyParsingException;
 import org.opengroup.osdu.core.common.model.http.AppException;
@@ -44,6 +40,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class DatasetDmsServiceImpl implements DatasetDmsService {
 
     @Inject
@@ -55,12 +52,7 @@ public class DatasetDmsServiceImpl implements DatasetDmsService {
     @Inject
     private IDatasetDmsServiceMap dmsServiceMap;
 
-    private ObjectMapper jsonObjectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
-    private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(jsonObjectMapper);
-
-    public DatasetDmsServiceImpl() {
-
-    }
+    private final HttpResponseBodyMapper bodyMapper;
 
     @Override
     public GetDatasetStorageInstructionsResponse getStorageInstructions(String kindSubType) {
