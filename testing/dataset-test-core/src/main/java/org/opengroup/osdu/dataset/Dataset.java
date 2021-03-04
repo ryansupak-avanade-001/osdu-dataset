@@ -15,6 +15,7 @@
 
 package org.opengroup.osdu.dataset;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -43,7 +44,7 @@ import java.util.UUID;
 
 public abstract class Dataset extends TestBase {
 
-	protected ObjectMapper jsonMapper = new ObjectMapper();
+	protected ObjectMapper jsonMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
 
 	String recordId;
 
