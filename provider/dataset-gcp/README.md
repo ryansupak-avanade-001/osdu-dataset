@@ -19,9 +19,11 @@ In order to run the service locally or remotely, you will need to have the follo
 | `GCP_SCHEMA_API` | ex `https://os-schema-jvmvia5dea-uc.a.run.app/api/schema-service/v1` | Schema API endpoint | no | output of infrastructure deployment |
 | `GCP_STORAGE_API` | ex `https://os-storage-jvmvia5dea-uc.a.run.app/api/storage/v2` | Storage API endpoint | no | output of infrastructure deployment |
 | `AUTHORIZE_API` | ex `https://os-entitlements-gcp-jvmvia5dea-uc.a.run.app/entitlements/v1` | Entitlements API endpoint | no | output of infrastructure deployment |
-| `GCP_FILE_DMS_BUCKET` | ex `file-dms-bucket` | File bucket name postfix (full name represent by project-id + partition-id + GCP_FILE_DMS_BUCKET ex `osdu-cicd-epam-opendes-file-dms-bucket`) | no | output of infrastructure deployment |
-| `GCP_EXPIRATION_DAYS` | ex `1` | expiration for signed urls & connection strings | no |  |
+| `FILE_DMS_BUCKET` | ex `file-dms-bucket` | File bucket name postfix (full name represent by project-id + partition-id + GCP_FILE_DMS_BUCKET ex `osdu-cicd-epam-opendes-file-dms-bucket`) | no | output of infrastructure deployment |
+| `EXPIRATION_DAYS` | ex `1` | expiration for signed urls & connection strings | no |  |
 | `REDIS_GROUP_HOST` |  ex `127.0.0.1` | Redis host for groups | no | https://console.cloud.google.com/memorystore/redis/instances |
+| `REDIS_GROUP_PORT` |  ex `1111` | Redis port | no | https://console.cloud.google.com/memorystore/redis/instances |
+
 
 ### Run Locally
 Check that maven is installed:
@@ -100,7 +102,34 @@ cd provider/dataset-gcp && mvn spring-boot:run
  
  You will need to have the following environment variables defined.
  
+ | name | value | description | sensitive? | source |
+ | ---  | ---   | ---         | ---        | ---    |
+ | `DOMAIN` | ex `osdu-gcp.go3-nrg.projects.epam.com` | - | no | - |
+ | `STORAGE_BASE_URL` | ex `https://os-storage-jvmvia5dea-uc.a.run.app/api/storage/v2/` | Storage API endpoint | no | output of infrastructure deployment |
+ | `LEGAL_BASE_URL` | ex `https://os-legal-jvmvia5dea-uc.a.run.app/api/legal/v1/` | Legal API endpoint | no | output of infrastructure deployment |
+ | `DATASET_BASE_URL` | ex `http://localhost:8080/api/dataset/v1/` | Dataset API endpoint | no | output of infrastructure deployment |
+ | `SCHEMA_API` | ex `https://os-schema-jvmvia5dea-uc.a.run.app/api/schema-service/v1` | Schema API endpoint | no | output of infrastructure deployment |
+ | `PROVIDER_KEY` | `GCP` | required for response verification | no | - |
+ | `INTEGRATION_TEST_AUDIENCE` | ex `****.apps.googleusercontent.com;` | Client application ID | yes | https://console.cloud.google.com/apis/credentials |
+ | `INTEGRATION_TESTER` | `********` | Service account for API calls, passed as a filename or JSON content, plain or Base64 encoded.  Note: this user must have entitlements configured already | yes | https://console.cloud.google.com/iam-admin/serviceaccounts |
+ | `GCP_DEPLOY_FILE` | `********` | Service account for test data tear down, passed as a filename or JSON content, plain or Base64 encoded. Must have cloud storage role configured | yes | https://console.cloud.google.com/iam-admin/serviceaccounts |
+ | `TENANT_NAME` | `opendes` | Tenant name | no | - |
+ | `KIND_SUBTYPE` | `DatasetTest` | Kind subtype that will be used in int tests, schema creation automated , result kind will be `TENANT_NAME::wks-test:dataset--FileCollection.KIND_SUBTYPE:1.0.0`| no | - |
+ | `LEGAL_TAG` | `public-usa-dataset-1` | Legal tag name, if tag with that name doesn't exist then it will be created during preparing step | no | - |
+ | `GCLOUD_PROJECT` | `osdu-cicd-epam` | Project id | no | - |
+
+
  **Entitlements configuration for integration accounts**
+ 
+ | INTEGRATION_TESTER | 
+ | ---  | 
+ | users<br/>service.entitlements.user<br/>service.storage.admin<br/>service.legal.user<br/>service.search.user<br/>service.delivery.viewer | 
+ 
+ **Cloud roles configuration for integration accounts**
+ 
+ | GCP_DEPLOY_FILE|
+ | ---  |
+ | storage.admin access to the Google Cloud Storage |
  
  Execute following command to build code and run all the integration tests:
  
