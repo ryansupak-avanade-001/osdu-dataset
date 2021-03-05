@@ -13,143 +13,119 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opengroup.osdu</groupId>
-  <artifactId>os-dataset</artifactId>
-  <version>0.6.0-SNAPSHOT</version>
-  <description>Root Dataset Registry Service project</description>
+--><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.opengroup.osdu</groupId>
+	<artifactId>os-dataset</artifactId>
+	<version>0.6.0-SNAPSHOT</version>
+	<description>Root Dataset Registry Service project</description>
 
-  <properties>
-    <java.version>1.8</java.version>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <docker.image.prefix>opendes</docker.image.prefix>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <os-core-common.version>0.3.28</os-core-common.version>
-    <jackson.version>2.11.2</jackson.version>
-    <netty.version>4.1.51.Final</netty.version>
-    <snakeyaml.version>1.26</snakeyaml.version>
-    <commons-codec.version>1.14</commons-codec.version>
-    <nimbusds.version>7.9</nimbusds.version>
-  </properties>
+	<properties>
+		<java.version>1.8</java.version>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<docker.image.prefix>opendes</docker.image.prefix>
+    	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<os-core-common.version>0.6.6</os-core-common.version>
+		<jackson.version>2.11.2</jackson.version>
+		<netty.version>4.1.51.Final</netty.version>
+		<snakeyaml.version>1.26</snakeyaml.version>
+		<commons-codec.version>1.14</commons-codec.version>
+		<nimbusds.version>7.9</nimbusds.version>
+	</properties>
 
-  <licenses>
-    <license>
-      <name>Apache License, Version 2.0</name>
-      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
-  <packaging>pom</packaging>
+	<packaging>pom</packaging>
 
-  <dependencyManagement>
-    <dependencies>
-      <!-- <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-bom</artifactId>
-        <version>${netty.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency> -->
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>2.3.4.RELEASE</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <!-- <dependency>
-        <groupId>com.nimbusds</groupId>
-        <artifactId>nimbus-jose-jwt</artifactId>
-        <version>${nimbusds.version}</version>
-      </dependency> -->
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-codec</groupId>
-        <artifactId>commons-codec</artifactId>
-        <version>${commons-codec.version}</version>
-      </dependency>
-      <!-- <dependency>
-        <groupId>org.yaml</groupId>
-        <artifactId>snakeyaml</artifactId>
-        <version>${snakeyaml.version}</version>
-      </dependency> -->
-      <dependency>
-        <groupId>org.opengroup.osdu</groupId>
-        <artifactId>os-core-common</artifactId>
-        <version>${os-core-common.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
+	<dependencyManagement>
+		<dependencies>
+			<!-- <dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-bom</artifactId>
+				<version>${netty.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency> -->
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>2.1.16.RELEASE</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<!-- <dependency>
+				<groupId>com.nimbusds</groupId>
+				<artifactId>nimbus-jose-jwt</artifactId>
+				<version>${nimbusds.version}</version>
+			</dependency> -->
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-codec</groupId>
+				<artifactId>commons-codec</artifactId>
+				<version>${commons-codec.version}</version>
+			</dependency>
+			<!-- <dependency>
+				<groupId>org.yaml</groupId>
+				<artifactId>snakeyaml</artifactId>
+				<version>${snakeyaml.version}</version>
+			</dependency> -->
+			<dependency>
+				<groupId>org.opengroup.osdu</groupId>
+				<artifactId>os-core-common</artifactId>
+				<version>${os-core-common.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>1.18.8</version>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.8</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
 
-  <profiles>
-    <profile>
-      <id>Default</id>
-      <activation>
-        <property>
-          <name>!repo.releases.id</name>
-        </property>
-      </activation>
-      <properties>
-        <repo.releases.id>community-maven-repo</repo.releases.id>
-        <publish.snapshots.id>community-maven-via-job-token</publish.snapshots.id>
-        <publish.releases.id>community-maven-via-job-token</publish.releases.id>
-        <repo.releases.url>https://community.opengroup.org/api/v4/groups/17/-/packages/maven
-        </repo.releases.url>
-        <publish.snapshots.url>https://community.opengroup.org/api/v4/projects/378/packages/maven
-        </publish.snapshots.url>
-        <publish.releases.url>https://community.opengroup.org/api/v4/projects/378/packages/maven
-        </publish.releases.url>
-      </properties>
-    </profile>
-  </profiles>
+	<repositories>
+		<repository>
+			<id>${gitlab-server}</id>
+			<url>https://community.opengroup.org/api/v4/groups/17/-/packages/maven</url>
+		</repository>
+	</repositories>
 
-  <repositories>
-    <repository>
-      <id>${repo.releases.id}</id>
-      <url>${repo.releases.url}</url>
-    </repository>
-  </repositories>
-
-  <distributionManagement>
-    <repository>
-      <id>${publish.releases.id}</id>
-      <url>${publish.releases.url}</url>
-    </repository>
-    <snapshotRepository>
-      <id>${publish.snapshots.id}</id>
-      <url>${publish.snapshots.url}</url>
-    </snapshotRepository>
-  </distributionManagement>
+	 <distributionManagement>
+		<repository>
+			<id>${gitlab-server}</id>
+			<url>https://community.opengroup.org/api/v4/projects/378/packages/maven</url>
+		</repository>
+		<snapshotRepository>
+			<id>${gitlab-server}</id>
+			<url>https://community.opengroup.org/api/v4/projects/378/packages/maven</url>
+    	</snapshotRepository>
+  	</distributionManagement>
 
 
-  <modules>
-    <module>dataset-core</module>
-    <module>provider/dataset-aws</module>
-    <module>provider/dataset-gcp</module>
+
+	<modules>
+		<module>dataset-core</module>
+		<module>provider/dataset-aws</module>
+		<module>provider/dataset-ibm</module>
   </modules>
 
 </project>

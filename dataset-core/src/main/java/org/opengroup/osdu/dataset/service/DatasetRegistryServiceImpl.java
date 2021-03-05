@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.opengroup.osdu.core.common.http.json.HttpResponseBodyMapper;
@@ -56,8 +57,8 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
      */
     final String DATASET_KIND_REGEX = "^[\\w\\-\\.]+:[\\w\\-\\.]+:dataset--+[\\w\\-\\.]+:[0-9]+.[0-9]+.[0-9]+$";
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper);
+    private final ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
+    private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper);                                                            
 
     @Inject
     private DpsHeaders headers;
@@ -104,7 +105,9 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
                 StorageExceptionResponse body = bodyMapper.parseBody(e.getHttpResponse(), StorageExceptionResponse.class);
                 throw new AppException(body.getCode(), "Storage Service: " + body.getReason(), body.getMessage());
             } catch (HttpResponseBodyParsingException e2) {
-
+                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                "Failed to parse error from Storage Service");
             }
 
         }
@@ -160,6 +163,26 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
         return response;
     }
 
+    //this should be in os-core-common, but placing here until it's able to be put inside the Record class
+    private boolean isOsduRecordIdValid(String recordId, String tenant, String kind) {        
+		
+            //Check format and tenant
+            if (!Record.isRecordIdValid(recordId, tenant, kind))
+                return false;
+    
+            //id should be split by colons. ex: tenant:groupType--individualType:uniqueId
+            String[] recordIdSplitByColon = recordId.split(":");
+    
+            //make sure groupType/individualType is correct
+            String[] kindSplitByColon = kind.split(":");
+            String kindSubType = kindSplitByColon[2]; //grab GroupType/IndividualType
+    
+            if (!recordIdSplitByColon[1].equalsIgnoreCase(kindSubType))
+                return false;
+                
+            return true;		        
+    }
+
     private boolean validateDatasets(ISchemaService schemaService, List<Record> datasets) {
 
         HashMap<String, Object> schemaKindsCache = new HashMap<>();
@@ -169,7 +192,7 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
             
             String datasetKind = dataset.getKind();
 
-            if (dataset.getId() != null && !Record.isRecordIdValid(dataset.getId(), headers.getPartitionId(), datasetKind)) {
+            if (dataset.getId() != null && !isOsduRecordIdValid(dataset.getId(), headers.getPartitionId(), datasetKind)) {
                 String msg = String.format(
 							"The record '%s' does not have a valid ID",	dataset.getId());
 					throw new AppException(HttpStatus.BAD_REQUEST.value(), "Invalid record id", msg);

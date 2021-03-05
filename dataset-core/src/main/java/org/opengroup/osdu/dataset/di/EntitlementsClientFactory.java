@@ -15,6 +15,7 @@
 
 package org.opengroup.osdu.dataset.di;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.opengroup.osdu.core.common.entitlements.EntitlementsAPIConfig;
@@ -28,7 +29,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class EntitlementsClientFactory extends AbstractFactoryBean<IEntitlementsFactory> {
 
-	private final ObjectMapper objectMapper = new ObjectMapper();
+	private final ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
 	private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper);
 
 	@Value("${AUTHORIZE_API}")
