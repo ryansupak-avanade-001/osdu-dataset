@@ -34,7 +34,7 @@
     <properties>
         <os-core-lib-ibm.version>0.3.28-SNAPSHOT</os-core-lib-ibm.version>
         <version.number>0.0.1-SNAPSHOT</version.number>
-        <start-class>org.opengroup.osdu.datasetregistry.provider.ibm.IBMDatasetRegistry</start-class>
+        <start-class>org.opengroup.osdu.dataset.provider.ibm.IBMDatasetRegistry</start-class>
         <!--<os-core-common.version>0.3.28</os-core-common.version>-->
     </properties>
 
