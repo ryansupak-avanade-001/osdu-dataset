@@ -30,13 +30,13 @@ import org.junit.Test;
 import org.opengroup.osdu.dataset.configuration.DatasetConfiguration;
 import org.opengroup.osdu.dataset.configuration.GcpConfig;
 import org.opengroup.osdu.dataset.configuration.MapperConfig;
+import org.opengroup.osdu.dataset.model.IntTestFileCollectionInstructionsItem;
+import org.opengroup.osdu.dataset.model.IntTestFileInstructionsItem;
+import org.opengroup.osdu.dataset.model.IntTestGetCreateUpdateDatasetRegistryResponse;
 import org.opengroup.osdu.dataset.model.request.IntTestGetDatasetRegistryRequest;
-import org.opengroup.osdu.dataset.model.response.GetCreateUpdateDatasetRegistryResponse;
 import org.opengroup.osdu.dataset.model.response.IntTestDatasetRetrievalDeliveryItem;
 import org.opengroup.osdu.dataset.model.response.IntTestGetDatasetRetrievalInstructionsResponse;
 import org.opengroup.osdu.dataset.model.response.IntTestGetDatasetStorageInstructionsResponse;
-import org.opengroup.osdu.dataset.provider.gcp.model.FileCollectionInstructionsItem;
-import org.opengroup.osdu.dataset.provider.gcp.model.FileInstructionsItem;
 import org.opengroup.osdu.dataset.util.CloudStorageUtilGcp;
 import org.opengroup.osdu.dataset.util.FileUtils;
 import org.opengroup.osdu.dataset.util.GcpTestUtils;
@@ -169,7 +169,7 @@ public class TestDataset extends Dataset {
 
 		String respStr = response.getEntity(String.class);
 
-		IntTestGetDatasetStorageInstructionsResponse<FileInstructionsItem> resp = jsonMapper
+		IntTestGetDatasetStorageInstructionsResponse<IntTestFileInstructionsItem> resp = jsonMapper
 			.readValue(respStr, IntTestGetDatasetStorageInstructionsResponse.class);
 
 		Assert.assertEquals(TestUtils.getProviderKey(), resp.getProviderKey());
@@ -186,8 +186,9 @@ public class TestDataset extends Dataset {
 
 		Assert.assertTrue(datasetRegistryResponse.getStatus() == 201);
 
-		GetCreateUpdateDatasetRegistryResponse registryResponse = objectMapper
-			.readValue(datasetRegistryResponse.getEntity(String.class), GetCreateUpdateDatasetRegistryResponse.class);
+		IntTestGetCreateUpdateDatasetRegistryResponse registryResponse = objectMapper
+			.readValue(datasetRegistryResponse.getEntity(String.class),
+				IntTestGetCreateUpdateDatasetRegistryResponse.class);
 		String recordId = registryResponse.getDatasetRegistries().get(0).getId();
 
 		registeredDatasetRegistryIds.add(recordId);
@@ -195,8 +196,8 @@ public class TestDataset extends Dataset {
 	}
 
 	public void validate_dataset_retrieval_delivery_item(IntTestDatasetRetrievalDeliveryItem deliveryItem) {
-		FileInstructionsItem fileInstructionsItem = objectMapper
-			.convertValue(deliveryItem.getRetrievalProperties(), FileInstructionsItem.class);
+		IntTestFileInstructionsItem fileInstructionsItem = objectMapper
+			.convertValue(deliveryItem.getRetrievalProperties(), IntTestFileInstructionsItem.class);
 
 		Assert.assertNotNull(fileInstructionsItem.getUnsignedUrl());
 		Assert.assertNotNull(fileInstructionsItem.getSignedUrl());
@@ -204,8 +205,8 @@ public class TestDataset extends Dataset {
 	}
 
 	public void validate_CollectionRetrievalItem(IntTestDatasetRetrievalDeliveryItem deliveryItem) {
-		FileCollectionInstructionsItem collectionInstructionsItem = objectMapper
-			.convertValue(deliveryItem.getRetrievalProperties(), FileCollectionInstructionsItem.class);
+		IntTestFileCollectionInstructionsItem collectionInstructionsItem = objectMapper
+			.convertValue(deliveryItem.getRetrievalProperties(), IntTestFileCollectionInstructionsItem.class);
 
 		Assert.assertNotNull(collectionInstructionsItem.getUnsignedUrl());
 		Assert.assertNotNull(collectionInstructionsItem.getConnectionString());
@@ -214,8 +215,8 @@ public class TestDataset extends Dataset {
 	}
 
 	public void validate_storageLocation(Object storageLocation) {
-		FileInstructionsItem fileInstructionsItem = objectMapper
-			.convertValue(storageLocation, FileInstructionsItem.class);
+		IntTestFileInstructionsItem fileInstructionsItem = objectMapper
+			.convertValue(storageLocation, IntTestFileInstructionsItem.class);
 
 		Assert.assertNotNull(fileInstructionsItem.getUnsignedUrl());
 		Assert.assertNotNull(fileInstructionsItem.getSignedUrl());
@@ -225,8 +226,8 @@ public class TestDataset extends Dataset {
 	}
 
 	public void validate_collectionStorageInstructions(Object collectionInstructions) {
-		FileCollectionInstructionsItem collectionInstructionsItem = objectMapper
-			.convertValue(collectionInstructions, FileCollectionInstructionsItem.class);
+		IntTestFileCollectionInstructionsItem collectionInstructionsItem = objectMapper
+			.convertValue(collectionInstructions, IntTestFileCollectionInstructionsItem.class);
 
 		Assert.assertNotNull(collectionInstructionsItem.getUnsignedUrl());
 		Assert.assertNotNull(collectionInstructionsItem.getConnectionString());
