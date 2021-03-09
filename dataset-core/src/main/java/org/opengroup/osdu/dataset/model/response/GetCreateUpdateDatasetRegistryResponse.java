@@ -16,11 +16,14 @@ package org.opengroup.osdu.dataset.model.response;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import org.opengroup.osdu.core.common.model.storage.Record;
 
 import lombok.Data;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class GetCreateUpdateDatasetRegistryResponse {
 
 	private List<Record> datasetRegistries;
