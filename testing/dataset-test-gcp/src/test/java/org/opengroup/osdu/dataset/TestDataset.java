@@ -226,11 +226,6 @@ public class TestDataset extends Dataset {
 		uploadedCloudFileUnsignedUrls.add(fileInstructionsItem.getUnsignedUrl());
 	}
 
-	@Override
-	protected Acl createAcl() {
-		return null;
-	}
-
 	public void validate_collectionStorageInstructions(Object collectionInstructions) {
 		IntTestFileCollectionInstructionsItem collectionInstructionsItem = objectMapper
 			.convertValue(collectionInstructions, IntTestFileCollectionInstructionsItem.class);
