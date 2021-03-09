@@ -19,6 +19,7 @@ package org.opengroup.osdu.dataset.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.util.Objects;
 
 public class MapperConfig {
@@ -27,7 +28,7 @@ public class MapperConfig {
 
 	public static ObjectMapper getObjectMapper() {
 		if (Objects.isNull(objectMapper)) {
-			objectMapper = new ObjectMapper().findAndRegisterModules()
+			objectMapper = new ObjectMapper().findAndRegisterModules().registerModule(new JavaTimeModule())
 				.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 		}
 		return objectMapper;

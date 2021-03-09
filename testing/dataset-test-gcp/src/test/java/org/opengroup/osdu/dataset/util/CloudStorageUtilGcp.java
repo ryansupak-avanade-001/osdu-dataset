@@ -48,8 +48,9 @@ import org.opengroup.osdu.dataset.CloudStorageUtil;
 import org.opengroup.osdu.dataset.configuration.GcpConfig;
 import org.opengroup.osdu.dataset.configuration.MapperConfig;
 import org.opengroup.osdu.dataset.credentials.StorageServiceAccountCredentialsProvider;
-import org.opengroup.osdu.dataset.provider.gcp.model.FileCollectionInstructionsItem;
-import org.opengroup.osdu.dataset.provider.gcp.model.FileInstructionsItem;
+import org.opengroup.osdu.dataset.model.IntTestFileCollectionInstructionsItem;
+import org.opengroup.osdu.dataset.model.IntTestFileInstructionsItem;
+
 
 @Log
 public class CloudStorageUtilGcp extends CloudStorageUtil {
@@ -68,8 +69,8 @@ public class CloudStorageUtilGcp extends CloudStorageUtil {
 
 	public String uploadCloudFileUsingProvidedCredentials(String fileName, Object storageLocationProperties,
 		String fileContents) {
-		FileInstructionsItem fileInstructionsItem = objectMapper
-			.convertValue(storageLocationProperties, FileInstructionsItem.class);
+		IntTestFileInstructionsItem fileInstructionsItem = objectMapper
+			.convertValue(storageLocationProperties, IntTestFileInstructionsItem.class);
 
 		Client client = GcpTestUtils.getClient();
 
@@ -85,8 +86,8 @@ public class CloudStorageUtilGcp extends CloudStorageUtil {
 
 	public String uploadCollectionUsingProvidedCredentials(String fileName, Object storageLocationProperties,
 		String fileContents) {
-		FileCollectionInstructionsItem instructionsItem = objectMapper
-			.convertValue(storageLocationProperties, FileCollectionInstructionsItem.class);
+		IntTestFileCollectionInstructionsItem instructionsItem = objectMapper
+			.convertValue(storageLocationProperties, IntTestFileCollectionInstructionsItem.class);
 
 		Storage instructionsBasedService = getStorageServiceFromInstruction(instructionsItem);
 
@@ -103,8 +104,8 @@ public class CloudStorageUtilGcp extends CloudStorageUtil {
 	}
 
 	public String downloadCloudFileUsingDeliveryItem(Object deliveryItem) {
-		FileInstructionsItem fileInstructionsItem = objectMapper
-			.convertValue(deliveryItem, FileInstructionsItem.class);
+		IntTestFileInstructionsItem fileInstructionsItem = objectMapper
+			.convertValue(deliveryItem, IntTestFileInstructionsItem.class);
 		try {
 			return FileUtils.readFileFromUrl(fileInstructionsItem.getSignedUrl());
 		} catch (IOException e) {
@@ -114,8 +115,8 @@ public class CloudStorageUtilGcp extends CloudStorageUtil {
 	}
 
 	public String downloadCollectionFileUsingDeliveryItem(Object deliveryItem, String fileName) {
-		FileCollectionInstructionsItem instructionsItem = objectMapper
-			.convertValue(deliveryItem, FileCollectionInstructionsItem.class);
+		IntTestFileCollectionInstructionsItem instructionsItem = objectMapper
+			.convertValue(deliveryItem, IntTestFileCollectionInstructionsItem.class);
 
 		Storage instructionsBasedService = getStorageServiceFromInstruction(instructionsItem);
 
@@ -134,7 +135,7 @@ public class CloudStorageUtilGcp extends CloudStorageUtil {
 		return BlobId.of(bucketName, filePath + "/" + fileName);
 	}
 
-	private Storage getStorageServiceFromInstruction(FileCollectionInstructionsItem instructionsItem) {
+	private Storage getStorageServiceFromInstruction(IntTestFileCollectionInstructionsItem instructionsItem) {
 		String token = instructionsItem.getConnectionString();
 		Credentials credentials = GoogleCredentials.create(new AccessToken(token, null));
 		return StorageOptions.newBuilder().setCredentials(credentials).build().getService();

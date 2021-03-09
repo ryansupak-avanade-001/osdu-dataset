@@ -27,6 +27,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opengroup.osdu.core.common.model.entitlements.Acl;
 import org.opengroup.osdu.dataset.configuration.DatasetConfiguration;
 import org.opengroup.osdu.dataset.configuration.GcpConfig;
 import org.opengroup.osdu.dataset.configuration.MapperConfig;
@@ -223,6 +224,11 @@ public class TestDataset extends Dataset {
 		Assert.assertNotNull(fileInstructionsItem.getCreatedAt());
 
 		uploadedCloudFileUnsignedUrls.add(fileInstructionsItem.getUnsignedUrl());
+	}
+
+	@Override
+	protected Acl createAcl() {
+		return null;
 	}
 
 	public void validate_collectionStorageInstructions(Object collectionInstructions) {
