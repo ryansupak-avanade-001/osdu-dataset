@@ -47,7 +47,7 @@ eslint-sast:
 osdu-gcp-test:
   variables:
     STORAGE_BASE_URL: $OSDU_GCP_STORAGE_URL
-    LEGAL_BASE_URL: $OSDU_GCP_LEGALTAG_API
+    LEGAL_BASE_URL: $OSDU_GCP_LEGALTAG_API/
     DATASET_BASE_URL: https://os-dataset-attcrcktoa-uc.a.run.app/api/dataset/v1/
     SCHEMA_API: $OSDU_GCP_SCHEMA_URL/api/schema-service/v1
     PROVIDER_KEY: GCP
