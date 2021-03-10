@@ -52,4 +52,4 @@ osdu-gcp-test:
     SCHEMA_API: $OSDU_GCP_SCHEMA_URL/api/schema-service/v1
     PROVIDER_KEY: GCP
     KIND_SUBTYPE: DatasetTest
-    
+    LEGAL_TAG: datatest-int-tag
