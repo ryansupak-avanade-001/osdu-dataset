@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.opengroup.osdu.dataset.configuration;
+package org.opengroup.osdu.dataset.model;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import java.util.Objects;
+import java.util.List;
+import lombok.Data;
+import org.opengroup.osdu.core.common.model.storage.Record;
 
-public class MapperConfig {
+@Data
+public class IntTestGetCreateUpdateDatasetRegistryResponse {
 
-	private static ObjectMapper objectMapper;
+	private List<Record> datasetRegistries;
 
-	public static ObjectMapper getObjectMapper() {
-		if (Objects.isNull(objectMapper)) {
-			objectMapper = new ObjectMapper().findAndRegisterModules().registerModule(new JavaTimeModule())
-				.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-		}
-		return objectMapper;
+	public IntTestGetCreateUpdateDatasetRegistryResponse(List<Record> datasetRegistries) {
+		this.datasetRegistries = datasetRegistries;
+	}
+
+	public IntTestGetCreateUpdateDatasetRegistryResponse() {
+		//Default constuctor for serialization/deserialization
 	}
 }
