@@ -18,12 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.inject.Inject;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import lombok.RequiredArgsConstructor;
 import org.opengroup.osdu.core.common.http.json.HttpResponseBodyMapper;
 import org.opengroup.osdu.core.common.http.json.HttpResponseBodyParsingException;
 import org.opengroup.osdu.core.common.model.http.AppException;
@@ -45,6 +41,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class DatasetRegistryServiceImpl implements DatasetRegistryService {
 
     /**
@@ -57,8 +54,7 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
      */
     final String DATASET_KIND_REGEX = "^[\\w\\-\\.]+:[\\w\\-\\.]+:dataset--+[\\w\\-\\.]+:[0-9]+.[0-9]+.[0-9]+$";
 
-    private final ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
-    private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper);                                                            
+    private final HttpResponseBodyMapper bodyMapper;
 
     @Inject
     private DpsHeaders headers;
@@ -164,23 +160,23 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
     }
 
     //this should be in os-core-common, but placing here until it's able to be put inside the Record class
-    private boolean isOsduRecordIdValid(String recordId, String tenant, String kind) {        
-		
+    private boolean isOsduRecordIdValid(String recordId, String tenant, String kind) {
+
             //Check format and tenant
             if (!Record.isRecordIdValid(recordId, tenant, kind))
                 return false;
-    
+
             //id should be split by colons. ex: tenant:groupType--individualType:uniqueId
             String[] recordIdSplitByColon = recordId.split(":");
-    
+
             //make sure groupType/individualType is correct
             String[] kindSplitByColon = kind.split(":");
             String kindSubType = kindSplitByColon[2]; //grab GroupType/IndividualType
-    
+
             if (!recordIdSplitByColon[1].equalsIgnoreCase(kindSubType))
                 return false;
-                
-            return true;		        
+
+            return true;
     }
 
     private boolean validateDatasets(ISchemaService schemaService, List<Record> datasets) {
