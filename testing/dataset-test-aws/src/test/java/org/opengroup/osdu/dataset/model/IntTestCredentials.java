@@ -16,6 +16,7 @@ package org.opengroup.osdu.dataset.model;
 
 import com.amazonaws.auth.AWSSessionCredentials;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,6 +29,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class IntTestCredentials implements AWSSessionCredentials {
 
     @JsonProperty("accessKeyId")

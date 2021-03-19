@@ -14,6 +14,7 @@
 
 package org.opengroup.osdu.dataset.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -25,6 +26,7 @@ import java.util.Date;
 
 @Data
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class IntTestFileDeliveryItemAWSImpl implements IntTestFileDeliveryItem {
 
     @JsonProperty("signedUrl")
