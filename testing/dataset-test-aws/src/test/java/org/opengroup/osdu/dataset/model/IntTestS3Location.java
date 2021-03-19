@@ -14,10 +14,13 @@
 
 package org.opengroup.osdu.dataset.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class IntTestS3Location {
 
   @Getter
