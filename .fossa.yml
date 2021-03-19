@@ -5,7 +5,7 @@ version: 2
 cli:
   server: https://app.fossa.com
   fetcher: custom
-  project: Dataset Registry
+  project: Dataset
 analyze:
   modules:
   - name: os-dataset
@@ -19,4 +19,12 @@ analyze:
   - name: dataset-aws
     type: mvn
     target: provider/dataset-aws/pom.xml
+    path: .
+  - name: dataset-ibm
+    type: mvn
+    target: provider/dataset-ibm/pom.xml
+    path: .
+  - name: dataset-gcp
+    type: mvn
+    target: provider/dataset-gcp/pom.xml
     path: .
