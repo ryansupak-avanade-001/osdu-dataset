@@ -15,9 +15,7 @@
 
 package org.opengroup.osdu.dataset.di;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import lombok.RequiredArgsConstructor;
 import org.opengroup.osdu.core.common.http.json.HttpResponseBodyMapper;
 import org.opengroup.osdu.dataset.schema.ISchemaFactory;
 import org.opengroup.osdu.dataset.schema.SchemaAPIConfig;
@@ -27,10 +25,10 @@ import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class SchemaClientFactory extends AbstractFactoryBean<ISchemaFactory> {
 
-	private final ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
-	private final HttpResponseBodyMapper bodyMapper = new HttpResponseBodyMapper(objectMapper);
+	private final HttpResponseBodyMapper bodyMapper;
 
 	@Value("${SCHEMA_API}")
 	private String SCHEMA_API;

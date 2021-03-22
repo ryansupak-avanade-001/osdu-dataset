@@ -22,7 +22,10 @@ import org.opengroup.osdu.core.common.model.storage.Record;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TestGetRecordsResponse {
     private List<Record> records;
     private List<Record> invalidRecords;

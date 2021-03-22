@@ -16,12 +16,15 @@ package org.opengroup.osdu.dataset.model;
 
 import java.time.Instant;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.Data;
 // import com.amazonaws.auth;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class IntTestFileUploadLocationAWSImpl implements IntTestFileUploadLocation {
 
     private String unsignedUrl;

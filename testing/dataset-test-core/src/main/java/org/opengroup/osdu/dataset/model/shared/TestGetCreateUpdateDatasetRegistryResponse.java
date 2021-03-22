@@ -19,7 +19,10 @@ import org.opengroup.osdu.core.common.model.storage.Record;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TestGetCreateUpdateDatasetRegistryResponse {
 
 	private List<Record> datasetRegistries;
