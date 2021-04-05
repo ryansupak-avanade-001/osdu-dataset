@@ -32,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
+import org.opengroup.osdu.dataset.logging.AuditLogger;
 import org.opengroup.osdu.dataset.model.request.DeliveryRole;
 import org.opengroup.osdu.dataset.model.response.DatasetRetrievalDeliveryItem;
 import org.opengroup.osdu.dataset.model.response.GetDatasetStorageInstructionsResponse;
@@ -50,6 +51,9 @@ public class DatasetDmsApiTest {
 
     @Mock
     private DatasetDmsService datasetDmsService;
+
+    @Mock
+    private AuditLogger auditLogger;
 
     @InjectMocks
     private DatasetDmsApi datasetDmsApi;

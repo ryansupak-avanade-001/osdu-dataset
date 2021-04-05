@@ -15,6 +15,7 @@
 package org.opengroup.osdu.dataset.api;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -22,6 +23,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.dataset.logging.AuditLogger;
 import org.opengroup.osdu.dataset.model.request.DeliveryRole;
 import org.opengroup.osdu.dataset.model.request.GetDatasetRegistryRequest;
 import org.opengroup.osdu.dataset.model.response.GetDatasetStorageInstructionsResponse;
@@ -50,13 +52,17 @@ public class DatasetDmsApi {
 	@Inject
 	private DatasetDmsService datasetDmsService;
 
+	@Inject
+	private AuditLogger auditLogger;
+
 
     @GetMapping("/getStorageInstructions")	
 	@PreAuthorize("@authorizationFilter.hasRole('" + DeliveryRole.VIEWER + "')")
 	public ResponseEntity<GetDatasetStorageInstructionsResponse> getStorageInstructions( 
 		@RequestParam(value = "kindSubType") String kindSubType) {
 
-			GetDatasetStorageInstructionsResponse response = this.datasetDmsService.getStorageInstructions(kindSubType);				
+			GetDatasetStorageInstructionsResponse response = this.datasetDmsService.getStorageInstructions(kindSubType);
+			this.auditLogger.readStorageInstructionsSuccess(Collections.singletonList(response.toString()));
 			return new ResponseEntity<GetDatasetStorageInstructionsResponse>(response, HttpStatus.OK);
 	}
 	
@@ -68,7 +74,8 @@ public class DatasetDmsApi {
 			List<String> datasetRegistryIds = new ArrayList<>();
 			datasetRegistryIds.add(datasetRegistryId);
 
-			Object response = this.datasetDmsService.getDatasetRetrievalInstructions(datasetRegistryIds);				
+			Object response = this.datasetDmsService.getDatasetRetrievalInstructions(datasetRegistryIds);
+			this.auditLogger.readRetrievalInstructionsSuccess(Collections.singletonList(response.toString()));
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
 	}
 
@@ -77,7 +84,8 @@ public class DatasetDmsApi {
 	public ResponseEntity<Object> getRetrievalInstructions( 
 		@RequestBody @Valid @NotNull GetDatasetRegistryRequest request) {
 
-			Object response = this.datasetDmsService.getDatasetRetrievalInstructions(request.datasetRegistryIds);				
+			Object response = this.datasetDmsService.getDatasetRetrievalInstructions(request.datasetRegistryIds);
+			this.auditLogger.readRetrievalInstructionsSuccess(Collections.singletonList(response.toString()));
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
 	}
 	

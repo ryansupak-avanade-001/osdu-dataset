@@ -37,6 +37,7 @@ import org.opengroup.osdu.core.common.model.storage.Record;
 import org.opengroup.osdu.core.common.model.storage.StorageRole;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
+import org.opengroup.osdu.dataset.logging.AuditLogger;
 import org.opengroup.osdu.dataset.model.request.CreateDatasetRegistryRequest;
 import org.opengroup.osdu.dataset.model.request.GetDatasetRegistryRequest;
 import org.opengroup.osdu.dataset.model.response.GetCreateUpdateDatasetRegistryResponse;
@@ -56,6 +57,9 @@ public class DatasetRegistryApiTest {
 
     @Mock
     private DpsHeaders httpHeaders;
+
+    @Mock
+    private AuditLogger auditLogger;
 
     @InjectMocks
     private DatasetRegistryApi datasetRegistryApi;
