@@ -15,6 +15,7 @@
 package org.opengroup.osdu.dataset.api;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -23,6 +24,7 @@ import javax.validation.constraints.NotNull;
 
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.storage.StorageRole;
+import org.opengroup.osdu.dataset.logging.AuditLogger;
 import org.opengroup.osdu.dataset.model.request.CreateDatasetRegistryRequest;
 import org.opengroup.osdu.dataset.model.request.GetDatasetRegistryRequest;
 import org.opengroup.osdu.dataset.model.response.GetCreateUpdateDatasetRegistryResponse;
@@ -53,12 +55,16 @@ public class DatasetRegistryApi {
 	@Inject
 	private DatasetRegistryService dataRegistryService;
 
+	@Inject
+	private AuditLogger auditLogger;
+
 	@PutMapping("/registerDataset")	
 	@PreAuthorize("@authorizationFilter.hasRole('" + StorageRole.CREATOR + "', '" + StorageRole.ADMIN + "')")
 	public ResponseEntity<GetCreateUpdateDatasetRegistryResponse> createOrUpdateDatasetRegistry(
 		@RequestBody @Valid @NotNull CreateDatasetRegistryRequest request) {
 
-			GetCreateUpdateDatasetRegistryResponse response = this.dataRegistryService.createOrUpdateDatasetRegistry(request.datasetRegistries);				
+			GetCreateUpdateDatasetRegistryResponse response = this.dataRegistryService.createOrUpdateDatasetRegistry(request.datasetRegistries);
+			this.auditLogger.registerDatasetSuccess(Collections.singletonList(response.toString()));
 			return new ResponseEntity<GetCreateUpdateDatasetRegistryResponse>(response, HttpStatus.CREATED);
 	}
 
@@ -70,7 +76,8 @@ public class DatasetRegistryApi {
 			List<String> datasetRegistryIds = new ArrayList<>();
 			datasetRegistryIds.add(datasetRegistryId);
 
-			GetCreateUpdateDatasetRegistryResponse response = this.dataRegistryService.getDatasetRegistries(datasetRegistryIds);				
+			GetCreateUpdateDatasetRegistryResponse response = this.dataRegistryService.getDatasetRegistries(datasetRegistryIds);
+			this.auditLogger.readDatasetRegistriesSuccess(Collections.singletonList(response.toString()));
 			return new ResponseEntity<GetCreateUpdateDatasetRegistryResponse>(response, HttpStatus.OK);
 	}
 
@@ -78,7 +85,8 @@ public class DatasetRegistryApi {
 	@PreAuthorize("@authorizationFilter.hasRole('" + StorageRole.CREATOR + "', '" + StorageRole.ADMIN + "', '" + StorageRole.VIEWER + "')")
 	public ResponseEntity<GetCreateUpdateDatasetRegistryResponse> getDatasetRegistry(
 		@RequestBody @Valid @NotNull GetDatasetRegistryRequest request) {
-			GetCreateUpdateDatasetRegistryResponse response = this.dataRegistryService.getDatasetRegistries(request.datasetRegistryIds);				
+			GetCreateUpdateDatasetRegistryResponse response = this.dataRegistryService.getDatasetRegistries(request.datasetRegistryIds);
+			this.auditLogger.readDatasetRegistriesSuccess(Collections.singletonList(response.toString()));
 			return new ResponseEntity<GetCreateUpdateDatasetRegistryResponse>(response, HttpStatus.OK);
 	}
 }
