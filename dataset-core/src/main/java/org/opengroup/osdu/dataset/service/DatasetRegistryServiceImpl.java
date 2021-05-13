@@ -213,7 +213,7 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
                     } catch (HttpResponseBodyParsingException | NullPointerException e1) {
                         throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                                 HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-                                "Failed to parse error from Schema Service");
+                                "Failed to parse error from Schema Service", e1);
                     }
                 }
             }           
