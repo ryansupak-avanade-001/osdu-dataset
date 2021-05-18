@@ -22,7 +22,8 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
-import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelper;
+import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelperV2;
+import org.opengroup.osdu.core.aws.dynamodb.IDynamoDBQueryHelperFactory;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
@@ -41,15 +42,6 @@ public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap {
     @Value("${DMS_API_BASE}")
     private String DMS_API_BASE;
 
-    @Value("${aws.dynamodb.table.prefix}")
-    String tablePrefix;
-
-    @Value("${aws.region}")
-    String dynamoDbRegion;
-
-    @Value("${aws.dynamodb.endpoint}")
-    String dynamoDbEndpoint;
-
     @Inject
     DmsRegistrationCache cache;
 
@@ -59,12 +51,21 @@ public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap {
     @Inject
 	private JaxRsDpsLog logger;
 
-    private DynamoDBQueryHelper queryHelper;
+    @Value("${aws.parameter.prefix}")
+    private String ssmParameterPrefix;
+
+    @Value("${aws.dynamodb.dmsRegistrationTable.ssm.relativePath:/common/dataset/DmsRegistrationTable}")
+    private String dmsRegistrationTableRelativePath;
+
+    private DynamoDBQueryHelperV2 queryHelper;
+
+    @Inject    
+    private IDynamoDBQueryHelperFactory queryHelperFactory;
 
     @PostConstruct
     public void init() {
 
-        queryHelper = new DynamoDBQueryHelper(dynamoDbEndpoint, dynamoDbRegion, tablePrefix);
+        queryHelper = queryHelperFactory.getQueryHelperUsingSSM(ssmParameterPrefix, dmsRegistrationTableRelativePath);
     }
 
     @Override

@@ -226,9 +226,9 @@ public abstract class Dataset extends TestBase {
 
 		//set acl
 		Acl acl = new Acl();
-		String[] viewers = new String[] { String.format("data.default.viewers@%s.testing.com", TenantUtils.getTenantName()) };		
+		String[] viewers = new String[] { String.format("data.default.viewers@%s.example.com", TenantUtils.getTenantName()) };
 		acl.setViewers(viewers);
-		String[] owners = new String[] { String.format("data.default.owners@%s.testing.com", TenantUtils.getTenantName()) };		
+		String[] owners = new String[] { String.format("data.default.owners@%s.example.com", TenantUtils.getTenantName()) };
 		acl.setOwners(owners);
 		datasetRegistry.setAcl(acl);
 
