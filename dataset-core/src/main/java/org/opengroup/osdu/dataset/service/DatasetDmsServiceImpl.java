@@ -124,7 +124,7 @@ public class DatasetDmsServiceImpl implements DatasetDmsService {
         for (String datasetRegistryId : datasetRegistryIds) {
 
             if (!Record.isRecordIdValidFormatAndTenant(datasetRegistryId, headers.getPartitionId())) {
-                throw new AppException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), String.format("Dataset Registry: '%' is an Invalid ID"), datasetRegistryId);
+                throw new AppException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), String.format("Dataset Registry: '%s' is an Invalid ID", datasetRegistryId), datasetRegistryId);
             }
 
 
