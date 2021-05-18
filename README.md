@@ -1,7 +1,82 @@
-## Running the Dataset Registry Service locally
+# OSDU Dataset Service
+
+## Contents
+[[_TOC_]]
+
+## Introduction
+
+The OSDU Dataset service provides internal and external API endpoints to allow and application or user fetch storage/retrieval instructions for various types of datasets.  (ex. File Datasets)
+
+The Dataset service requires that various DMS services are registered per dataset schema type.  For example the schema subType '`dataset--File.*`' can be mapped to the FileDMS service's endpoint
+
+## System interactions
+
+The File service defines the following workflows:
+
+* Dataset Storage Instructions
+* Dataset Retrieval Instructions
+* Dataset Registry Registration
+* Dataset Registry Retrieval
+
+
+### Dataset Storage Instructions
+
+The dataset storage instructions workflow is defined for the `/v1/getStorageInstructions` API endpoint.  The following diagram illustrates the workflow.
+
+![OSDU Dataset Service getStorageInstructions](docs/img/getStorageInstructions.png)
+
+### Dataset Retrieval Instructions
+
+The dataset retrieval instructions workflow is defined for the `/v1/getRetrievalInstructions` API endpoint.  The following diagram illustrates the workflow.
+
+![OSDU Dataset Service getRetrievalInstructions](docs/img/getRetrievalInstructions.png)
+
+
+### Dataset Registry Registration
+The dataset registry registration workflow is defined for the `/v1/registerDataset` API endpoint. The following diagram illustrates the workflow.
+
+![OSDU Dataset Service registerDatasetRegistry](docs/img/registerDatasetRegistry.png)
+
+
+### Dataset Registry Retrieval
+
+The dataset registry retrieval workflow is defined for the `/v1/getDatasetRegistry` API endpoints (GET/POST). The following diagram illustrates the workflow.
+
+![OSDU Dataset Service getDatasetRegistry](docs/img/getDatasetRegistry.png)
+
+
+## Validations
+
+The Dataset service's current implementation performs a general check of the validity of the
+authorization token and data partition ID before the service starts the core function of each service.
+
+However, the Dataset service doesn't perform any verification whether a
+dataset upload/download happened or whether the user registered a dataset after upload.
+
+## API Request/Response 
+
+API information is available in the swagger doc located in the docs folder: [Dataset Swagger Doc](docs/dataset.swagger.yaml)
+
+
+
+## Service Provider Interfaces
+
+The Dataset service has a few Service Provider Interfaces that can be implemented.
+
+| Interface              | Required/Optional       | Path                                                                        |
+| ---------------------- | ----------------------- | ------------------------------------------------------------------------    |
+| DatasetDmsService      | Optional to implement   | `dataset-core/src/main/java/.../service/DatasetDmsService`                  |
+| DatasetRegistryService | Optional to implement   | `dataset-core/src/main/java/.../provider/interfaces/DatasetRegistryService` |
+| IDatasetDmsServiceMap  | Required to implement   | `dataset-core/src/main/java/.../provider/interfaces/IDatasetDmsServiceMap`  |
+
+## Running integration tests
+Integration tests are located in a separate project for each cloud in the ```testing``` directory under the project root directory.
+
+## AWS Implementation
+### Running the Dataset Registry Service locally
 The Dataset Registry Service is a Maven multi-module project with each cloud implemention placed in its submodule.
 
-### Other platforms
+#### Other platforms
 
 1. Navigate to the module of the cloud of interest, for example, ```dataset-aws```. Configure ```application.properties``` and optionally ```logback-spring.xml```. Intead of changing these files in the source, you can also provide external files at run time. 
 
@@ -58,11 +133,11 @@ deploy resources to the AWS console, see the deployment section below.
     Search for tests: In whole project
     ```
    
-## Cloud Deployment
+### Cloud Deployment
 This section describes the deployment process for each cloud provider.
 
 ### AWS
- TODO
+ This service is deployed as part of the CloudFormation package
  
 ### GCP
 
@@ -75,7 +150,9 @@ Integration tests are located in a separate project for each cloud in the ```tes
 
 ### AWS
 
-TODO
+1. Run the testing/dataset-aws/build-aws/prepare-dist.sh file from the repo root directory
+2. Configure required env vars
+3. Run dist/testing/dataset-aws/build-aws/run-tests.sh
 
 ### GCP
 
