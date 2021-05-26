@@ -47,25 +47,25 @@ public class AuditEvents {
   }
 
   public AuditPayload getReadStorageInstructionsEvent(AuditStatus status, List<String> resources) {
+    //not including resources to avoid logging sensitive access information
     return AuditPayload.builder()
         .action(AuditAction.READ)
         .status(status)
         .user(this.user)
         .actionId(READ_STORAGE_INSTRUCTIONS_ACTION_ID)
         .message(getStatusMessage(status, READ_STORAGE_INSTRUCTIONS_MESSAGE))
-        .resources(resources)
         .build();
   }
 
   public AuditPayload getReadRetrievalInstructionsEvent(AuditStatus status,
       List<String> resources) {
+    //not including resources to avoid logging sensitive access information
     return AuditPayload.builder()
         .action(AuditAction.READ)
         .status(status)
         .user(this.user)
         .actionId(READ_RETRIEVAL_INSTRUCTIONS_ACTION_ID)
         .message(getStatusMessage(status, READ_RETRIEVAL_INSTRUCTIONS_MESSAGE))
-        .resources(resources)
         .build();
   }
 
