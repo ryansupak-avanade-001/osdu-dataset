@@ -18,6 +18,8 @@
 package org.opengroup.osdu.dataset.logging;
 
 import com.google.common.base.Strings;
+
+import java.util.ArrayList;
 import java.util.List;
 import org.opengroup.osdu.core.common.logging.audit.AuditAction;
 import org.opengroup.osdu.core.common.logging.audit.AuditPayload;
@@ -54,6 +56,7 @@ public class AuditEvents {
         .user(this.user)
         .actionId(READ_STORAGE_INSTRUCTIONS_ACTION_ID)
         .message(getStatusMessage(status, READ_STORAGE_INSTRUCTIONS_MESSAGE))
+        .resources(new ArrayList<>())
         .build();
   }
 
@@ -66,6 +69,7 @@ public class AuditEvents {
         .user(this.user)
         .actionId(READ_RETRIEVAL_INSTRUCTIONS_ACTION_ID)
         .message(getStatusMessage(status, READ_RETRIEVAL_INSTRUCTIONS_MESSAGE))
+        .resources(new ArrayList<>())
         .build();
   }
 
