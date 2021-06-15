@@ -24,8 +24,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DmsRegistrationCache extends RedisCache<String, DmsRegistrations> {
-    public DmsRegistrationCache(@Value("${aws.elasticache.cluster.endpoint}") final String REDIS_HOST, @Value("${aws.elasticache.cluster.port}") final String REDIS_PORT) {
-        super(REDIS_HOST, Integer.parseInt(REDIS_PORT), 300, String.class, DmsRegistrations.class);
+    public DmsRegistrationCache(@Value("${aws.elasticache.cluster.endpoint}") final String REDIS_HOST, @Value("${aws.elasticache.cluster.port}") final String REDIS_PORT, @Value("${aws.elasticache.cluster.key}") final String REDIS_KEY) {
+        super(REDIS_HOST, Integer.parseInt(REDIS_PORT), REDIS_KEY, 300, String.class, DmsRegistrations.class);
     }
 
     public static String getCacheKey(DpsHeaders headers) {
