@@ -35,8 +35,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
+import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.core.gcp.multitenancy.GcsMultiTenantAccess;
-import org.opengroup.osdu.core.gcp.multitenancy.TenantFactory;
 import org.opengroup.osdu.dataset.provider.gcp.model.FileCollectionInstructionsItem;
 import org.opengroup.osdu.dataset.provider.gcp.model.FileCollectionInstructionsItem.FileCollectionInstructionsItemBuilder;
 import org.opengroup.osdu.dataset.provider.gcp.model.GcsRole;
@@ -50,9 +50,11 @@ import org.opengroup.osdu.dataset.provider.gcp.util.GoogleStorageBucketUtil;
 import org.opengroup.osdu.dataset.provider.gcp.util.InstantHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.annotation.RequestScope;
 
 @Slf4j
 @Service
+@RequestScope
 @RequiredArgsConstructor
 public class FileCollectionStorageService implements IFileCollectionStorageService {
 
@@ -70,7 +72,7 @@ public class FileCollectionStorageService implements IFileCollectionStorageServi
 
 	private final DpsHeaders headers;
 
-	private final TenantFactory tenantFactory;
+	private final ITenantFactory tenantFactory;
 
 	private final GoogleStorageBucketUtil bucketUtil;
 
