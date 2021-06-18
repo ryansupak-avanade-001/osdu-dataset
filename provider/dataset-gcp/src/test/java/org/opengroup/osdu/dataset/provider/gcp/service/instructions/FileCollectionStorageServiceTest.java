@@ -40,8 +40,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
+import org.opengroup.osdu.core.common.provider.interfaces.ITenantFactory;
 import org.opengroup.osdu.core.gcp.multitenancy.GcsMultiTenantAccess;
-import org.opengroup.osdu.core.gcp.multitenancy.TenantFactory;
 import org.opengroup.osdu.dataset.provider.gcp.model.FileCollectionInstructionsItem;
 import org.opengroup.osdu.dataset.provider.gcp.service.instructions.downscoped.DownScopedCredentials;
 import org.opengroup.osdu.dataset.provider.gcp.service.instructions.downscoped.DownScopedCredentialsService;
@@ -67,7 +67,7 @@ public class FileCollectionStorageServiceTest {
 	private DpsHeaders headers;
 
 	@Mock
-	private TenantFactory tenantFactory;
+	private ITenantFactory tenantFactory;
 
 	@Mock
 	private TenantInfo tenantInfo;
