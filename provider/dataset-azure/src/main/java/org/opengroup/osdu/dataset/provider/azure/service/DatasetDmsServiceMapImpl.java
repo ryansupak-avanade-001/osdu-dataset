@@ -16,17 +16,35 @@
 
 package org.opengroup.osdu.dataset.provider.azure.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opengroup.osdu.dataset.dms.DmsServiceProperties;
 import org.opengroup.osdu.dataset.provider.interfaces.IDatasetDmsServiceMap;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap {
 
+    private final Map<String, DmsServiceProperties> resourceTypeToDmsServiceMap = new HashMap<>();
+
+    @Value("${FILE_API}")
+    private String fileApi;
+
+    @PostConstruct
+    public void init() {
+        //TODO: replace this with static or dynamic registration of DMS
+        resourceTypeToDmsServiceMap.put(
+                "dataset--File.*",
+                new DmsServiceProperties(fileApi)
+        );
+    }
+
     @Override
     public Map<String, DmsServiceProperties> getResourceTypeToDmsServiceMap() {
-        return null;
+        return resourceTypeToDmsServiceMap;
     }
 }
