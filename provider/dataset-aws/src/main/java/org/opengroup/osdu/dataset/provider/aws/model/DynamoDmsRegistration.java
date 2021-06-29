@@ -17,6 +17,9 @@ public class DynamoDmsRegistration {
     @DynamoDBHashKey(attributeName = "datasetKind")
     private String datasetKind;
 
+    @DynamoDBAttribute(attributeName = "apiBase")
+    private String apiBase;
+
     @DynamoDBAttribute(attributeName = "route")
     private String route;
 
