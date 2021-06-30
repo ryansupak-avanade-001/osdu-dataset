@@ -88,5 +88,4 @@ public class DatasetDmsApi {
 			this.auditLogger.readRetrievalInstructionsSuccess(Collections.singletonList(response.toString()));
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
 	}
-	
 }
