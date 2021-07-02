@@ -28,3 +28,7 @@ analyze:
     type: mvn
     target: provider/dataset-gcp/pom.xml
     path: .
+  - name: dataset-azure
+    type: mvn
+    target: provider/dataset-azure/pom.xml
+    path: .
