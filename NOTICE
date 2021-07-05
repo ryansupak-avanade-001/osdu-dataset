@@ -599,8 +599,9 @@ The following software have components provided under the terms of this license:
 - java-cloudant (from https://cloudant.com)
 - java-cloudant (from https://cloudant.com)
 - javatuples (from http://www.javatuples.org)
-- javax.inject (from )
 - javax.inject (from http://code.google.com/p/atinject/)
+- javax.inject (from )
+- javax.ws.rs-api (from http://jax-rs-spec.java.net)
 - jersey-repackaged-guava (from )
 - jose4j (from https://bitbucket.org/b_c/jose4j/)
 - lang-mustache (from https://github.com/elastic/elasticsearch)
@@ -701,6 +702,7 @@ The following software have components provided under the terms of this license:
 
 - API Common (from https://github.com/googleapis)
 - ASM Core (from )
+- Apache Commons Codec (from http://commons.apache.org/proper/commons-codec/)
 - GAX (Google Api eXtensions) (from https://github.com/googleapis)
 - GAX (Google Api eXtensions) (from https://github.com/googleapis)
 - GAX (Google Api eXtensions) (from https://github.com/googleapis)
@@ -708,6 +710,8 @@ The following software have components provided under the terms of this license:
 - Google Auth Library for Java - Credentials (from )
 - Google Auth Library for Java - OAuth2 HTTP (from )
 - Hamcrest (from http://hamcrest.org/JavaHamcrest/)
+- Hamcrest Core (from http://hamcrest.org/)
+- Hamcrest library (from )
 - HdrHistogram (from http://hdrhistogram.github.io/HdrHistogram/)
 - JavaBeans Activation Framework API jar (from )
 - Lucene Common Analyzers (from )
@@ -726,6 +730,7 @@ The following software have components provided under the terms of this license:
 - Netty/Codec/HTTP (from )
 - Protocol Buffer Java API (from https://developers.google.com/protocol-buffers/)
 - Protocol Buffers [Util] (from )
+- Reflections (from http://github.com/ronmamo/reflections)
 - SnakeYAML (from http://www.snakeyaml.org)
 - Spring Core (from https://github.com/spring-projects/spring-framework)
 - Spring Core (from https://github.com/spring-projects/spring-framework)
@@ -754,28 +759,25 @@ CC0-1.0
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- Netty/Common (from )
-- jersey-core-common (from )
-- jersey-repackaged-guava (from )
 - reactive-streams (from http://www.reactive-streams.org/)
-
-========================================================================
-CDDL-1.0
-========================================================================
-The following software have components provided under the terms of this license:
-
-- Apache Log4j Core (from )
 
 ========================================================================
 CDDL-1.1
 ========================================================================
 The following software have components provided under the terms of this license:
 
+- HK2 Implementation Utilities (from )
 - JavaBeans Activation Framework (from )
 - JavaBeans(TM) Activation Framework (from http://java.sun.com/javase/technologies/desktop/javabeans/jaf/index.jsp)
 - JavaMail API (from )
+- OSGi resource locator (from )
+- ServiceLocator Default Implementation (from git://java.net/hk2~git/hk2-locator)
+- aopalliance-repackaged (from )
 - javax.annotation-api (from http://jcp.org/en/jsr/detail?id=250)
+- javax.inject (from )
 - javax.ws.rs-api (from http://jax-rs-spec.java.net)
+- jersey-core-common (from )
+- jersey-repackaged-guava (from )
 - tomcat-embed-core (from http://tomcat.apache.org/)
 - tomcat-embed-core (from http://tomcat.apache.org/)
 - tomcat-embed-core (from http://tomcat.apache.org/)
@@ -795,7 +797,6 @@ The following software have components provided under the terms of this license:
 - Lucene Core (from )
 - Lucene Core (from )
 - Woodstox (from https://github.com/FasterXML/woodstox)
-- aalto-xml (from )
 
 ========================================================================
 EPL-1.0
@@ -841,8 +842,16 @@ GPL-2.0-only
 ========================================================================
 The following software have components provided under the terms of this license:
 
+- HK2 Implementation Utilities (from )
 - JavaBeans Activation Framework (from )
+- OSGi resource locator (from )
+- ServiceLocator Default Implementation (from git://java.net/hk2~git/hk2-locator)
+- aopalliance-repackaged (from )
 - javax.annotation-api (from http://jcp.org/en/jsr/detail?id=250)
+- javax.inject (from )
+- javax.ws.rs-api (from http://jax-rs-spec.java.net)
+- jersey-core-common (from )
+- jersey-repackaged-guava (from )
 - tomcat-embed-core (from http://tomcat.apache.org/)
 - tomcat-embed-core (from http://tomcat.apache.org/)
 - tomcat-embed-core (from http://tomcat.apache.org/)
@@ -860,9 +869,17 @@ GPL-2.0-with-classpath-exception
 The following software have components provided under the terms of this license:
 
 - Expression Language 3.0 (from https://projects.eclipse.org/projects/ee4j.el)
+- HK2 Implementation Utilities (from )
 - JavaBeans Activation Framework (from )
+- OSGi resource locator (from )
+- ServiceLocator Default Implementation (from git://java.net/hk2~git/hk2-locator)
+- aopalliance-repackaged (from )
 - jakarta.annotation-api (from https://projects.eclipse.org/projects/ee4j.ca)
 - javax.annotation-api (from http://jcp.org/en/jsr/detail?id=250)
+- javax.inject (from )
+- javax.ws.rs-api (from http://jax-rs-spec.java.net)
+- jersey-core-common (from )
+- jersey-repackaged-guava (from )
 - tomcat-embed-core (from http://tomcat.apache.org/)
 - tomcat-embed-core (from http://tomcat.apache.org/)
 - tomcat-embed-core (from http://tomcat.apache.org/)
@@ -883,10 +900,8 @@ ImageMagick
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- Jackson (from http://jackson.codehaus.org)
 - Stax2 API (from http://github.com/FasterXML/stax2-api)
 - Woodstox (from https://github.com/FasterXML/woodstox)
-- aalto-xml (from )
 
 ========================================================================
 JSON
@@ -923,6 +938,7 @@ The following software have components provided under the terms of this license:
 
 - Javassist (from http://www.javassist.org/)
 - Javassist (from http://www.javassist.org/)
+- Javassist (from http://www.javassist.org/)
 - SnakeYAML (from http://www.snakeyaml.org)
 
 ========================================================================
@@ -931,6 +947,7 @@ LGPL-3.0-only
 The following software have components provided under the terms of this license:
 
 - Apache Log4j API (from )
+- Apache Log4j Core (from )
 
 ========================================================================
 MIT
@@ -941,7 +958,6 @@ The following software have components provided under the terms of this license:
 - AWS Java SDK for AWS License Manager (from https://aws.amazon.com/sdkforjava)
 - AWS SDK for Java - Models (from https://aws.amazon.com/sdkforjava)
 - Animal Sniffer Annotations (from )
-- Apache Log4j SLF4J Binding (from )
 - Azure Java Client Authentication Library for AutoRest (from https://github.com/Azure/autorest-clientruntime-for-java)
 - Azure Java Client Runtime for ARM (from https://github.com/Azure/autorest-clientruntime-for-java)
 - Azure Java Client Runtime for AutoRest (from https://github.com/Azure/autorest-clientruntime-for-java)
@@ -972,9 +988,9 @@ The following software have components provided under the terms of this license:
 - Microsoft Azure client library for KeyVault Secrets (from https://github.com/Azure/azure-sdk-for-java)
 - Microsoft Azure common module for Storage (from https://github.com/Azure/azure-sdk-for-java)
 - Microsoft Azure internal Avro module for Storage (from https://github.com/Azure/azure-sdk-for-java)
-- Mockito (from http://www.mockito.org)
-- Mockito (from http://www.mockito.org)
 - Mockito (from http://mockito.org)
+- Mockito (from http://www.mockito.org)
+- Mockito (from http://www.mockito.org)
 - Mockito (from http://mockito.org)
 - Mockito (from http://mockito.org)
 - Netty/Codec/HTTP (from )
@@ -1006,6 +1022,7 @@ The following software have components provided under the terms of this license:
 
 - Javassist (from http://www.javassist.org/)
 - Javassist (from http://www.javassist.org/)
+- Javassist (from http://www.javassist.org/)
 
 ========================================================================
 MPL-2.0
@@ -1015,6 +1032,7 @@ The following software have components provided under the terms of this license:
 - Javassist (from http://www.javassist.org/)
 - Javassist (from http://www.javassist.org/)
 - Javassist (from http://www.javassist.org/)
+- OkHttp (from )
 
 ========================================================================
 PHP-3.01
@@ -1090,7 +1108,10 @@ The following software have components provided under the terms of this license:
 - Spring Web (from https://github.com/spring-projects/spring-framework)
 - Spring Web (from https://github.com/spring-projects/spring-framework)
 - azure-documentdb (from https://azure.microsoft.com/en-us/services/cosmos-db/)
+- jersey-core-common (from )
+- jersey-repackaged-guava (from )
 - msal4j (from https://github.com/AzureAD/microsoft-authentication-library-for-java)
+- reactive-streams (from http://www.reactive-streams.org/)
 
 ========================================================================
 unknown
@@ -1102,8 +1123,15 @@ The following software have components provided under the terms of this license:
 - Checker Qual (from https://checkerframework.org)
 - JSON in Java (from https://github.com/douglascrockford/JSON-java)
 - JUnit (from http://junit.org)
+- JUnit Jupiter (Aggregator) (from https://junit.org/junit5/)
 - JavaBeans Activation Framework API jar (from )
 - Spongy Castle (from http://rtyley.github.io/spongycastle/)
 - jakarta.xml.bind-api (from )
+- org.junit.jupiter:junit-jupiter-api (from http://junit.org/junit5/)
+- org.junit.jupiter:junit-jupiter-engine (from http://junit.org/junit5/)
+- org.junit.jupiter:junit-jupiter-params (from http://junit.org/junit5/)
+- org.junit.platform:junit-platform-commons (from http://junit.org/junit5/)
+- org.junit.platform:junit-platform-engine (from http://junit.org/junit5/)
+- org.junit.vintage:junit-vintage-engine (from http://junit.org/junit5/)
 
 
