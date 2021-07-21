@@ -87,8 +87,17 @@ public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap {
                 HashMap<String, DmsServiceProperties> resourceTypeToDmsServiceMap = new HashMap<>();                
         
                 for (DynamoDmsRegistration reg : test) {
+
+                    String apiBase = "";
+                    if (StringUtils.isNotEmpty(DMS_API_BASE)) {
+                        apiBase = DMS_API_BASE;
+                    }
+                    else {
+                        apiBase = reg.getApiBase();
+                    }
+
                     resourceTypeToDmsServiceMap.put(reg.getDatasetKind(), new DmsServiceProperties(
-                        StringUtils.join(DMS_API_BASE, reg.getRoute()),
+                        StringUtils.join(apiBase, reg.getRoute()),
                         reg.getIsStorageAllowed()
                     ));
                 }
