@@ -23,6 +23,7 @@ public class BasicAuthSecurityConfig extends WebSecurityConfigurerAdapter {
 	                "/swagger-resources/**",
 	                "/configuration/security",
 	                "/swagger-ui.html",
+									"/info",
 	                "/webjars/**").permitAll()
 				.anyRequest().authenticated().and().oauth2ResourceServer().jwt();
 	}
