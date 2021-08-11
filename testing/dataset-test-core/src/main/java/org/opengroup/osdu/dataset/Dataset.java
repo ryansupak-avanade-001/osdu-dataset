@@ -15,11 +15,11 @@
 
 package org.opengroup.osdu.dataset;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.sun.jersey.api.client.ClientResponse;
 import org.apache.http.HttpStatus;
 import org.junit.Assert;
@@ -28,14 +28,11 @@ import org.opengroup.osdu.core.common.model.entitlements.Acl;
 import org.opengroup.osdu.core.common.model.legal.Legal;
 import org.opengroup.osdu.core.common.model.legal.LegalCompliance;
 import org.opengroup.osdu.core.common.model.storage.Record;
-import org.opengroup.osdu.dataset.model.IntTestFileDeliveryItem;
 import org.opengroup.osdu.dataset.model.request.IntTestGetDatasetRegistryRequest;
 import org.opengroup.osdu.dataset.model.response.IntTestDatasetRetrievalDeliveryItem;
 import org.opengroup.osdu.dataset.model.response.IntTestGetDatasetRetrievalInstructionsResponse;
 import org.opengroup.osdu.dataset.model.response.IntTestGetDatasetStorageInstructionsResponse;
 import org.opengroup.osdu.dataset.model.shared.TestGetCreateUpdateDatasetRegistryRequest;
-
-import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,6 +49,8 @@ public abstract class Dataset extends TestBase {
 
 	protected static ArrayList<String> uploadedCloudFileUnsignedUrls = new ArrayList<>();
 	protected static ArrayList<String> registeredDatasetRegistryIds = new ArrayList<>();
+
+	protected static final VersionInfoUtils VERSION_INFO_UTILS = new VersionInfoUtils();
 
 	public static void classSetup(String token) throws Exception {
 		// make sure schema is created
@@ -248,6 +247,26 @@ public abstract class Dataset extends TestBase {
 		datasetRegistry.setData(data);
 		
 		return datasetRegistry;
+	}
+
+	@Test
+	public void should_returnInfo() throws Exception {
+		ClientResponse response = TestUtils
+				.send("info", "GET", HeaderUtils.getHeaders(TenantUtils.getTenantName(),
+						testUtils.getToken()), "", "");
+
+		assertEquals(HttpStatus.SC_OK, response.getStatus());
+
+		VersionInfoUtils.VersionInfo responseObject = VERSION_INFO_UTILS
+				.getVersionInfoFromResponse(response);
+
+		assertNotNull(responseObject.groupId);
+		assertNotNull(responseObject.artifactId);
+		assertNotNull(responseObject.version);
+		assertNotNull(responseObject.buildTime);
+		assertNotNull(responseObject.branch);
+		assertNotNull(responseObject.commitId);
+		assertNotNull(responseObject.commitMessage);
 	}
 
 	// @Test

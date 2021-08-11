@@ -23,11 +23,12 @@ import com.sun.jersey.api.client.ClientResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.apache.commons.text.StringSubstitutor;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opengroup.osdu.core.common.model.entitlements.Acl;
 import org.opengroup.osdu.dataset.configuration.DatasetConfiguration;
 import org.opengroup.osdu.dataset.configuration.GcpConfig;
 import org.opengroup.osdu.dataset.configuration.MapperConfig;
@@ -251,13 +252,16 @@ public class TestDataset extends Dataset {
 		return stringSubstitutor.replace(datasetRegistry);
 	}
 
+	@Before
 	@Override
 	public void setup() throws Exception {
+		this.testUtils = new GcpTestUtils();
 	}
 
-
+	@After
 	@Override
 	public void tearDown() throws Exception {
+		this.testUtils = null;
 	}
 
 }
