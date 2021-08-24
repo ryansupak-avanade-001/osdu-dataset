@@ -16,7 +16,6 @@
 
 package org.opengroup.osdu.dataset.provider.azure.service;
 
-import org.apache.commons.lang3.StringUtils;
 import org.opengroup.osdu.dataset.dms.DmsServiceProperties;
 import org.opengroup.osdu.dataset.provider.interfaces.IDatasetDmsServiceMap;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,11 +35,11 @@ public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap {
 
     @PostConstruct
     public void init() {
+        DmsServiceProperties fileDmsProperties = new DmsServiceProperties(fileApi);
+        fileDmsProperties.setStagingLocationSupported(true);
+
         //TODO: replace this with static or dynamic registration of DMS
-        resourceTypeToDmsServiceMap.put(
-                "dataset--File.*",
-                new DmsServiceProperties(fileApi)
-        );
+        resourceTypeToDmsServiceMap.put("dataset--File.*", fileDmsProperties);
     }
 
     @Override

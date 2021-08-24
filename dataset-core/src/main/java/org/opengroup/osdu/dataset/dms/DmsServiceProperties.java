@@ -32,6 +32,9 @@ public class DmsServiceProperties {
     //optional API key if required for connecting to service
     private String apiKey;
 
+    //optional copy dms support if staging containers are supported by DMS implementers
+    private boolean stagingLocationSupported = false;
+
     //additional constructors
     public DmsServiceProperties(String dmsServiceBaseUrl) {
         this.dmsServiceBaseUrl = dmsServiceBaseUrl;

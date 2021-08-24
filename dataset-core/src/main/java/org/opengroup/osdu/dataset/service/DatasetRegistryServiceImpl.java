@@ -16,10 +16,13 @@ package org.opengroup.osdu.dataset.service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
 import lombok.RequiredArgsConstructor;
+import org.opengroup.osdu.core.common.dms.model.CopyDmsRequest;
+import org.opengroup.osdu.core.common.dms.model.CopyDmsResponse;
 import org.opengroup.osdu.core.common.http.json.HttpResponseBodyMapper;
 import org.opengroup.osdu.core.common.http.json.HttpResponseBodyParsingException;
 import org.opengroup.osdu.core.common.model.http.AppException;
@@ -31,14 +34,22 @@ import org.opengroup.osdu.core.common.model.storage.StorageException;
 import org.opengroup.osdu.core.common.model.storage.UpsertRecords;
 import org.opengroup.osdu.core.common.storage.IStorageFactory;
 import org.opengroup.osdu.core.common.storage.IStorageService;
+import org.opengroup.osdu.dataset.dms.DmsException;
+import org.opengroup.osdu.dataset.dms.DmsServiceProperties;
+import org.opengroup.osdu.dataset.dms.IDmsFactory;
+import org.opengroup.osdu.dataset.dms.IDmsProvider;
 import org.opengroup.osdu.dataset.model.request.SchemaExceptionResponse;
 import org.opengroup.osdu.dataset.model.request.SchemaExceptionResponseBody;
 import org.opengroup.osdu.dataset.model.request.StorageExceptionResponse;
 import org.opengroup.osdu.dataset.model.response.GetCreateUpdateDatasetRegistryResponse;
+import org.opengroup.osdu.dataset.model.validation.DmsValidationDoc;
+import org.opengroup.osdu.dataset.provider.interfaces.IDatasetDmsServiceMap;
 import org.opengroup.osdu.dataset.schema.ISchemaFactory;
 import org.opengroup.osdu.dataset.schema.ISchemaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import static org.opengroup.osdu.dataset.util.ExceptionUtils.handleDmsException;
 
 @Service
 @RequiredArgsConstructor
@@ -64,6 +75,12 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
 
     @Inject
     ISchemaFactory schemaFactory;
+
+    @Inject
+    private IDmsFactory dmsFactory;
+
+    @Inject
+    private IDatasetDmsServiceMap dmsServiceMap;
 
     Pattern datasetKindPattern = Pattern.compile(DATASET_KIND_REGEX);
 
@@ -92,6 +109,11 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
         ISchemaService schemaService = this.schemaFactory.create(headers);
 
         this.validateDatasets(schemaService, datasetRegistries);
+
+        Map<String, DmsServiceProperties> kindSubTypeToDmsServiceMap = dmsServiceMap.getResourceTypeToDmsServiceMap();
+        Map<String, CopyDmsRequest> datasetRegistryRequestMap = this.segregateDatasetsBasedOnKind(datasetRegistries);
+
+        this.copyDmsToPersistentStorage(datasetRegistryRequestMap, kindSubTypeToDmsServiceMap);
 
         UpsertRecords storageResponse = null;
         try {
@@ -184,8 +206,6 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
         HashMap<String, Object> schemaKindsCache = new HashMap<>();
 
         for (Record dataset : datasets) {
-
-            
             String datasetKind = dataset.getKind();
 
             if (dataset.getId() != null && !isOsduRecordIdValid(dataset.getId(), headers.getPartitionId(), datasetKind)) {
@@ -237,22 +257,78 @@ public class DatasetRegistryServiceImpl implements DatasetRegistryService {
     }
 
     private boolean validateKindIsValidAndGroupTypeIsDataset(String kind) {
-
         Matcher matcher = datasetKindPattern.matcher(kind);
-        boolean matchFound = matcher.find();            
-
-        return matchFound;        
-
+        boolean matchFound = matcher.find();
+        return matchFound;
     }
 
     private String getKindSubtype(String kind) {
-
+        // TODO: change this to regex.
         String[] kindSplitByColon = kind.split(":");
-
         String kindSubType = kindSplitByColon[2]; //grab GroupType/IndividualType
-
         return kindSubType;
-
     }
 
+    private String getKindSubTypeCatchAll(String kindSubType) {
+        String[] splitByPeriod = kindSubType.split("\\.");
+
+        String kindSubTypeCatchAll = splitByPeriod[0] + ".*";
+
+        return kindSubTypeCatchAll;
+    }
+
+    public void copyDmsToPersistentStorage(Map<String, CopyDmsRequest> datasetRegistryRequestMap,
+                    Map<String, DmsServiceProperties> kindSubTypeToDmsServiceMap) {
+        for (Map.Entry<String, CopyDmsRequest> datasetRegistryRequestEntry : datasetRegistryRequestMap.entrySet()) {
+            try {
+                DmsServiceProperties dmsServiceProperties = kindSubTypeToDmsServiceMap.get(datasetRegistryRequestEntry.getKey());
+                if (dmsServiceProperties.isStagingLocationSupported()) {
+                    IDmsProvider dmsProvider = dmsFactory.create(headers, dmsServiceProperties);
+                    List<CopyDmsResponse> entryResponse = dmsProvider.copyDmsToPersistentStorage(datasetRegistryRequestEntry.getValue());
+                    for (CopyDmsResponse response: entryResponse) {
+                        if (!response.isSuccess()) {
+                            throw new AppException(400, "Bad Request", "Invalid dataset metadata");
+                        }
+                    }
+                }
+            }
+            catch(DmsException e) {
+                handleDmsException(e);
+            }
+        }
+    }
+
+    private Map<String, CopyDmsRequest> segregateDatasetsBasedOnKind(List<Record> datasets) {
+        Map<String, CopyDmsRequest> datasetRegistryRequestMap = new HashMap<>();
+        Map<String, DmsServiceProperties> kindSubTypeToDmsServiceMap = dmsServiceMap.getResourceTypeToDmsServiceMap();
+
+        for (Record datasetRegistryRecord : datasets) {
+            String kindSubType = getKindSubtype(datasetRegistryRecord.getKind());
+            String kindSubTypeCatchAll = getKindSubTypeCatchAll(kindSubType);
+            String dmsMapId = null;
+
+            if (kindSubTypeToDmsServiceMap.containsKey(kindSubType)) {
+                dmsMapId = kindSubType;
+            }
+            else if (kindSubTypeToDmsServiceMap.containsKey(kindSubTypeCatchAll)) {
+                dmsMapId = kindSubTypeCatchAll;
+            }
+            else {
+                throw new AppException(HttpStatus.BAD_REQUEST.value(),
+                        HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                        String.format(DmsValidationDoc.KIND_SUB_TYPE_NOT_REGISTERED_ERROR, kindSubType));
+            }
+
+            if (!datasetRegistryRequestMap.containsKey(dmsMapId)) {
+                CopyDmsRequest request = new CopyDmsRequest();
+                request.getDatasetSources().add(datasetRegistryRecord);
+                datasetRegistryRequestMap.put(dmsMapId, request);
+            }
+            else {
+                CopyDmsRequest request = datasetRegistryRequestMap.get(dmsMapId);
+                request.getDatasetSources().add(datasetRegistryRecord);
+            }
+        }
+        return datasetRegistryRequestMap;
+    }
 }

@@ -16,12 +16,20 @@ package org.opengroup.osdu.dataset.service;
 
 import java.util.List;
 
+import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.dataset.model.response.GetDatasetRetrievalInstructionsResponse;
 import org.opengroup.osdu.dataset.model.response.GetDatasetStorageInstructionsResponse;
 
 public interface DatasetDmsService {
 
+    // old and new storage instructions
     GetDatasetStorageInstructionsResponse getStorageInstructions(String resourceType);
-    GetDatasetRetrievalInstructionsResponse getDatasetRetrievalInstructions(List<String> datasestRegistryIds);
-    
+
+    // old get retrieval
+    GetDatasetRetrievalInstructionsResponse getDatasetRetrievalInstructions(List<String> datasetRegistryIds);
+
+    // new retrieval
+    default RetrievalInstructionsResponse getRetrievalInstructions(List<String> datasetRegistryIds) {
+        return null;
+    }
 }

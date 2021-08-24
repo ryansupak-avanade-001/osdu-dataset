@@ -17,6 +17,7 @@ package org.opengroup.osdu.dataset;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class HeaderUtils {
 
@@ -28,6 +29,9 @@ public class HeaderUtils {
 		headers.put("Data-Partition-Id", tenantName);
 		headers.put("Authorization", token);
 
+		final String correlationId = UUID.randomUUID().toString();
+		System.out.printf("Using correlation-id for the request: %s \n", correlationId);
+		headers.put("correlation-id", correlationId);
 		return headers;
 	}
 

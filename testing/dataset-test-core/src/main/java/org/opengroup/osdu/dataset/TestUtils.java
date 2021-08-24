@@ -63,6 +63,13 @@ public abstract class TestUtils {
         return providerKey;
     }
 
+    public static String getEnvironment() {
+        return System.getProperty("DEPLOY_ENV", System.getenv("DEPLOY_ENV"));
+    }
+
+    public static String getTenantName() {
+        return System.getProperty("TENANT_NAME", System.getenv("TENANT_NAME"));
+    }
     public static final String getSchemaAuthority() {
         if (schemaAuthority == null) {
             return DEFAULT_SCHEMA_AUTHORITY;

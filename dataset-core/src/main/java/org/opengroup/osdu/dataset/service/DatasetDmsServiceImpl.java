@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import lombok.RequiredArgsConstructor;
+import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.core.common.http.json.HttpResponseBodyMapper;
 import org.opengroup.osdu.core.common.http.json.HttpResponseBodyParsingException;
 import org.opengroup.osdu.core.common.model.http.AppException;
@@ -38,6 +39,8 @@ import org.opengroup.osdu.dataset.model.validation.DmsValidationDoc;
 import org.opengroup.osdu.dataset.provider.interfaces.IDatasetDmsServiceMap;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import static org.opengroup.osdu.dataset.util.ExceptionUtils.handleDmsException;
 
 @Service
 @RequiredArgsConstructor
@@ -92,13 +95,7 @@ public class DatasetDmsServiceImpl implements DatasetDmsService {
             response = dmsProvider.getStorageInstructions();
 
         } catch (DmsException e) {
-            try {
-                DmsExceptionResponse body = bodyMapper.parseBody(e.getHttpResponse(), DmsExceptionResponse.class);
-                throw new AppException(body.getCode(), "DMS Service: " + body.getReason(), body.getMessage());
-            } catch (HttpResponseBodyParsingException e1) {
-                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                        HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), "Failed to parse error from DMS Service");
-            }
+            handleDmsException(e);
         }
 
         return response;
@@ -117,8 +114,50 @@ public class DatasetDmsServiceImpl implements DatasetDmsService {
     @Override
     public GetDatasetRetrievalInstructionsResponse getDatasetRetrievalInstructions(List<String> datasetRegistryIds) {
 
-        Map<String, DmsServiceProperties> kindSubTypeToDmsServiceMap = dmsServiceMap.getResourceTypeToDmsServiceMap();                
+        Map<String, DmsServiceProperties> kindSubTypeToDmsServiceMap = dmsServiceMap.getResourceTypeToDmsServiceMap();
+        HashMap<String, GetDatasetRegistryRequest> datasetRegistryRequestMap =
+                segregateDatasetIdsToDms(datasetRegistryIds, kindSubTypeToDmsServiceMap);
 
+        GetDatasetRetrievalInstructionsResponse mergedResponse = new GetDatasetRetrievalInstructionsResponse(new ArrayList<>());
+          
+        for (Map.Entry<String,GetDatasetRegistryRequest> datasetRegistryRequestEntry : datasetRegistryRequestMap.entrySet()) {
+            try {
+                IDmsProvider dmsProvider = dmsFactory.create(headers, kindSubTypeToDmsServiceMap.get(datasetRegistryRequestEntry.getKey()));
+                GetDatasetRetrievalInstructionsResponse entryResponse = dmsProvider.getDatasetRetrievalInstructions(datasetRegistryRequestEntry.getValue());
+                mergedResponse.getDelivery().addAll(entryResponse.getDelivery());
+            }
+            catch(DmsException e) {
+                handleDmsException(e);
+            }
+        }
+        return mergedResponse;
+    }
+
+    @Override
+    public RetrievalInstructionsResponse getRetrievalInstructions(List<String> datasetRegistryIds) {
+        Map<String, DmsServiceProperties> kindSubTypeToDmsServiceMap = dmsServiceMap.getResourceTypeToDmsServiceMap();
+        HashMap<String, GetDatasetRegistryRequest> datasetRegistryRequestMap =
+                segregateDatasetIdsToDms(datasetRegistryIds, kindSubTypeToDmsServiceMap);
+
+        RetrievalInstructionsResponse response = new RetrievalInstructionsResponse();
+
+        for (Map.Entry<String,GetDatasetRegistryRequest> datasetRegistryRequestEntry : datasetRegistryRequestMap.entrySet()) {
+            try {
+                IDmsProvider dmsProvider = dmsFactory.create(headers, kindSubTypeToDmsServiceMap.get(datasetRegistryRequestEntry.getKey()));
+                RetrievalInstructionsResponse entryResponse = dmsProvider.getRetrievalInstructions(datasetRegistryRequestEntry.getValue());
+                response.getDatasets().addAll(entryResponse.getDatasets());
+                response.setProviderKey(entryResponse.getProviderKey());
+            }
+            catch(DmsException e) {
+                handleDmsException(e);
+            }
+        }
+        return response;
+    }
+
+
+
+    private HashMap<String, GetDatasetRegistryRequest> segregateDatasetIdsToDms(List<String> datasetRegistryIds, Map<String, DmsServiceProperties> kindSubTypeToDmsServiceMap) {
         HashMap<String, GetDatasetRegistryRequest> datasetRegistryRequestMap = new HashMap<>();
 
         for (String datasetRegistryId : datasetRegistryIds) {
@@ -127,11 +166,8 @@ public class DatasetDmsServiceImpl implements DatasetDmsService {
                 throw new AppException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), String.format("Dataset Registry: '%s' is an Invalid ID", datasetRegistryId), datasetRegistryId);
             }
 
-
             String kindSubType = getKindSubTypeFromID(datasetRegistryId);
-
             String kindSubTypeCatchAll = getKindSubTypeCatchAll(kindSubType);
-
             String dmsMapId = null;
 
             if (kindSubTypeToDmsServiceMap.containsKey(kindSubType)) {
@@ -141,8 +177,8 @@ public class DatasetDmsServiceImpl implements DatasetDmsService {
                 dmsMapId = kindSubTypeCatchAll;
             }
             else {
-                throw new AppException(HttpStatus.BAD_REQUEST.value(), 
-                HttpStatus.BAD_REQUEST.getReasonPhrase(), 
+                throw new AppException(HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 String.format(DmsValidationDoc.KIND_SUB_TYPE_NOT_REGISTERED_ERROR, kindSubType));
             }
 
@@ -154,40 +190,11 @@ public class DatasetDmsServiceImpl implements DatasetDmsService {
             }
             else {
                 GetDatasetRegistryRequest request = datasetRegistryRequestMap.get(dmsMapId);
-                request.datasetRegistryIds.add(datasetRegistryId);               
-            }           
-
-        }
-        
-        GetDatasetRetrievalInstructionsResponse mergedResponse = new GetDatasetRetrievalInstructionsResponse(new ArrayList<DatasetRetrievalDeliveryItem>());
-          
-        for (Map.Entry<String,GetDatasetRegistryRequest> datasetRegistryRequestEntry : datasetRegistryRequestMap.entrySet()) {
-
-            try {
-    
-                IDmsProvider dmsProvider = dmsFactory.create(headers, kindSubTypeToDmsServiceMap.get(datasetRegistryRequestEntry.getKey()));
-                GetDatasetRetrievalInstructionsResponse entryResponse = dmsProvider.getDatasetRetrievalInstructions(datasetRegistryRequestEntry.getValue());
-                mergedResponse.getDelivery().addAll(entryResponse.getDelivery());                           
-                
+                request.datasetRegistryIds.add(datasetRegistryId);
             }
-            catch(DmsException e) {
-                try {
-                    DmsExceptionResponse body = bodyMapper.parseBody(e.getHttpResponse(), DmsExceptionResponse.class);
-                    throw new AppException(body.getCode(), "DMS Service: " + body.getReason(), body.getMessage());
-                } catch (HttpResponseBodyParsingException e1) {
-                    throw new AppException(
-                        HttpStatus.INTERNAL_SERVER_ERROR.value(), 
-                        HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), 
-                        "Failed to parse error from DMS Service");
-                }                   
-            }    
-
         }
-        
-
-        return mergedResponse;
+        return datasetRegistryRequestMap;
     }
-
 
     private String getKindSubTypeFromID(String id) {
         String[] idSplitByColon = id.split(":");
@@ -204,7 +211,4 @@ public class DatasetDmsServiceImpl implements DatasetDmsService {
 
         return kindSubTypeCatchAll;
     }
-
-
-    
 }

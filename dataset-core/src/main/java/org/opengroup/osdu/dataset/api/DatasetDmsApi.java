@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.opengroup.osdu.core.common.dms.constants.DatasetConstants;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.dataset.logging.AuditLogger;
 import org.opengroup.osdu.dataset.model.request.DeliveryRole;
@@ -63,7 +64,16 @@ public class DatasetDmsApi {
 
 			GetDatasetStorageInstructionsResponse response = this.datasetDmsService.getStorageInstructions(kindSubType);
 			this.auditLogger.readStorageInstructionsSuccess(Collections.singletonList(response.toString()));
-			return new ResponseEntity<GetDatasetStorageInstructionsResponse>(response, HttpStatus.OK);
+			return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
+	@PostMapping("/storageInstructions")
+	@PreAuthorize("@authorizationFilter.hasRole('" + DatasetConstants.DATASET_EDITOR_ROLE + "')")
+	public ResponseEntity<GetDatasetStorageInstructionsResponse> storageInstructions(
+			@RequestParam(value = "kindSubType") String kindSubType) {
+		GetDatasetStorageInstructionsResponse response = this.datasetDmsService.getStorageInstructions(kindSubType);
+		this.auditLogger.readStorageInstructionsSuccess(Collections.singletonList(response.toString()));
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
 	@GetMapping("/getRetrievalInstructions")	
@@ -76,7 +86,7 @@ public class DatasetDmsApi {
 
 			Object response = this.datasetDmsService.getDatasetRetrievalInstructions(datasetRegistryIds);
 			this.auditLogger.readRetrievalInstructionsSuccess(Collections.singletonList(response.toString()));
-			return new ResponseEntity<Object>(response, HttpStatus.OK);
+			return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@PostMapping("/getRetrievalInstructions")	
@@ -88,4 +98,30 @@ public class DatasetDmsApi {
 			this.auditLogger.readRetrievalInstructionsSuccess(Collections.singletonList(response.toString()));
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
 	}
+
+	@GetMapping("/retrievalInstructions")
+	@PreAuthorize("@authorizationFilter.hasRole('" + DatasetConstants.DATASET_VIEWER_ROLE + "')")
+	public ResponseEntity<Object> retrievalInstructions(
+			@RequestParam(value = "id") String datasetRegistryId) {
+
+		List<String> datasetRegistryIds = new ArrayList<>();
+		datasetRegistryIds.add(datasetRegistryId);
+
+		return getRetrievalInstructions(datasetRegistryIds);
+	}
+
+	@PostMapping("/retrievalInstructions")
+	@PreAuthorize("@authorizationFilter.hasRole('" + DatasetConstants.DATASET_VIEWER_ROLE + "')")
+	public ResponseEntity<Object> retrievalInstructions(
+			@RequestBody @Valid @NotNull GetDatasetRegistryRequest request) {
+
+		return getRetrievalInstructions(request.datasetRegistryIds);
+	}
+
+	private ResponseEntity<Object> getRetrievalInstructions(List<String> datasetRegistryIds) {
+		Object response = this.datasetDmsService.getRetrievalInstructions(datasetRegistryIds);
+		this.auditLogger.readRetrievalInstructionsSuccess(Collections.singletonList(response.toString()));
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
 }
