@@ -16,9 +16,14 @@
 
 package org.opengroup.osdu.dataset.dms;
 
+import org.opengroup.osdu.core.common.dms.model.CopyDmsRequest;
+import org.opengroup.osdu.core.common.dms.model.CopyDmsResponse;
+import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
 import org.opengroup.osdu.dataset.model.request.GetDatasetRegistryRequest;
 import org.opengroup.osdu.dataset.model.response.GetDatasetRetrievalInstructionsResponse;
 import org.opengroup.osdu.dataset.model.response.GetDatasetStorageInstructionsResponse;
+
+import java.util.List;
 
 public interface IDmsProvider {
 
@@ -26,6 +31,14 @@ public interface IDmsProvider {
 
     GetDatasetRetrievalInstructionsResponse getDatasetRetrievalInstructions(GetDatasetRegistryRequest request) throws DmsException;
 
- 
+    // new retrieval
+    default RetrievalInstructionsResponse getRetrievalInstructions(GetDatasetRegistryRequest request)
+            throws DmsException {
+        return null;
+    }
 
+    // copy dms
+    default List<CopyDmsResponse> copyDmsToPersistentStorage(CopyDmsRequest copyDmsRequest) throws DmsException {
+        return null;
+    }
 }

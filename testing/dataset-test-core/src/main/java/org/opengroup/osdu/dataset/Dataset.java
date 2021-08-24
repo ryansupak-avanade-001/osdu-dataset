@@ -203,8 +203,6 @@ public abstract class Dataset extends TestBase {
 	public abstract void validate_storageLocation(Object storageLocation);
 
 	private static Record createDatasetRegistry(String id, String filename, String unsignedUrl) {
-
-
 		TestGetCreateUpdateDatasetRegistryRequest request = new TestGetCreateUpdateDatasetRegistryRequest();
 
 		Record datasetRegistry = new Record();
