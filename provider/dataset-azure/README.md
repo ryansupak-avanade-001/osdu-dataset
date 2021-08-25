@@ -87,6 +87,101 @@ Java version: 1.8.0_212, vendor: AdoptOpenJDK, runtime: /usr/lib/jvm/jdk8u212-b0
 ...
 ```
 
+### Build and run the application
+
+After configuring your environment as specified above, you can follow these steps to build and run the application. These steps should be invoked from the *repository root.*
+
+```bash
+# build + test + install core service code
+$ mvn clean install
+
+# build + test + package azure service code
+$ mvn clean package -pl provider/dataset-azure -am
+
+# run service
+#
+# Note: this assumes that the environment variables for running the service as outlined
+#       above are already exported in your environment.
+$ java -jar $(find provider/dataset-azure/target/ -name '*-spring-boot.jar')
+
+# Alternately you can run using the Mavan Task
+$ mvn spring-boot:run
+```
+
+### Test the application
+
+After the service has started it should be accessible via a web browser by visiting [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html). If the request does not fail, you can then run the integration tests.
+
+```bash
+# build + install integration test core
+$ (cd testing && mvn clean install -DskipTests=true)
+
+# build + run Azure integration tests.
+#
+# Note: this assumes that the environment variables for integration tests as outlined
+#       above are already exported in your environment.
+$ (cd testing/dataset-test-azure/ && mvn clean test)
+```
+
+## Debugging
+
+Jet Brains - the authors of Intellij IDEA, have written an [excellent guide](https://www.jetbrains.com/help/idea/debugging-your-first-java-application.html) on how to debug java programs.
+
+## Deploying service to Azure
+
+Service deployments into Azure are standardized to make the process the same for all services if using ADO and are closely related to the infrastructure deployed. The steps to deploy into Azure can be [found here](https://community.opengroup.org/osdu/platform/deployment-and-operations/infra-azure-provisioning)
+
+The default ADO pipeline is /devops/azure-pipeline.yml
+
+
+### Manual Deployment Steps
+
+__Environment Settings__
+
+The following environment variables are necessary to properly deploy a service to an Azure OSDU Environment.
+
+```bash
+# Group Level Variables
+export AZURE_TENANT_ID=""
+export AZURE_SUBSCRIPTION_ID=""
+export AZURE_SUBSCRIPTION_NAME=""
+export AZURE_PRINCIPAL_ID=""
+export AZURE_PRINCIPAL_SECRET=""
+export AZURE_APP_ID=""
+export AZURE_BASENAME_21=""
+export AZURE_BASENAME=""
+export AZURE_BASE=""
+export AZURE_STORAGE_ACCOUNT=""
+export AZURE_NO_ACCESS_ID=""
+
+# Pipeline Level Variable
+export AZURE_SERVICE="storage"
+export AZURE_BUILD_SUBDIR="provider/dataset-azure"
+export AZURE_TEST_SUBDIR="testing/dataset-test-azure"
+
+# Required for Azure Deployment
+export AZURE_CLIENT_ID="${AZURE_PRINCIPAL_ID}"
+export AZURE_CLIENT_SECRET="${AZURE_PRINCIPAL_SECRET}"
+export AZURE_RESOURCE_GROUP="${AZURE_BASENAME}-osdu-r2-app-rg"
+export AZURE_APPSERVICE_PLAN="${AZURE_BASENAME}-osdu-r2-sp"
+export AZURE_APPSERVICE_NAME="${AZURE_BASENAME_21}-au-${AZURE_SERVICE}"
+
+# Required for Testing
+export AZURE_AD_TENANT_ID="$AZURE_TENANT_ID"
+export INTEGRATION_TESTER: "$AZURE_PRINCIPAL_ID"
+export AZURE_TESTER_SERVICEPRINCIPAL_SECRET: "$AZURE_PRINCIPAL_SECRET"
+export AZURE_AD_APP_RESOURCE_ID: "$AZURE_APP_ID"
+export STORAGE_URL="https://{AZURE_BASENAME_21}-au-storage.azurewebsites.net/"
+export LEGAL_URL="https://{AZURE_BASENAME_21}-au-legal.azurewebsites.net/"
+export TENANT_NAME: "opendes"
+export AZURE_STORAGE_ACCOUNT: "$AZURE_STORAGE_ACCOUNT"
+export NO_DATA_ACCESS_TESTER: "$AZURE_NO_ACCESS_ID"
+export NO_DATA_ACCESS_TESTER_SERVICEPRINCIPAL_SECRET: "$AZURE_NO_ACCESS_SECRET"
+export DOMAIN: "contoso.com"
+export PUBSUB_TOKEN: "az"
+export DEPLOY_ENV: "empty"
+```
+
 ## License
 Copyright © Microsoft Corporation
 
@@ -101,5 +196,3 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
-
