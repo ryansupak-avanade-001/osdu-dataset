@@ -61,6 +61,8 @@ public class DmsRestService implements IDmsProvider {
 
     @Override
     public GetDatasetRetrievalInstructionsResponse getDatasetRetrievalInstructions(GetDatasetRegistryRequest request) {
+        // The REST APIs of Dataset Service have a new response format.
+        // TODO: This method will be deleted from the interface once the old Non-REST compliant APIs are deprecated and deleted.
         return null;
     }
 
