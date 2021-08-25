@@ -230,6 +230,114 @@ paths:
         '500':
           description: Internal Server Error
 
+  /storageInstructions:
+    get:
+      tags:
+        - dataset-api
+      summary: Generate storage instructions (Eg - Signed URLs) for datasets
+      operationId: storageInstructions
+      consumes:
+        - application.json
+      produces:
+        - '*/*'
+      parameters:
+        - name: data-partition-id
+          in: header
+          description: tenant
+          required: true
+          type: string
+          default: "opendes"
+        - name: kindSubType
+          in: query
+          description: subType of the kind (partition:wks:kindSubType:version)
+          required: true
+          type: string
+          default: "dataset--File.Generic"
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/StorageInstructionsResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+
+  /retrievalInstructions:
+    get:
+      tags:
+        - dataset-api
+      summary: Generate retrieval instructions (Eg - Signed URLs) for single dataset
+      operationId: retrievalInstructions
+      consumes:
+        - application.json
+      produces:
+        - '*/*'
+      parameters:
+        - name: data-partition-id
+          in: header
+          description: tenant
+          required: true
+          type: string
+          default: "opendes"
+        - name: datasetRegistryId
+          in: query
+          description: "Dataset registry id"
+          required: true
+          type: string
+          default: "opendes:dataset--File.Generic:8118591ee2a24eada7152e54b369e99a"
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/RetrievalInstructionsResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+        - dataset-api
+      summary: Generate retrieval instructions (Eg - Signed URLs) for multiple datasets
+      operationId: retrievalInstructionsWithPost
+      consumes:
+        - application.json
+      produces:
+        - '*/*'
+      parameters:
+        - name: data-partition-id
+          in: header
+          description: tenant
+          required: true
+          type: string
+          default: "opendes"
+        - in: body
+          name: request
+          description: request
+          required: true
+          schema:
+            $ref: '#/definitions/GetUsingDatasetRegistryIdsRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/RetrievalInstructionsResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
       # security:
       #   - JWT:
       #       - global
@@ -457,6 +565,46 @@ definitions:
             providerKey:
               type: string
               example: "AWS_S3"
+  StorageInstructionsResponse:
+    type: object
+    properties:
+      storageLocation:
+        type: object
+        properties:
+          CSP_SPECIFIC_PROPERTY_1:
+            type: string
+          CSP_SPECIFIC_PROPERTY_2:
+            type: string
+          CSP_SPECIFIC_PROPERTY_3:
+            type: string
+      providerKey:
+        type: string
+        example: "AZURE"
+
+  RetrievalInstructionsResponse:
+    type: object
+    properties:
+      providerKey:
+        type: string
+        example: "AZURE"
+      datasets:
+        type: array
+        items:
+          type: object
+          properties:
+            datasetRegistryId:
+              type: string
+              example: "opendes:dataset--File.Generic:8118591ee2a24eada7152e54b369e99a"
+            retrievalProperties:
+              type: object
+              properties:
+                CSP_SPECIFIC_PROPERTY_1:
+                  type: string
+                CSP_SPECIFIC_PROPERTY_2:
+                  type: string
+                CSP_SPECIFIC_PROPERTY_3:
+                  type: string
+
 # Added by API Auto Mocking Plugin
 host: virtserver.swaggerhub.com
 basePath: /mttwise/Dataset/1
