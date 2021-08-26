@@ -3,6 +3,8 @@ variables:
   AWS_TEST_SUBDIR: testing/dataset-test-aws
   AWS_SERVICE: dataset
   AWS_ENVIRONMENT: dev
+  AWS_DEPLOY_TARGET: EKS
+  AWS_EKS_DEPLOYMENT_NAME: os-dataset
 
   IBM_BUILD_SUBDIR: provider/dataset-ibm
 
