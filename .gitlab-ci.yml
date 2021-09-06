@@ -17,6 +17,11 @@ variables:
   OSDU_GCP_ENV_VARS: AUTHORIZE_API=$OSDU_GCP_ENTITLEMENTS_V2_URL,GCP_STORAGE_API=$OSDU_GCP_STORAGE_URL,GCP_SCHEMA_API=$OSDU_GCP_SCHEMA_URL/api/schema-service/v1,FILE_DMS_BUCKET=$OSDU_GCP_FILE_DMS_BUCKET,EXPIRATION_DAYS=$OSDU_GCP_EXPIRATION_DAYS,REDIS_GROUP_HOST=$REDIS_GROUP_HOST,REDIS_GROUP_PORT=$OSDU_GCP_REDIS_SEARCH_PORT,GOOGLE_AUDIENCES=$GOOGLE_AUDIENCE,PARTITION_API=$OSDU_GCP_PARTITION_API --vpc-connector=$OSDU_GCP_VPC_CONNECTOR
   OSDU_GCP_TEST_SUBDIR: testing/$OSDU_GCP_SERVICE-test-$OSDU_GCP_VENDOR
 
+  #Azure
+  AZURE_SERVICE: dataset
+  AZURE_BUILD_SUBDIR: provider/dataset-azure
+  AZURE_TEST_SUBDIR: testing/dataset-test-azure
+
 include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "standard-setup.yml"
@@ -32,6 +37,9 @@ include:
 
   - project: 'osdu/platform/ci-cd-pipelines'
     file: 'cloud-providers/aws-maven.yml'
+
+  - project: 'osdu/platform/ci-cd-pipelines'
+    file: 'cloud-providers/azure.yml'
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/ibm-deploy-only.yml"
