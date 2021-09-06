@@ -1,0 +1,83 @@
+#  Copyright © Microsoft Corporation
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+trigger:
+  batch: true
+  branches:
+    include:
+      - master
+  paths:
+    exclude:
+      - /**/*.md
+      - .gitignore
+      - /docs
+      - /provider/dataset-aws
+      - /provider/dataset-gcp
+      - /provider/dataset-ibm
+
+resources:
+  repositories:
+    - repository: FluxRepo
+      type: git
+      name: k8-gitops-manifests
+    - repository: TemplateRepo
+      type: git
+      name: infra-azure-provisioning
+
+
+variables:
+  - group: 'Azure - OSDU'
+  - group: 'Azure - OSDU Secrets'
+
+  - name: serviceName
+    value: "dataset"
+  - name: chartPath
+    value: "devops/azure/chart"
+  - name: valuesFile
+    value: "devops/azure/chart/helm-config.yaml"
+  - name: 'MANIFEST_REPO'
+    value: $[ resources.repositories['FluxRepo'].name ]
+  - name: SKIP_TESTS
+    value: 'false'
+  - name: 'MAVEN_CACHE_FOLDER'
+    value: $(Pipeline.Workspace)/.m2/repository
+
+stages:
+  - template: /devops/build-stage.yml@TemplateRepo
+    parameters:
+      mavenGoal: 'package'
+      mavenPublishJUnitResults: true
+      serviceCoreMavenOptions: '-pl dataset-core -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+      mavenOptions: '-pl provider/dataset-azure -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+      copyFileContents: |
+        pom.xml
+        provider/dataset-azure/pom.xml
+        provider/dataset-azure/target/*-spring-boot.jar
+        .mvn/community-maven.settings.xml
+      copyFileContentsToFlatten: ''
+      serviceBase: ${{ variables.serviceName }}
+      testingRootFolder: 'testing'
+      chartPath: ${{ variables.chartPath }}
+  - template: /devops/deploy-stages.yml@TemplateRepo
+    parameters:
+      serviceName: ${{ variables.serviceName }}
+      chartPath: ${{ variables.chartPath }}
+      valuesFile: ${{ variables.valuesFile }}
+      testCoreMavenPomFile: 'testing/dataset-test-core/pom.xml'
+      testCoreMavenOptions: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+      skipDeploy: ${{ variables.SKIP_DEPLOY }}
+      skipTest: ${{ variables.SKIP_TESTS }}
+      providers:
+        - name: Azure
+          environments: [ 'dev' ]
