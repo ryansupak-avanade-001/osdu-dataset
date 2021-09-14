@@ -81,7 +81,7 @@ public class CloudStorageUtilGcp extends CloudStorageUtil {
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Upload file by signed URL FAIL", e);
 		}
-		return fileInstructionsItem.getUnsignedUrl();
+		return fileInstructionsItem.getFileSource();
 	}
 
 	public String uploadCollectionUsingProvidedCredentials(String fileName, Object storageLocationProperties,

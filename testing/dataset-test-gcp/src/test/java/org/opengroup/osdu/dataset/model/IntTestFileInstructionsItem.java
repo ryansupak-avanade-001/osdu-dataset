@@ -19,7 +19,6 @@ package org.opengroup.osdu.dataset.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.net.URL;
-import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,12 +30,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class IntTestFileInstructionsItem {
 
-	@JsonProperty("unsignedUrl")
-	private String unsignedUrl;
+  @JsonProperty("signedUrl")
+  private URL signedUrl;
 
-	@JsonProperty("signedUrl")
-	private URL signedUrl;
+  @JsonProperty("createdBy")
+  private String createdBy;
 
-	@JsonProperty("createdAt")
-	private Instant createdAt;
+  @JsonProperty("fileSource")
+  private String fileSource;
 }

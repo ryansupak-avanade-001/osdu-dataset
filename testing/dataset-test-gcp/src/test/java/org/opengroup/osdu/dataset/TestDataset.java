@@ -90,13 +90,13 @@ public class TestDataset extends Dataset {
 		//Step 2: Upload File
 		String fileName = "testFile.txt";
 		String fileContents = "Hello World!";
-		String unsignedUploadUrl = cloudStorageUtilGcp
+		String fileSource = cloudStorageUtilGcp
 			.uploadCloudFileUsingProvidedCredentials(fileName, datasetInstructions.getStorageLocation(),
 				fileContents);
-		uploadedCloudFileUnsignedUrls.add(unsignedUploadUrl);
+		uploadedCloudFileUnsignedUrls.add(getFileUnsignedUrl(fileSource));
 
 		//Step 3: Register File
-		String datasetRegistry = createDatasetRegistry(INPUT_DATASET_FILE_JSON, unsignedUploadUrl);
+		String datasetRegistry = createDatasetRegistry(INPUT_DATASET_FILE_JSON, fileSource);
 		String recordId = registerDataset(datasetRegistry);
 
 		//Step 4: Retrieve File and validate contents
@@ -201,9 +201,7 @@ public class TestDataset extends Dataset {
 		IntTestFileInstructionsItem fileInstructionsItem = objectMapper
 			.convertValue(deliveryItem.getRetrievalProperties(), IntTestFileInstructionsItem.class);
 
-		Assert.assertNotNull(fileInstructionsItem.getUnsignedUrl());
-		Assert.assertNotNull(fileInstructionsItem.getSignedUrl());
-		Assert.assertNotNull(fileInstructionsItem.getCreatedAt());
+		Assert.assertNotNull(fileInstructionsItem);
 	}
 
 	public void validate_CollectionRetrievalItem(IntTestDatasetRetrievalDeliveryItem deliveryItem) {
@@ -220,11 +218,11 @@ public class TestDataset extends Dataset {
 		IntTestFileInstructionsItem fileInstructionsItem = objectMapper
 			.convertValue(storageLocation, IntTestFileInstructionsItem.class);
 
-		Assert.assertNotNull(fileInstructionsItem.getUnsignedUrl());
+		Assert.assertNotNull(fileInstructionsItem.getFileSource());
 		Assert.assertNotNull(fileInstructionsItem.getSignedUrl());
-		Assert.assertNotNull(fileInstructionsItem.getCreatedAt());
+		Assert.assertNotNull(fileInstructionsItem.getCreatedBy());
 
-		uploadedCloudFileUnsignedUrls.add(fileInstructionsItem.getUnsignedUrl());
+		uploadedCloudFileUnsignedUrls.add(getFileUnsignedUrl(fileInstructionsItem.getFileSource()));
 	}
 
 	public void validate_collectionStorageInstructions(Object collectionInstructions) {
@@ -250,6 +248,10 @@ public class TestDataset extends Dataset {
 				"legal-tag", GcpConfig.getLegalTag())
 		);
 		return stringSubstitutor.replace(datasetRegistry);
+	}
+
+	private String getFileUnsignedUrl(String relativePath) {
+		return "gs://" + GcpConfig.getProjectID() + "-" + GcpConfig.getGcpStoragePersistentArea() + relativePath;
 	}
 
 	@Before

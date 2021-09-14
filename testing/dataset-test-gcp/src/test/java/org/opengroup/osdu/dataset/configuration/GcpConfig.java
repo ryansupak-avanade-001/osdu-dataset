@@ -51,6 +51,10 @@ public class GcpConfig {
 		return getEnvironmentVariableOrDefaultValue("GCLOUD_PROJECT", "");
 	}
 
+	public static String getGcpStoragePersistentArea() {
+		return getEnvironmentVariableOrDefaultValue("GCP_STORAGE_PERSISTENT_AREA", "");
+	}
+
 	private static String getEnvironmentVariableOrDefaultValue(String key, String defaultValue) {
 		String environmentVariable = getEnvironmentVariable(key);
 		if (environmentVariable == null) {

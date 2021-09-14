@@ -23,6 +23,7 @@ import org.opengroup.osdu.dataset.di.DmsClientFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.cloud.gcp.data.datastore.repository.config.EnableDatastoreRepositories;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 
@@ -31,6 +32,7 @@ import org.springframework.context.annotation.FilterType;
 @ComponentScan(value = {"org.opengroup.osdu"}, excludeFilters = {
 	@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = {DmsClientFactory.class,
 		DatasetApplication.class, IStorageFactory.class})})
+@EnableDatastoreRepositories
 public class DatasetApplicationGCP {
 
 	public static void main(String[] args) {

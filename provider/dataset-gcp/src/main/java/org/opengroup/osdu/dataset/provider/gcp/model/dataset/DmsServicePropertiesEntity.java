@@ -20,18 +20,24 @@ package org.opengroup.osdu.dataset.provider.gcp.model.dataset;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.opengroup.osdu.dataset.dms.DmsServiceProperties;
+import org.springframework.cloud.gcp.data.datastore.core.mapping.Entity;
+import org.springframework.data.annotation.Id;
 
+@Entity(name = "DmsServiceProperties")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GcpDmsServiceProperties extends DmsServiceProperties {
+public class DmsServicePropertiesEntity {
 
-  private DataSetType dataSetType;
+  @Id
+  private String datasetKind;
 
-  public GcpDmsServiceProperties(DataSetType dataSetType, DmsServiceProperties dmsServiceProperties) {
-    super(dmsServiceProperties.getDmsServiceBaseUrl(), dmsServiceProperties.isAllowStorage(),
-        dmsServiceProperties.getApiKey(), dmsServiceProperties.isStagingLocationSupported());
-    this.dataSetType = dataSetType;
-  }
+  private String dmsServiceBaseUrl;
+
+  private boolean isStorageAllowed;
+
+  private String apiKey;
+
+  private boolean isStagingLocationSupported;
 }
+

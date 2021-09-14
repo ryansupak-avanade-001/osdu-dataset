@@ -15,27 +15,14 @@
  * limitations under the License.
  */
 
-package org.opengroup.osdu.dataset.provider.gcp.config;
+package org.opengroup.osdu.dataset.provider.gcp.repository;
 
-import java.util.ArrayList;
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.opengroup.osdu.dataset.provider.gcp.model.dataset.DmsServicePropertiesEntity;
+import org.springframework.cloud.gcp.data.datastore.repository.DatastoreRepository;
+import org.springframework.stereotype.Repository;
 
-@ConfigurationProperties
-@Data
-public class GcpPropertiesConfig {
+@Repository
+public interface DmsServicePropertiesEntityRepository extends
+    DatastoreRepository<DmsServicePropertiesEntity, String> {
 
-	private String fileDmsBucket;
-
-	private Integer expirationDays;
-
-	private ArrayList<String> fileLocationSequence;
-
-	private ArrayList<String> fileCollectionLocationSequence;
-
-	private String redisGroupHost;
-
-	private Integer redisGroupPort;
-
-	private String dmsApiBase;
 }
