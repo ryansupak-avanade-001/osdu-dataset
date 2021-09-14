@@ -20,9 +20,13 @@ package org.opengroup.osdu.dataset.provider.gcp.dms;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.opengroup.osdu.dataset.dms.DmsServiceProperties;
+import org.opengroup.osdu.dataset.provider.gcp.config.GcpPropertiesConfig;
 import org.opengroup.osdu.dataset.provider.gcp.model.dataset.DataSetType;
+import org.opengroup.osdu.dataset.provider.gcp.model.dataset.DmsServicePropertiesEntity;
 import org.opengroup.osdu.dataset.provider.gcp.model.dataset.GcpDmsServiceProperties;
+import org.opengroup.osdu.dataset.provider.gcp.repository.DmsServicePropertiesEntityRepository;
 import org.opengroup.osdu.dataset.provider.interfaces.IDatasetDmsServiceMap;
 import org.springframework.stereotype.Service;
 
@@ -30,20 +34,34 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap {
 
-	private final Map<String, DmsServiceProperties> resourceTypeToDmsServiceMap = new HashMap<>();
+  private final DmsServicePropertiesEntityRepository dmsServicePropertiesEntityRepository;
+  private final GcpPropertiesConfig gcpPropertiesConfig;
 
-	@Override
-	public Map<String, DmsServiceProperties> getResourceTypeToDmsServiceMap() {
-		resourceTypeToDmsServiceMap.put(
-			"dataset--File.*",
-			new GcpDmsServiceProperties(DataSetType.FILE)
-		);
+  @Override
+  public Map<String, DmsServiceProperties> getResourceTypeToDmsServiceMap() {
+    Iterable<DmsServicePropertiesEntity> properties = this.dmsServicePropertiesEntityRepository.findAll();
 
-		resourceTypeToDmsServiceMap.put(
-			"dataset--FileCollection.*",
-			new GcpDmsServiceProperties(DataSetType.FILE_COLLECTION)
-		);
+    Map<String, DmsServiceProperties> resourceTypeToDmsServiceMap = new HashMap<>();
 
-		return resourceTypeToDmsServiceMap;
-	}
+    for (DmsServicePropertiesEntity entity : properties) {
+      String dmsApiBase = this.gcpPropertiesConfig.getDmsApiBase();
+      if (StringUtils.isEmpty(dmsApiBase)) {
+        dmsApiBase = entity.getDmsServiceBaseUrl();
+      }
+
+      DmsServiceProperties dmsServiceProperties = new DmsServiceProperties(dmsApiBase, entity.isStorageAllowed(),
+          entity.getApiKey(), entity.isStagingLocationSupported());
+      
+      if (StringUtils.containsIgnoreCase(entity.getDatasetKind(), "collection")) {
+        resourceTypeToDmsServiceMap.put(entity.getDatasetKind(), new GcpDmsServiceProperties(
+            DataSetType.FILE_COLLECTION, dmsServiceProperties));
+      } else {
+        resourceTypeToDmsServiceMap.put(entity.getDatasetKind(), new GcpDmsServiceProperties(
+            DataSetType.FILE, dmsServiceProperties));
+      }
+    }
+
+    return resourceTypeToDmsServiceMap;
+  }
+
 }

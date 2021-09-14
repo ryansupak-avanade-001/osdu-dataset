@@ -18,7 +18,10 @@
 package org.opengroup.osdu.dataset.provider.gcp.dms;
 
 import lombok.RequiredArgsConstructor;
+import org.opengroup.osdu.core.common.http.HttpClient;
+import org.opengroup.osdu.core.common.http.IHttpClient;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
+import org.opengroup.osdu.dataset.dms.DmsRestService;
 import org.opengroup.osdu.dataset.dms.DmsServiceProperties;
 import org.opengroup.osdu.dataset.dms.IDmsFactory;
 import org.opengroup.osdu.dataset.dms.IDmsProvider;
@@ -28,10 +31,13 @@ import org.opengroup.osdu.dataset.provider.gcp.service.IFileService;
 @RequiredArgsConstructor
 public class GcpDmsFactory implements IDmsFactory {
 
-	private final IFileService fileDmsService;
+  private final IFileService fileDmsService;
 
-	@Override
-	public IDmsProvider create(DpsHeaders headers, DmsServiceProperties dmsServiceRoute) {
-		return new GcpDmsService(fileDmsService, (GcpDmsServiceProperties) dmsServiceRoute);
-	}
+  private IHttpClient httpClient = new HttpClient();
+
+  @Override
+  public IDmsProvider create(DpsHeaders headers, DmsServiceProperties dmsServiceRoute) {
+    return new GcpDmsService(fileDmsService, (GcpDmsServiceProperties) dmsServiceRoute,
+        new GcpDmsRestService(dmsServiceRoute, httpClient, headers));
+  }
 }

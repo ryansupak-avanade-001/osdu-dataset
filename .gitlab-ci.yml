@@ -67,3 +67,5 @@ osdu-gcp-test:
     PROVIDER_KEY: GCP
     KIND_SUBTYPE: DatasetTest
     LEGAL_TAG: datatest-int-tag
+    LEGAL_HOST: $OSDU_GCP_LEGALTAG_API/
+    GCP_STORAGE_PERSISTENT_AREA: persisten-area
