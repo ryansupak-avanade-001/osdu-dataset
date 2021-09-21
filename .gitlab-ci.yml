@@ -7,6 +7,7 @@ variables:
   AWS_EKS_DEPLOYMENT_NAME: os-dataset
 
   IBM_BUILD_SUBDIR: provider/dataset-ibm
+  IBM_INT_TEST_SUBDIR: testing/dataset-test-ibm
 
    # --- osdu-gcp specific variables ---
   OSDU_GCP_SERVICE: dataset
@@ -42,7 +43,7 @@ include:
     file: 'cloud-providers/azure.yml'
 
   - project: "osdu/platform/ci-cd-pipelines"
-    file: "cloud-providers/ibm-deploy-only.yml"
+    file: "cloud-providers/ibm.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/gitlab-ultimate.yml"
