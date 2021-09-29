@@ -20,7 +20,7 @@
 				"DatasetProperties": {
 					"FileSourceInfo": {
 						"FileSource": "${unsigned_url}",
-						"PreloadFilePath": "${unsigned_url}"
+						"PreLoadFilePath": "${unsigned_url}"
 					}
 				}
 			},

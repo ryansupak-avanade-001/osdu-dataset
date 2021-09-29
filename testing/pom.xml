@@ -19,7 +19,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.opengroup.osdu</groupId>
 	<artifactId>os-dataset-testing</artifactId>
-	<version>0.11.0-SNAPSHOT</version>
+	<version>0.12.0-SNAPSHOT</version>
 	<description>Dataset integration testing code</description>
 	<packaging>pom</packaging>
 
@@ -35,6 +35,7 @@
 		<module>dataset-test-azure</module>
 		<module>dataset-test-aws</module>
 		<module>dataset-test-gcp</module>
+		<module>dataset-test-ibm</module>
 	</modules>
 
 	<profiles>

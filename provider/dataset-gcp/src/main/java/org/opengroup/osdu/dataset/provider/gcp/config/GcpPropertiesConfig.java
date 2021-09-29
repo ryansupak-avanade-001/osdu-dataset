@@ -36,4 +36,6 @@ public class GcpPropertiesConfig {
 	private String redisGroupHost;
 
 	private Integer redisGroupPort;
+
+	private String dmsApiBase;
 }

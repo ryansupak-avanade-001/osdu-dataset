@@ -27,5 +27,11 @@ import org.opengroup.osdu.dataset.dms.DmsServiceProperties;
 @AllArgsConstructor
 public class GcpDmsServiceProperties extends DmsServiceProperties {
 
-	private DataSetType dataSetType;
+  private DataSetType dataSetType;
+
+  public GcpDmsServiceProperties(DataSetType dataSetType, DmsServiceProperties dmsServiceProperties) {
+    super(dmsServiceProperties.getDmsServiceBaseUrl(), dmsServiceProperties.isAllowStorage(),
+        dmsServiceProperties.getApiKey(), dmsServiceProperties.isStagingLocationSupported());
+    this.dataSetType = dataSetType;
+  }
 }

@@ -25,7 +25,9 @@ In order to run the service locally or remotely, you will need to have the follo
 | `REDIS_GROUP_PORT` |  ex `1111` | Redis port | no | https://console.cloud.google.com/memorystore/redis/instances |
 | `GOOGLE_AUDIENCES` | ex `*****.apps.googleusercontent.com` | Client ID for getting access to cloud resources | yes | https://console.cloud.google.com/apis/credentials |
 | `PARTITION_API` | ex `http://localhost:8081/api/partition/v1` | Partition service endpoint | no | - |
-
+| `osdu.dataset.config.useRestDms` | `true` OR `false` | Allows to configure DMS REST APIs usage | no | - |
+| `spring.cloud.gcp.datastore.namespace` | ex `namespace` | Allows to configure Datastore namespace for DMS service properties storage | no | - |
+| `DMS_API_BASE` | ex `http://localhost:8081/api/file/v2/files` | Only for local usage. Allows to override DMS service base url value from Datastore.  | no | - |
 
 ### Run Locally
 Check that maven is installed:
@@ -119,13 +121,14 @@ cd provider/dataset-gcp && mvn spring-boot:run
  | `KIND_SUBTYPE` | `DatasetTest` | Kind subtype that will be used in int tests, schema creation automated , result kind will be `TENANT_NAME::wks-test:dataset--FileCollection.KIND_SUBTYPE:1.0.0`| no | - |
  | `LEGAL_TAG` | `public-usa-dataset-1` | Legal tag name, if tag with that name doesn't exist then it will be created during preparing step | no | - |
  | `GCLOUD_PROJECT` | `osdu-cicd-epam` | Project id | no | - |
-
+ | `GCP_STORAGE_PERSISTENT_AREA` | ex `persistent-area` | persistent area bucket(will be concatenated with project id ex `osdu-cicd-epam-persistent-area` | no | output of infrastructure deployment |
+ | `LEGAL_HOST` | ex `https://os-legal-jvmvia5dea-uc.a.run.app/api/legal/v1/` | Legal API endpoint | no | output of infrastructure deployment |
 
  **Entitlements configuration for integration accounts**
  
  | INTEGRATION_TESTER | 
  | ---  | 
- | users<br/>service.entitlements.user<br/>service.storage.admin<br/>service.legal.user<br/>service.search.user<br/>service.delivery.viewer | 
+ | users<br/>service.entitlements.user<br/>service.storage.admin<br/>service.legal.user<br/>service.search.user<br/>service.delivery.viewer<br/>service.dataset.viewers<br/>service.dataset.editors | 
  
  **Cloud roles configuration for integration accounts**
  

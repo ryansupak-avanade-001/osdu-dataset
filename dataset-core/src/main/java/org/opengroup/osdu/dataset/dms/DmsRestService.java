@@ -19,6 +19,8 @@ package org.opengroup.osdu.dataset.dms;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.net.URISyntaxException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.utils.URIBuilder;
@@ -33,8 +35,6 @@ import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.dataset.model.request.GetDatasetRegistryRequest;
 import org.opengroup.osdu.dataset.model.response.GetDatasetRetrievalInstructionsResponse;
 import org.opengroup.osdu.dataset.model.response.GetDatasetStorageInstructionsResponse;
-import java.net.URISyntaxException;
-import java.util.List;
 
 @RequiredArgsConstructor
 public class DmsRestService implements IDmsProvider {

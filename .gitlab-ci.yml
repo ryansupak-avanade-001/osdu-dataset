@@ -7,6 +7,7 @@ variables:
   AWS_EKS_DEPLOYMENT_NAME: os-dataset
 
   IBM_BUILD_SUBDIR: provider/dataset-ibm
+  IBM_INT_TEST_SUBDIR: testing/dataset-test-ibm
 
    # --- osdu-gcp specific variables ---
   OSDU_GCP_SERVICE: dataset
@@ -16,6 +17,12 @@ variables:
   OSDU_GCP_EXPIRATION_DAYS: 1
   OSDU_GCP_ENV_VARS: AUTHORIZE_API=$OSDU_GCP_ENTITLEMENTS_V2_URL,GCP_STORAGE_API=$OSDU_GCP_STORAGE_URL,GCP_SCHEMA_API=$OSDU_GCP_SCHEMA_URL/api/schema-service/v1,FILE_DMS_BUCKET=$OSDU_GCP_FILE_DMS_BUCKET,EXPIRATION_DAYS=$OSDU_GCP_EXPIRATION_DAYS,REDIS_GROUP_HOST=$REDIS_GROUP_HOST,REDIS_GROUP_PORT=$OSDU_GCP_REDIS_SEARCH_PORT,GOOGLE_AUDIENCES=$GOOGLE_AUDIENCE,PARTITION_API=$OSDU_GCP_PARTITION_API --vpc-connector=$OSDU_GCP_VPC_CONNECTOR
   OSDU_GCP_TEST_SUBDIR: testing/$OSDU_GCP_SERVICE-test-$OSDU_GCP_VENDOR
+  OSDU_GCP_HELM_PACKAGE_CHARTS: "devops/gcp/deploy devops/gcp/configmap"
+
+  #Azure
+  AZURE_SERVICE: dataset
+  AZURE_BUILD_SUBDIR: provider/dataset-azure
+  AZURE_TEST_SUBDIR: testing/dataset-test-azure
 
 include:
   - project: "osdu/platform/ci-cd-pipelines"
@@ -33,8 +40,11 @@ include:
   - project: 'osdu/platform/ci-cd-pipelines'
     file: 'cloud-providers/aws-maven.yml'
 
+  - project: 'osdu/platform/ci-cd-pipelines'
+    file: 'cloud-providers/azure.yml'
+
   - project: "osdu/platform/ci-cd-pipelines"
-    file: "cloud-providers/ibm-deploy-only.yml"
+    file: "cloud-providers/ibm.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/gitlab-ultimate.yml"
@@ -59,3 +69,5 @@ osdu-gcp-test:
     PROVIDER_KEY: GCP
     KIND_SUBTYPE: DatasetTest
     LEGAL_TAG: datatest-int-tag
+    LEGAL_HOST: $OSDU_GCP_LEGALTAG_API/
+    GCP_STORAGE_PERSISTENT_AREA: persisten-area
