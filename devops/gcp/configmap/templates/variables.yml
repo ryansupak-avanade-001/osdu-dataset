@@ -7,10 +7,6 @@ metadata:
   namespace: "{{ .Release.Namespace }}"
 data:
   LOG_LEVEL: "{{ .Values.data.log_level }}"
-  GCP_SCHEMA_API: "{{ .Values.data.schema_api }}"
-  GCP_STORAGE_API: "{{ .Values.data.storage_api }}"
-  AUTHORIZE_API: "{{ .Values.data.authorize_api }}"
-  PARTITION_API: "{{ .Values.data.partition_api }}"
   FILE_DMS_BUCKET: "{{ .Values.data.file_dms_bucket }}"
   EXPIRATION_DAYS: "{{ .Values.data.expiration_days }}"
   REDIS_GROUP_HOST: "{{ .Values.data.redis_group_host }}"
