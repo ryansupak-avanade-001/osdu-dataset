@@ -12,12 +12,15 @@ variables:
    # --- osdu-gcp specific variables ---
   OSDU_GCP_SERVICE: dataset
   OSDU_GCP_VENDOR: gcp
-  OSDU_GCP_APPLICATION_NAME: os-dataset
+  OSDU_GCP_APPLICATION_NAME: dataset
   OSDU_GCP_FILE_DMS_BUCKET: "file-dms-bucket"
   OSDU_GCP_EXPIRATION_DAYS: 1
-  OSDU_GCP_ENV_VARS: AUTHORIZE_API=$OSDU_GCP_ENTITLEMENTS_V2_URL,GCP_STORAGE_API=$OSDU_GCP_STORAGE_URL,GCP_SCHEMA_API=$OSDU_GCP_SCHEMA_URL/api/schema-service/v1,FILE_DMS_BUCKET=$OSDU_GCP_FILE_DMS_BUCKET,EXPIRATION_DAYS=$OSDU_GCP_EXPIRATION_DAYS,REDIS_GROUP_HOST=$REDIS_GROUP_HOST,REDIS_GROUP_PORT=$OSDU_GCP_REDIS_SEARCH_PORT,GOOGLE_AUDIENCES=$GOOGLE_AUDIENCE,PARTITION_API=$OSDU_GCP_PARTITION_API --vpc-connector=$OSDU_GCP_VPC_CONNECTOR
   OSDU_GCP_TEST_SUBDIR: testing/$OSDU_GCP_SERVICE-test-$OSDU_GCP_VENDOR
   OSDU_GCP_HELM_PACKAGE_CHARTS: "devops/gcp/deploy devops/gcp/configmap"
+  OSDU_GCP_HELM_CONFIG_SERVICE_VARS: "--set data.google_audiences=$GOOGLE_AUDIENCE --set data.redis_group_host=$REDIS_GROUP_HOST --set data.file_dms_bucket=$OSDU_GCP_FILE_DMS_BUCKET --set data.expiration_days=$OSDU_GCP_EXPIRATION_DAYS"
+  OSDU_GCP_HELM_DEPLOYMENT_SERVICE_VARS: "--set data.image=$CI_REGISTRY_IMAGE/osdu-gcp:$CI_COMMIT_SHORT_SHA --set data.serviceAccountName=workload-identity-dataset"
+  OSDU_GCP_HELM_CONFIG_SERVICE: dataset-config
+  OSDU_GCP_HELM_DEPLOYMENT_SERVICE: dataset-deploy
 
   #Azure
   AZURE_SERVICE: dataset
@@ -50,7 +53,7 @@ include:
     file: "scanners/gitlab-ultimate.yml"
 
   - project: 'osdu/platform/ci-cd-pipelines'
-    file: 'cloud-providers/osdu-gcp-cloudrun.yml'
+    file: 'cloud-providers/osdu-gcp-gke.yml'
 
 
 # disable the eslint scanner
@@ -62,12 +65,12 @@ eslint-sast:
 
 osdu-gcp-test:
   variables:
-    STORAGE_BASE_URL: $OSDU_GCP_STORAGE_URL
-    LEGAL_BASE_URL: $OSDU_GCP_LEGALTAG_API/
-    DATASET_BASE_URL: $OSDU_GCP_DATASET_URL
-    SCHEMA_API: $OSDU_GCP_SCHEMA_URL/api/schema-service/v1
+    STORAGE_BASE_URL: $OSDU_GCP_STORAGE_EXTERNAL_URL
+    LEGAL_BASE_URL: $OSDU_GCP_LEGAL_EXTERNAL_URL
+    DATASET_BASE_URL: $OSDU_GCP_DATASET_EXTERNAL_URL
+    SCHEMA_API: $OSDU_GCP_SCHEMA_URL
     PROVIDER_KEY: GCP
     KIND_SUBTYPE: DatasetTest
     LEGAL_TAG: datatest-int-tag
-    LEGAL_HOST: $OSDU_GCP_LEGALTAG_API/
+    LEGAL_HOST: $OSDU_GCP_LEGAL_EXTERNAL_URL
     GCP_STORAGE_PERSISTENT_AREA: persisten-area

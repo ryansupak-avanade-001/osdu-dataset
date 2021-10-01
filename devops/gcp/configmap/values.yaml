@@ -3,11 +3,7 @@
 # Declare variables to be passed into your templates.
 
 data:
-  authorize_api: "http://entitlements/api/entitlements/v2/"
-  partition_api: "http://partition/api/partition/v1/"
   log_level: "INFO"
-  schema_api: "http://schema/api/schema-service/v1"
-  storage_api: "http://storage/api/storage/v2"
   file_dms_bucket: "file-dms-bucket"
   expiration_days: 1
   redis_group_host: ""
