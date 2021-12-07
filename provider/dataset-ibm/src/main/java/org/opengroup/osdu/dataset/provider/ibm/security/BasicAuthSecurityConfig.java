@@ -16,15 +16,15 @@ import org.springframework.core.annotation.Order;
 public class BasicAuthSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.csrf().disable()
-				.authorizeRequests()
-	            .antMatchers("/test/**","/v1/api-docs",
-	                "/configuration/ui",
-	                "/swagger-resources/**",
-	                "/configuration/security",
-	                "/swagger-ui.html",
-									"/info",
-	                "/webjars/**").permitAll()
-				.anyRequest().authenticated().and().oauth2ResourceServer().jwt();
+		http.csrf().disable();
+				// .authorizeRequests()
+	            // .antMatchers("/test/**","/v1/api-docs",
+	            //     "/configuration/ui",
+	            //     "/swagger-resources/**",
+	            //     "/configuration/security",
+	            //     "/swagger-ui.html",
+				// 					"/info",
+	            //     "/webjars/**").permitAll()
+				// .anyRequest().authenticated().and().oauth2ResourceServer().jwt();
 	}
 }
