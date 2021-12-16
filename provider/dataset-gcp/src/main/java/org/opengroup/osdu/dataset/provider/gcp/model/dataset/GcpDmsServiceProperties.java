@@ -18,6 +18,7 @@
 package org.opengroup.osdu.dataset.provider.gcp.model.dataset;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.opengroup.osdu.dataset.dms.DmsServiceProperties;
@@ -26,12 +27,16 @@ import org.opengroup.osdu.dataset.dms.DmsServiceProperties;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GcpDmsServiceProperties extends DmsServiceProperties {
-
   private DataSetType dataSetType;
 
-  public GcpDmsServiceProperties(DataSetType dataSetType, DmsServiceProperties dmsServiceProperties) {
-    super(dmsServiceProperties.getDmsServiceBaseUrl(), dmsServiceProperties.isAllowStorage(),
-        dmsServiceProperties.getApiKey(), dmsServiceProperties.isStagingLocationSupported());
+  @Builder
+  public GcpDmsServiceProperties(
+      String dmsServiceBaseUrl,
+      boolean allowStorage,
+      String apiKey,
+      boolean stagingLocationSupported,
+      DataSetType dataSetType) {
+    super(dmsServiceBaseUrl, allowStorage, apiKey, stagingLocationSupported);
     this.dataSetType = dataSetType;
   }
 }

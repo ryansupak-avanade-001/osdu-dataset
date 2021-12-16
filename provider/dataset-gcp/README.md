@@ -4,30 +4,210 @@
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
 ### Prerequisites
-Pre-requisites
 
 * GCloud SDK with java (latest version)
 * JDK 8
 * Lombok 1.16 or later
 * Maven
 
-### Installation
-In order to run the service locally or remotely, you will need to have the following environment variables defined.
+# Features of implementation
+This is a universal solution created using EPAM OSM and OBM mappers technology.
+It allows you to work with various implementations of KV stores and Blob stores.
+
+## Limitations of the current version
+
+In the current version, the mappers are equipped with several drivers to the stores:
+
+- OSM (mapper for KV-data): Google Datastore; Postgres
+- OBM (mapper to Blob stores): Google Cloud Storage (GCS); MinIO
+
+## Extensibility
+
+To use any other store or message broker, implement a driver for it. With an extensible set of drivers, the solution is unrestrictedly universal and portable without modification to the main code.
+
+Mappers support "multitenancy" with flexibility in how it is implemented.
+They switch between datasources of different tenants due to the work of a bunch of classes that implement the following interfaces:
+
+- Destination - takes a description of the current context, e.g., "data-partition-id = opendes"
+- DestinationResolver – accepts Destination, finds the resource, connects, and returns Resolution
+- DestinationResolution – contains a ready-made connection, the mapper uses it to get to data
+
+## Mapper tuning mechanisms
+
+This service uses specific implementations of DestinationResolvers based on the tenant information provided by the OSDU Partition service.
+- for Google Datastore: osm/config/DsTenantDestinationResolver.java
+- for Postgres: osm/config/PgTenantDestinationResolver.java
+
+#### Their algorithms are as follows:
+- incoming Destination carries data-partition-id
+- resolver accesses the Partition service and gets PartitionInfo
+- from PartitionInfo resolver retrieves properties for the connection: URL, username, password etc.
+- resolver creates a data source, connects to the resource, remembers the datasource
+- resolver gives the datasource to the mapper in the Resolution object
+- Google Cloud resolvers do not receive special properties from the Partition service for connection, 
+because the location of the resources is unambiguously known - they are in the GCP project. 
+And credentials are also not needed - access to data is made on behalf of the Google Identity SA
+under which the service itself is launched. Therefore, resolver takes only 
+the value of the **projectId** property from PartitionInfo and uses it to connect to a resource 
+in the corresponding GCP project.
+
+# Configuration
+
+## Service Configuration
+
+Define the following environment variables.
+Most of them are common to all hosting environments, but there are properties that are only necessary when running in Google Cloud.
+
+#### Common properties for all environments
 
 | name | value | description | sensitive? | source |
 | ---  | ---   | ---         | ---        | ---    |
-| `GCP_SCHEMA_API` | ex `https://os-schema-jvmvia5dea-uc.a.run.app/api/schema-service/v1` | Schema API endpoint | no | output of infrastructure deployment |
-| `GCP_STORAGE_API` | ex `https://os-storage-jvmvia5dea-uc.a.run.app/api/storage/v2` | Storage API endpoint | no | output of infrastructure deployment |
+| `SCHEMA_API` | ex `https://os-schema-jvmvia5dea-uc.a.run.app/api/schema-service/v1` | Schema API endpoint | no | output of infrastructure deployment |
+| `STORAGE_API` | ex `https://os-storage-jvmvia5dea-uc.a.run.app/api/storage/v2` | Storage API endpoint | no | output of infrastructure deployment |
 | `AUTHORIZE_API` | ex `https://os-entitlements-gcp-jvmvia5dea-uc.a.run.app/entitlements/v1` | Entitlements API endpoint | no | output of infrastructure deployment |
+| `PARTITION_API` | ex `http://localhost:8081/api/partition/v1` | Partition service endpoint | no | - |
 | `FILE_DMS_BUCKET` | ex `file-dms-bucket` | File bucket name postfix (full name represent by project-id + partition-id + GCP_FILE_DMS_BUCKET ex `osdu-cicd-epam-opendes-file-dms-bucket`) | no | output of infrastructure deployment |
 | `EXPIRATION_DAYS` | ex `1` | expiration for signed urls & connection strings | no |  |
 | `REDIS_GROUP_HOST` |  ex `127.0.0.1` | Redis host for groups | no | https://console.cloud.google.com/memorystore/redis/instances |
 | `REDIS_GROUP_PORT` |  ex `1111` | Redis port | no | https://console.cloud.google.com/memorystore/redis/instances |
+| `osdu.dataset.config.useRestDms` | `true` OR `false` | Allows to configure *DMS REST APIs usage* | no | - |
+| `DMS_API_BASE` | ex `http://localhost:8081/api/file/v2/files` | *Only for local usage.* Allows to override DMS service base url value from Datastore.  | no | - |
+
+#### For Mappers, to activate drivers
+| name | value | description | sensitive? | source |
+| ---  | ---   | ---         | ---        | ---    |
+| `OSMDRIVER` | `postgres` OR `datastore` | Osm driver mode that defines which KV storage will be used | no | - |
+| `OBMDRIVER` | `gcs` OR `minio` | Obm driver mode that defines which object storage will be used | no | - |
+
+#### For Google Cloud only
+| name | value | description | sensitive? | source |
+| ---  | ---   | ---         | ---        | ---    |
 | `GOOGLE_AUDIENCES` | ex `*****.apps.googleusercontent.com` | Client ID for getting access to cloud resources | yes | https://console.cloud.google.com/apis/credentials |
-| `PARTITION_API` | ex `http://localhost:8081/api/partition/v1` | Partition service endpoint | no | - |
-| `osdu.dataset.config.useRestDms` | `true` OR `false` | Allows to configure DMS REST APIs usage | no | - |
 | `spring.cloud.gcp.datastore.namespace` | ex `namespace` | Allows to configure Datastore namespace for DMS service properties storage | no | - |
-| `DMS_API_BASE` | ex `http://localhost:8081/api/file/v2/files` | Only for local usage. Allows to override DMS service base url value from Datastore.  | no | - |
+
+## Configuring mappers' Datasources
+When using non-Google-Cloud-native technologies, property sets must be defined on the Partition service as part of PartitionInfo for each Tenant.
+
+They are specific to each storage technology:
+#### for OSM - Postgres:
+**prefix:** `osm.postgres`
+It can be overridden by:
+- through the Spring Boot property `osm.postgres.partitionPropertiesPrefix`
+- environment variable `OSM_POSTGRES_PARTITIONPROPERTIESPREFIX`
+
+**Propertyset:**
+
+| Property | Description |
+| --- | --- |
+| osm.postgres.datasource.url | server URL |
+| osm.postgres.datasource.username | username |
+| osm.postgres.datasource.password | password |
+
+<details><summary>Example of a definition for a single tenant</summary>
+
+```
+
+curl -L -X PATCH 'https://dev.osdu.club/api/partition/v1/partitions/opendes' -H 'data-partition-id: opendes' -H 'Authorization: Bearer ...' -H 'Content-Type: application/json' --data-raw '{
+  "properties": {
+    "osm.postgres.datasource.url": {
+      "sensitive": false,
+      "value": "jdbc:postgresql://35.239.205.90:5432/postgres"
+    },
+    "osm.postgres.datasource.username": {
+      "sensitive": false,
+      "value": "osm_poc"
+    },
+    "osm.postgres.datasource.password": {
+      "sensitive": true,
+      "value": "osm_poc"
+    }
+  }
+}'
+
+```
+
+</details>
+
+#### for OBM - Minio:
+**prefix:** `obm.minio`
+It can be overridden by:
+
+- through the Spring Boot property `obm.minio.partitionPropertiesPrefix`
+- environment variable `OBM_MINIO_PARTITIONPROPERTIESPREFIX`
+
+**Propertyset** (for two types of connection: messaging and admin operations):
+
+| Property | Description |
+| --- | --- |
+| obm.minio.endpoint | - url |
+| obm.minio.credentials.access.key | - username |
+| obm.minio.credentials.secret.key | - password |
+
+<details><summary>Example of a single tenant definition</summary>
+
+```
+
+curl -L -X PATCH 'https://dev.osdu.club/api/partition/v1/partitions/opendes' -H 'data-partition-id: opendes' -H 'Authorization: Bearer ...' -H 'Content-Type: application/json' --data-raw '{
+  "properties": {
+    "obm.minio.endpoint": {
+      "sensitive": false,
+      "value": "localhost"
+    },
+    "obm.minio.credentials.access.key": {
+      "sensitive": false,
+      "value": "minioadmin"
+    },
+    "obm.minio.credentials.secret.key": {
+      "sensitive": false,
+      "value": "secret"
+    }
+  }
+}'
+
+```
+
+</details>
+
+## For postgres only. Schema configuration
+
+```
+
+CREATE TABLE public."DmsServiceProperties"(
+id text COLLATE pg_catalog."default" NOT NULL,
+pk bigint NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+data jsonb NOT NULL,
+CONSTRAINT DmsServiceProperties_id UNIQUE (id)
+);
+CREATE INDEX DmsServiceProperties_datagin ON public."DmsServiceProperties" USING GIN (data);
+
+```
+
+Example of filling table with DMS providers:
+
+```
+
+INSERT INTO public."DmsServiceProperties"(
+id, data)
+VALUES ('dataset--File.*', '{
+"apiKey": "",
+"datasetKind": "dataset--File.*",
+"isStorageAllowed": true,
+"dmsServiceBaseUrl": "https://localhost/api/file/v2/files",
+"isStagingLocationSupported": true
+}');
+
+INSERT INTO public."DmsServiceProperties"(
+id, data)
+VALUES (
+'dataset--FileCollection.*', '{
+"apiKey": "",
+"datasetKind": "dataset--FileCollection.*",
+"isStorageAllowed": true,
+"dmsServiceBaseUrl": "",
+"isStagingLocationSupported": false
+}');
+
+```
 
 ### Run Locally
 Check that maven is installed:

@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.opengroup.osdu.dataset.provider.gcp.repository;
+package org.opengroup.osdu.dataset.provider.gcp.config;
 
-import org.opengroup.osdu.dataset.provider.gcp.model.dataset.DmsServicePropertiesEntity;
-import org.springframework.cloud.gcp.data.datastore.repository.DatastoreRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cloud.gcp.data.datastore.repository.config.EnableDatastoreRepositories;
+import org.springframework.context.annotation.Configuration;
 
-@Repository
-public interface DmsServicePropertiesEntityRepository extends
-    DatastoreRepository<DmsServicePropertiesEntity, String> {
-
-}
+@Configuration
+@ConditionalOnProperty(name = "osmDriver", havingValue = "datastore")
+@EnableDatastoreRepositories
+public class GcpDatastoreConfig {}
