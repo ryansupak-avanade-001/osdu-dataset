@@ -9,4 +9,4 @@ ENV PORT $PORT
 # Copy the jar to the production image from the builder stage.
 COPY provider/dataset-${PROVIDER_NAME}/target/dataset-${PROVIDER_NAME}-*.jar dataset-${PROVIDER_NAME}.jar
 # Run the web service on container startup.
-CMD java -Djava.security.egd=file:/dev/./urandom -Dserver.port=${PORT} -jar /app/dataset-${PROVIDER_NAME}.jar
+CMD java -Djava.security.egd=file:/dev/./urandom -Dserver.port=${PORT} -Dlog4j.formatMsgNoLookups=true -jar /app/dataset-${PROVIDER_NAME}.jar
