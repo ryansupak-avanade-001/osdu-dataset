@@ -23,7 +23,8 @@ import org.opengroup.osdu.dataset.model.response.DatasetRetrievalDeliveryItem;
 
 public class GcpDatasetRetrievalDeliveryItem extends DatasetRetrievalDeliveryItem {
 
-	public GcpDatasetRetrievalDeliveryItem(String datasetRegistryId, Object deliveryObject, ObjectMapper objectMapper) {
-		super(datasetRegistryId, objectMapper.convertValue(deliveryObject, Map.class), "GCP");
+	public GcpDatasetRetrievalDeliveryItem(String datasetRegistryId, Object deliveryObject,
+			ObjectMapper objectMapper, String providerKey) {
+		super(datasetRegistryId, objectMapper.convertValue(deliveryObject, Map.class), providerKey);
 	}
 }

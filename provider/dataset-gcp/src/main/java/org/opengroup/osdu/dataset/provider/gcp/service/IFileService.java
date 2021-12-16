@@ -22,6 +22,11 @@ import org.opengroup.osdu.dataset.model.request.GetDatasetRegistryRequest;
 import org.opengroup.osdu.dataset.model.response.GetDatasetRetrievalInstructionsResponse;
 import org.opengroup.osdu.dataset.model.response.GetDatasetStorageInstructionsResponse;
 
+/**
+ * TODO: Remove interface and related logic after migration FileCollection logic to File service.
+ * getFileUploadInstructions and getFileRetrievalInstructions methods already unused due to
+ * migration.
+ */
 public interface IFileService {
 
 	GetDatasetStorageInstructionsResponse getFileUploadInstructions();

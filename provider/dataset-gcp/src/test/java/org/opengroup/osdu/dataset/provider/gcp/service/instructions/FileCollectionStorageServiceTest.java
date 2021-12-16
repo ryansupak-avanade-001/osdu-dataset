@@ -29,7 +29,6 @@ import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import java.io.IOException;
-import java.time.Instant;
 import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,8 +44,7 @@ import org.opengroup.osdu.core.gcp.multitenancy.GcsMultiTenantAccess;
 import org.opengroup.osdu.dataset.provider.gcp.model.FileCollectionInstructionsItem;
 import org.opengroup.osdu.dataset.provider.gcp.service.instructions.downscoped.DownScopedCredentials;
 import org.opengroup.osdu.dataset.provider.gcp.service.instructions.downscoped.DownScopedCredentialsService;
-import org.opengroup.osdu.dataset.provider.gcp.util.GoogleStorageBucketUtil;
-import org.opengroup.osdu.dataset.provider.gcp.util.InstantHelper;
+import org.opengroup.osdu.dataset.provider.gcp.util.PathUtil;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FileCollectionStorageServiceTest {
@@ -61,9 +59,6 @@ public class FileCollectionStorageServiceTest {
 	private StorageOptions storageOptions;
 
 	@Mock
-	private InstantHelper instantHelper;
-
-	@Mock
 	private DpsHeaders headers;
 
 	@Mock
@@ -73,7 +68,7 @@ public class FileCollectionStorageServiceTest {
 	private TenantInfo tenantInfo;
 
 	@Mock
-	private GoogleStorageBucketUtil bucketUtil;
+	private PathUtil bucketUtil;
 
 	@Mock
 	private GoogleCredentials googleCredentials;
@@ -114,27 +109,21 @@ public class FileCollectionStorageServiceTest {
 	public void givenFolderResource_whenCreateDeliveryInstruction_thenCreatedProperly() throws IOException {
 		when(storage.get(any(BlobId.class))).thenReturn(null);
 
-		Instant instant = Instant.now();
-		when(instantHelper.getCurrentInstant()).thenReturn(instant);
-
 		FileCollectionInstructionsItem expected = FileCollectionInstructionsItem.builder()
 			.unsignedUrl(unsignedUrl)
-			.createdAt(instant)
 			.connectionString(downScopedTokenValue)
 			.build();
 
 		FileCollectionInstructionsItem actual = collectionStorageService
 			.createCollectionDeliveryItem(unsignedUrl);
 
-		assertEquals(expected, actual);
+		assertEquals(expected.getUnsignedUrl(), actual.getUnsignedUrl());
+		assertEquals(expected.getConnectionString(), actual.getConnectionString());
 	}
 
 	@Test
 	public void shouldGetUploadInstruction() {
-		Instant instant = Instant.now();
-		when(instantHelper.getCurrentInstant()).thenReturn(instant);
 		FileCollectionInstructionsItem actual = collectionStorageService.getCollectionUploadItem();
-		assertEquals(instant, actual.getCreatedAt());
 		assertEquals(downScopedTokenValue, actual.getConnectionString());
 		assertTrue(actual.getUnsignedUrl().endsWith("/"));
 	}

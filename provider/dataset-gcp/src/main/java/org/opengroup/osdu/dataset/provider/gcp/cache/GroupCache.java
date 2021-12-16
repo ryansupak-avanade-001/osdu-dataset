@@ -19,13 +19,13 @@ package org.opengroup.osdu.dataset.provider.gcp.cache;
 
 import org.opengroup.osdu.core.common.cache.RedisCache;
 import org.opengroup.osdu.core.common.model.entitlements.Groups;
-import org.opengroup.osdu.dataset.provider.gcp.config.GcpPropertiesConfig;
+import org.opengroup.osdu.dataset.provider.gcp.config.GcpConfigProperties;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GroupCache extends RedisCache<String, Groups> {
 
-	public GroupCache(GcpPropertiesConfig propertiesConfig) {
+	public GroupCache(GcpConfigProperties propertiesConfig) {
 		super(propertiesConfig.getRedisGroupHost(), propertiesConfig.getRedisGroupPort(), 30, String.class,
 			Groups.class);
 	}

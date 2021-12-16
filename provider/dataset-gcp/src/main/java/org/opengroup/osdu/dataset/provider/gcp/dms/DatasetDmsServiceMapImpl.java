@@ -17,16 +17,17 @@
 
 package org.opengroup.osdu.dataset.provider.gcp.dms;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.opengroup.osdu.dataset.dms.DmsServiceProperties;
-import org.opengroup.osdu.dataset.provider.gcp.config.GcpPropertiesConfig;
+import org.opengroup.osdu.dataset.provider.gcp.config.GcpConfigProperties;
 import org.opengroup.osdu.dataset.provider.gcp.model.dataset.DataSetType;
 import org.opengroup.osdu.dataset.provider.gcp.model.dataset.DmsServicePropertiesEntity;
 import org.opengroup.osdu.dataset.provider.gcp.model.dataset.GcpDmsServiceProperties;
-import org.opengroup.osdu.dataset.provider.gcp.repository.DmsServicePropertiesEntityRepository;
+import org.opengroup.osdu.dataset.provider.gcp.mappers.osm.repository.DmsServicePropertiesRepository;
 import org.opengroup.osdu.dataset.provider.interfaces.IDatasetDmsServiceMap;
 import org.springframework.stereotype.Service;
 
@@ -34,34 +35,22 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap {
 
-  private final DmsServicePropertiesEntityRepository dmsServicePropertiesEntityRepository;
-  private final GcpPropertiesConfig gcpPropertiesConfig;
+  private final DmsServicePropertiesRepository dmsServicePropertiesRepository;
+  private final GcpConfigProperties gcpConfigProperties;
 
   @Override
   public Map<String, DmsServiceProperties> getResourceTypeToDmsServiceMap() {
-    Iterable<DmsServicePropertiesEntity> properties = this.dmsServicePropertiesEntityRepository.findAll();
-
-    Map<String, DmsServiceProperties> resourceTypeToDmsServiceMap = new HashMap<>();
-
-    for (DmsServicePropertiesEntity entity : properties) {
-      String dmsApiBase = this.gcpPropertiesConfig.getDmsApiBase();
-      if (StringUtils.isEmpty(dmsApiBase)) {
-        dmsApiBase = entity.getDmsServiceBaseUrl();
-      }
-
-      DmsServiceProperties dmsServiceProperties = new DmsServiceProperties(dmsApiBase, entity.isStorageAllowed(),
-          entity.getApiKey(), entity.isStagingLocationSupported());
-      
-      if (StringUtils.containsIgnoreCase(entity.getDatasetKind(), "collection")) {
-        resourceTypeToDmsServiceMap.put(entity.getDatasetKind(), new GcpDmsServiceProperties(
-            DataSetType.FILE_COLLECTION, dmsServiceProperties));
-      } else {
-        resourceTypeToDmsServiceMap.put(entity.getDatasetKind(), new GcpDmsServiceProperties(
-            DataSetType.FILE, dmsServiceProperties));
-      }
-    }
-
-    return resourceTypeToDmsServiceMap;
+    Iterable<DmsServicePropertiesEntity> properties = this.dmsServicePropertiesRepository.findAll();
+    String dmsApiBase = this.gcpConfigProperties.getDmsApiBase();
+    return StreamSupport.stream(properties.spliterator(), false)
+        .collect(Collectors.toMap(DmsServicePropertiesEntity::getDatasetKind,
+            entity -> GcpDmsServiceProperties.builder()
+                .dmsServiceBaseUrl(StringUtils.isEmpty(dmsApiBase) ? entity.getDmsServiceBaseUrl() : dmsApiBase)
+                .allowStorage(entity.isStorageAllowed())
+                .apiKey(entity.getApiKey())
+                .stagingLocationSupported(entity.isStagingLocationSupported())
+                .dataSetType(StringUtils.containsIgnoreCase(entity.getDatasetKind(),
+                    "collection") ? DataSetType.FILE_COLLECTION : DataSetType.FILE)
+                .build()));
   }
-
 }

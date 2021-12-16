@@ -38,7 +38,7 @@ public class DmsClientFactory extends AbstractFactoryBean<IDmsFactory> {
 	}
 
 	@Override
-	protected IDmsFactory createInstance() throws Exception {
+	protected IDmsFactory createInstance() {
 		return new GcpDmsFactory(fileDmsService);
 	}
 }
