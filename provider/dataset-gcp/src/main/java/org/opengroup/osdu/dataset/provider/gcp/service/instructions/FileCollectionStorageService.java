@@ -46,8 +46,7 @@ import org.opengroup.osdu.dataset.provider.gcp.service.instructions.downscoped.D
 import org.opengroup.osdu.dataset.provider.gcp.service.instructions.downscoped.DownScopedCredentialsService;
 import org.opengroup.osdu.dataset.provider.gcp.service.instructions.downscoped.DownScopedOptions;
 import org.opengroup.osdu.dataset.provider.gcp.service.instructions.interfaces.IFileCollectionStorageService;
-import org.opengroup.osdu.dataset.provider.gcp.util.GoogleStorageBucketUtil;
-import org.opengroup.osdu.dataset.provider.gcp.util.InstantHelper;
+import org.opengroup.osdu.dataset.provider.gcp.util.PathUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
@@ -68,19 +67,16 @@ public class FileCollectionStorageService implements IFileCollectionStorageServi
 
 	private final GcsMultiTenantAccess gcsMultiTenantAccess;
 
-	private final InstantHelper instantHelper;
-
 	private final DpsHeaders headers;
 
 	private final ITenantFactory tenantFactory;
 
-	private final GoogleStorageBucketUtil bucketUtil;
+	private final PathUtil pathUtil;
 
 	private final DownScopedCredentialsService downscopedCredentialsService;
 
 	@Override
 	public FileCollectionInstructionsItem createCollectionDeliveryItem(String unsignedUrl) {
-		Instant now = instantHelper.getCurrentInstant();
 		TenantInfo tenantInfo = tenantFactory.getTenantInfo(headers.getPartitionId());
 		Storage storage = getStorage(tenantInfo);
 
@@ -102,7 +98,9 @@ public class FileCollectionStorageService implements IFileCollectionStorageServi
 			.join("/", Arrays.copyOfRange(gsObjectKeyParts, 1, gsObjectKeyParts.length));
 
 		FileCollectionInstructionsItemBuilder instructionsItemBuilder = FileCollectionInstructionsItem
-			.builder().createdAt(now).unsignedUrl(unsignedUrl);
+			.builder()
+				.createdAt(Instant.now())
+				.unsignedUrl(unsignedUrl);
 
 		BlobId blobId = BlobId.of(bucketName, filePath);
 		Blob blob = storage.get(blobId);
@@ -130,10 +128,9 @@ public class FileCollectionStorageService implements IFileCollectionStorageServi
 	public FileCollectionInstructionsItem getCollectionUploadItem() {
 		TenantInfo tenantInfo = tenantFactory.getTenantInfo(headers.getPartitionId());
 		Storage storage = getStorage(tenantInfo);
-		Instant now = instantHelper.getCurrentInstant();
 
 		String filePath = getRelativePath();
-		String bucketName = bucketUtil.getBucketPath(tenantInfo);
+		String bucketName = pathUtil.getBucketPath(tenantInfo);
 
 		log.debug("Creating the folder for name : {}. PartitionID : {}",
 			filePath, headers.getPartitionId());
@@ -148,7 +145,7 @@ public class FileCollectionStorageService implements IFileCollectionStorageServi
 		String fileSource = "gs://" + bucketName + "/" + filePath + "/";
 
 		FileCollectionInstructionsItemBuilder instructionsItemBuilder = FileCollectionInstructionsItem
-			.builder().createdAt(now)
+			.builder().createdAt(Instant.now())
 			.unsignedUrl(fileSource);
 
 		DownScopedCredentials downScopedCredentials = getDownScopedCredentials(bucketName, filePath,

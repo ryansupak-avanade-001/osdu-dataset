@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.opengroup.osdu.dataset.provider.gcp.config;
+package org.opengroup.osdu.dataset.provider.gcp.di;
 
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
-import org.opengroup.osdu.core.gcp.multitenancy.GcsMultiTenantAccess;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
 
-@Configuration
-public class GcpStorageFactory {
+@Service
+@ConditionalOnProperty(name = "obmDriver", havingValue = "minio")
+public class MinioEnvironmentResolverImpl implements EnvironmentResolver {
 
-	@Bean
-	public Storage googleCloudStorage() {
-		return StorageOptions.getDefaultInstance().getService();
-	}
+  @Override
+  public String getProviderKey() {
+    return "ANTHOS";
+  }
 
-	@Bean
-	public GcsMultiTenantAccess gcsMultiTenantAccess() {
-		return new GcsMultiTenantAccess();
-	}
+  @Override
+  public String getTransferProtocol() {
+    return "http://";
+  }
 }

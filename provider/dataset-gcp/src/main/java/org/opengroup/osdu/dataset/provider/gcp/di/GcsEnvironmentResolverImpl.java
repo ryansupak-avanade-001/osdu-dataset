@@ -15,15 +15,22 @@
  * limitations under the License.
  */
 
-package org.opengroup.osdu.dataset.provider.gcp.util;
+package org.opengroup.osdu.dataset.provider.gcp.di;
 
-import java.time.Instant;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
 
-@Component
-public class InstantHelper {
+@Service
+@ConditionalOnProperty(name = "obmDriver", havingValue = "gcs")
+public class GcsEnvironmentResolverImpl implements EnvironmentResolver {
 
-	public Instant getCurrentInstant() {
-		return Instant.now();
-	}
+  @Override
+  public String getProviderKey() {
+    return "GCP";
+  }
+
+  @Override
+  public String getTransferProtocol() {
+    return "gs://";
+  }
 }

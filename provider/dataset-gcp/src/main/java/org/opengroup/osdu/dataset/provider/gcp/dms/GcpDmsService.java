@@ -44,6 +44,7 @@ public class GcpDmsService implements IDmsProvider {
 
   private final IDmsProvider dmsRestService;
 
+  // TODO: osdu.dataset.config.useRestDms property ignored in current implementation
   @Override
   public GetDatasetStorageInstructionsResponse getStorageInstructions() throws DmsException {
     switch (dmsServiceProperties.getDataSetType()) {
