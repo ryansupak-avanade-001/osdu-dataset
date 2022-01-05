@@ -82,9 +82,17 @@
 					<groupId>org.apache.logging.log4j</groupId>
 					<artifactId>log4j-to-slf4j</artifactId>
 				</exclusion>
-			</exclusions>
+				<exclusion>
+					<groupId>org.apache.tomcat.embed</groupId>
+					<artifactId>tomcat-embed-core</artifactId>
+				</exclusion>
+            </exclusions>
         </dependency> 
-      
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-core</artifactId>
+			<version>9.0.54</version>		
+		</dependency>      
 
         <!-- Third party Apache 2.0 license packages -->
         <dependency>
