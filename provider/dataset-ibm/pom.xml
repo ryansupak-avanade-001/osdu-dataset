@@ -36,9 +36,18 @@
             		<groupId>org.apache.logging.log4j</groupId>
             		<artifactId>log4j-api</artifactId>
             	</exclusion>
+            	<exclusion>
+            		<groupId>io.netty</groupId>
+            		<artifactId>netty-codec</artifactId>
+            	</exclusion>
             </exclusions>
       </dependency>
-      		<dependency>
+      <dependency>
+      	<groupId>io.netty</groupId>
+        <artifactId>netty-codec</artifactId>
+        <version>4.1.68.Final</version>
+      </dependency>
+      	<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-to-slf4j</artifactId>
 			<version>${log4j2.version}</version>
