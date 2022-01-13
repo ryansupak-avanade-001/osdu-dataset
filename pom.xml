@@ -33,6 +33,7 @@
 		<commons-codec.version>1.14</commons-codec.version>
 		<nimbusds.version>7.9</nimbusds.version>
 		<log4j2.version>2.17.0</log4j2.version>
+		<springfox.version>3.0.0</springfox.version>
 	</properties>
 
 	<licenses>
@@ -111,6 +112,13 @@
 			<version>1.18.8</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- swagger dependency -->
+		<dependency>
+      		<groupId>io.springfox</groupId>
+      		<artifactId>springfox-boot-starter</artifactId>
+      		<version>${springfox.version}</version>
+    	</dependency>
+		
 	</dependencies>
 
 	<profiles>
