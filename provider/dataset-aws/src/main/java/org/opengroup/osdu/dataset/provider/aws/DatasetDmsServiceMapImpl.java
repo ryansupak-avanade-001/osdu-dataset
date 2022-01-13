@@ -78,7 +78,7 @@ public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap {
 
     protected DmsRegistrations getServicesInfoFromCacheOrDynamo(DpsHeaders headers) {
 		String cacheKey = DmsRegistrationCache.getCacheKey(headers);
-		DmsRegistrations dmsRegistrations = this.cache.get(cacheKey);
+		DmsRegistrations dmsRegistrations = (DmsRegistrations) this.cache.get(cacheKey);
 
 		if (dmsRegistrations == null) {			
 			try {
