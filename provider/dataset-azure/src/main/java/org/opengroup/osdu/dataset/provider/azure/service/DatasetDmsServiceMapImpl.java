@@ -19,6 +19,7 @@ package org.opengroup.osdu.dataset.provider.azure.service;
 import org.opengroup.osdu.dataset.dms.DmsServiceProperties;
 import org.opengroup.osdu.dataset.provider.interfaces.IDatasetDmsServiceMap;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -26,17 +27,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@PropertySource("classpath:osdu-dataset.properties")
 public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap {
 
     private final Map<String, DmsServiceProperties> resourceTypeToDmsServiceMap = new HashMap<>();
 
-    private static final String KIND_FILE = "dataset--File.*";
-    private static final String KIND_FILE_COLLECTION = "dataset--FileCollection.*";
+    @Value("${osdu.kind.file}")
+    private String fileKind;
 
-    @Value("${FILE_API}")
+    @Value("${osdu.kind.file.collection}")
+    private String fileCollectionKind;
+
+    @Value("${osdu.api.endpoints.file}")
     private String fileApi;
 
-    @Value("${FILE_COLLECTION_API}")
+    @Value("${osdu.api.endpoints.file.collection}")
     private String fileCollectionApi;
 
     @PostConstruct
@@ -45,8 +50,8 @@ public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap {
         fileDmsProperties.setStagingLocationSupported(true);
 
         //TODO: replace this with static or dynamic registration of DMS
-        resourceTypeToDmsServiceMap.put(KIND_FILE, fileDmsProperties);
-        resourceTypeToDmsServiceMap.put(KIND_FILE_COLLECTION, getDmsServicePropertyForFileCollection());
+        resourceTypeToDmsServiceMap.put(fileKind, fileDmsProperties);
+        resourceTypeToDmsServiceMap.put(fileCollectionKind, getDmsServicePropertyForFileCollection());
     }
 
     @Override
