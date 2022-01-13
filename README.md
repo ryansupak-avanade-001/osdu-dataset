@@ -150,9 +150,7 @@ Integration tests are located in a separate project for each cloud in the ```tes
 
 ### AWS
 
-1. Run the testing/dataset-aws/build-aws/prepare-dist.sh file from the repo root directory
-2. Configure required env vars
-3. Run dist/testing/dataset-aws/build-aws/run-tests.sh
+Instructions for running the AWS integration tests can be found [here](./provider/dataset-aws/README.md)
 
 ### GCP
 
