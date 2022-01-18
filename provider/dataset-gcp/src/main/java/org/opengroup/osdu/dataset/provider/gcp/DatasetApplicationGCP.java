@@ -32,11 +32,9 @@ import org.springframework.context.annotation.FilterType;
 @ComponentScan(value = {"org.opengroup.osdu"}, excludeFilters = {
 	@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = {DmsClientFactory.class,
 		DatasetApplication.class, IStorageFactory.class})})
-@EnableDatastoreRepositories
 public class DatasetApplicationGCP {
 
 	public static void main(String[] args) {
 		SpringApplication.run(DatasetApplicationGCP.class, args);
 	}
-
 }

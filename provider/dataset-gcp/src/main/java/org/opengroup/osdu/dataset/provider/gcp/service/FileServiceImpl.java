@@ -38,7 +38,8 @@ import org.opengroup.osdu.dataset.model.request.StorageExceptionResponse;
 import org.opengroup.osdu.dataset.model.response.DatasetRetrievalDeliveryItem;
 import org.opengroup.osdu.dataset.model.response.GetDatasetRetrievalInstructionsResponse;
 import org.opengroup.osdu.dataset.model.response.GetDatasetStorageInstructionsResponse;
-import org.opengroup.osdu.dataset.provider.gcp.config.GcpPropertiesConfig;
+import org.opengroup.osdu.dataset.provider.gcp.config.GcpConfigProperties;
+import org.opengroup.osdu.dataset.provider.gcp.di.EnvironmentResolver;
 import org.opengroup.osdu.dataset.provider.gcp.model.FileCollectionInstructionsItem;
 import org.opengroup.osdu.dataset.provider.gcp.model.FileInstructionsItem;
 import org.opengroup.osdu.dataset.provider.gcp.model.dataset.GcpDatasetRetrievalDeliveryItem;
@@ -53,28 +54,24 @@ import org.springframework.stereotype.Service;
 public class FileServiceImpl implements IFileService {
 
 	private final HttpResponseBodyMapper bodyMapper;
-
 	private final ObjectMapper objectMapper;
-
 	private final IFileStorageService fileStorageService;
-
 	private final IFileCollectionStorageService collectionStorageService;
-
 	private final IStorageFactory storageFactory;
-
-	private final GcpPropertiesConfig propertiesConfig;
-
+	private final GcpConfigProperties propertiesConfig;
 	private final DpsHeaders headers;
+	private final EnvironmentResolver providerKeyResolver;
 
 	@Override
 	public GetDatasetStorageInstructionsResponse getFileUploadInstructions() {
-		return new GcpGetDatasetStorageInstructionsResponse(fileStorageService.getFileUploadItem(), objectMapper);
+		return new GcpGetDatasetStorageInstructionsResponse(fileStorageService.getFileUploadItem(),
+				objectMapper, providerKeyResolver.getProviderKey());
 	}
 
 	@Override
 	public GetDatasetStorageInstructionsResponse getCollectionUploadInstructions() {
 		return new GcpGetDatasetStorageInstructionsResponse(collectionStorageService.getCollectionUploadItem(),
-			objectMapper);
+			objectMapper, providerKeyResolver.getProviderKey());
 	}
 
 	@Override
@@ -129,7 +126,7 @@ public class FileServiceImpl implements IFileService {
 			FileInstructionsItem fileInstructionsItem = fileStorageService.createFileDeliveryItem(preLoadFilePath);
 
 			GcpDatasetRetrievalDeliveryItem resp = new GcpDatasetRetrievalDeliveryItem(datasetRegistryRecord.getId(),
-				fileInstructionsItem, objectMapper);
+				fileInstructionsItem, objectMapper, providerKeyResolver.getProviderKey());
 
 			delivery.add(resp);
 		}
@@ -145,7 +142,7 @@ public class FileServiceImpl implements IFileService {
 				.createCollectionDeliveryItem(fileCollectionPath);
 
 			GcpDatasetRetrievalDeliveryItem resp = new GcpDatasetRetrievalDeliveryItem(datasetRegistryRecord.getId(),
-				collectionInstructionsItem, objectMapper);
+				collectionInstructionsItem, objectMapper, providerKeyResolver.getProviderKey());
 
 			delivery.add(resp);
 		}

@@ -29,9 +29,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opengroup.osdu.dataset.dms.DmsServiceProperties;
-import org.opengroup.osdu.dataset.provider.gcp.config.GcpPropertiesConfig;
+import org.opengroup.osdu.dataset.provider.gcp.config.GcpConfigProperties;
 import org.opengroup.osdu.dataset.provider.gcp.model.dataset.DmsServicePropertiesEntity;
-import org.opengroup.osdu.dataset.provider.gcp.repository.DmsServicePropertiesEntityRepository;
+import org.opengroup.osdu.dataset.provider.gcp.mappers.osm.repository.DmsServicePropertiesRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DatasetDmsServiceMapImplTest {
@@ -39,10 +39,10 @@ public class DatasetDmsServiceMapImplTest {
   private static final String DATASET_KIND = "example";
 
   @Mock
-  private DmsServicePropertiesEntityRepository dmsServicePropertiesEntityRepository;
+  private DmsServicePropertiesRepository dmsServicePropertiesEntityRepository;
 
   @Mock
-  private GcpPropertiesConfig gcpPropertiesConfig;
+  private GcpConfigProperties gcpConfigProperties;
 
   @InjectMocks
   private DatasetDmsServiceMapImpl datasetDmsServiceMap;
@@ -60,5 +60,4 @@ public class DatasetDmsServiceMapImplTest {
     Map<String, DmsServiceProperties> actual = this.datasetDmsServiceMap.getResourceTypeToDmsServiceMap();
     assertTrue(actual.containsKey(DATASET_KIND));
   }
-
 }

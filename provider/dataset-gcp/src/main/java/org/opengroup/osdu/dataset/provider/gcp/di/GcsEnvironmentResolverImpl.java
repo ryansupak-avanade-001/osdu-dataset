@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.opengroup.osdu.dataset.provider.gcp.cache;
+package org.opengroup.osdu.dataset.provider.gcp.di;
 
-import org.opengroup.osdu.core.common.cache.RedisCache;
-import org.opengroup.osdu.core.common.model.entitlements.Groups;
-import org.opengroup.osdu.dataset.provider.gcp.config.GcpConfigProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
 
-@Component
-public class GroupCache extends RedisCache<String, Groups> {
+@Service
+@ConditionalOnProperty(name = "obmDriver", havingValue = "gcs")
+public class GcsEnvironmentResolverImpl implements EnvironmentResolver {
 
-	public GroupCache(GcpConfigProperties propertiesConfig) {
-		super(propertiesConfig.getRedisGroupHost(), propertiesConfig.getRedisGroupPort(), 30, String.class,
-			Groups.class);
-	}
+  @Override
+  public String getProviderKey() {
+    return "GCP";
+  }
 
+  @Override
+  public String getTransferProtocol() {
+    return "gs://";
+  }
 }
