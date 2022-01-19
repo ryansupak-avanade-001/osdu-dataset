@@ -35,7 +35,6 @@ import org.opengroup.osdu.core.gcp.osm.model.Destination;
 import org.opengroup.osdu.core.gcp.osm.translate.TranslatorRuntimeException;
 import org.opengroup.osdu.core.gcp.osm.translate.postgresql.PgDestinationResolution;
 import org.opengroup.osdu.core.gcp.osm.translate.postgresql.PgDestinationResolver;
-import org.opengroup.osdu.dataset.provider.gcp.config.GcpConfigProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.stereotype.Component;
@@ -46,13 +45,12 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class PgTenantDestinationResolver implements PgDestinationResolver {
 
-  private static final String DATASOURCE = "datasource";
+  private static final String DATASOURCE = ".datasource.";
   private static final String DRIVER_CLASS_NAME = "org.postgresql.Driver";
 
   private final DpsHeaders dpsHeaders;
   private final IPartitionFactory partitionFactory;
   private final PgOsmConfigurationProperties pgOsmConfigurationProperties;
-  private final GcpConfigProperties gcpConfigProperties;
   private final Map<String, DataSource> dataSourceCache = new HashMap<>();
 
   @Override
@@ -78,13 +76,12 @@ public class PgTenantDestinationResolver implements PgDestinationResolver {
           Map<String, Property> partitionProperties = partitionInfo.getProperties();
 
           String prefix = pgOsmConfigurationProperties.getPartitionPropertiesPrefix();
-          String delimiter = gcpConfigProperties.getPartitionPropertiesDelimiter();
           String url = getPartitionProperty(partitionId, partitionProperties,
-              prefix + delimiter + DATASOURCE + delimiter + "url");
+              prefix + DATASOURCE + "url");
           String username = getPartitionProperty(partitionId, partitionProperties,
-              prefix + delimiter + DATASOURCE + delimiter + "username");
+              prefix + DATASOURCE + "username");
           String password = getPartitionProperty(partitionId, partitionProperties,
-              prefix + delimiter + DATASOURCE + delimiter + "password");
+              prefix + DATASOURCE + "password");
 
           dataSource = DataSourceBuilder.create()
               .driverClassName(DRIVER_CLASS_NAME)

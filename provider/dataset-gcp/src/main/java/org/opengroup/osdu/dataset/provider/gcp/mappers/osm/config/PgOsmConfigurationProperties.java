@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Setter
 public class PgOsmConfigurationProperties {
-  private String partitionPropertiesPrefix = "osm_postgres";
+  private String partitionPropertiesPrefix = "osm.postgres";
   private Integer maximumPoolSize = 40;
   private Integer minimumIdle = 0;
   private Integer idleTimeout = 30000;

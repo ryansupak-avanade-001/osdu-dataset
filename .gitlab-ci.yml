@@ -9,7 +9,7 @@ variables:
   IBM_BUILD_SUBDIR: provider/dataset-ibm
   IBM_INT_TEST_SUBDIR: testing/dataset-test-ibm
 
-   # --- osdu-gcp specific variables ---
+  # --- osdu-gcp specific variables ---
   OSDU_GCP_SERVICE: dataset
   OSDU_GCP_VENDOR: gcp
   OSDU_GCP_APPLICATION_NAME: dataset
@@ -18,7 +18,7 @@ variables:
   OSDU_GCP_TEST_SUBDIR: testing/$OSDU_GCP_SERVICE-test-$OSDU_GCP_VENDOR
   OSDU_GCP_HELM_PACKAGE_CHARTS: "devops/gcp/deploy devops/gcp/configmap"
   OSDU_GCP_HELM_CONFIG_SERVICE_VARS: "--set data.google_audiences=$GOOGLE_AUDIENCE --set data.redis_group_host=$REDIS_GROUP_HOST --set data.file_dms_bucket=$OSDU_GCP_FILE_DMS_BUCKET --set data.expiration_days=$OSDU_GCP_EXPIRATION_DAYS"
-  OSDU_GCP_HELM_DEPLOYMENT_SERVICE_VARS: "--set data.image=$CI_REGISTRY_IMAGE/osdu-gcp:$CI_COMMIT_SHORT_SHA --set data.serviceAccountName=workload-identity-dataset"
+  OSDU_GCP_HELM_DEPLOYMENT_SERVICE_VARS: "--set data.image=$CI_REGISTRY_IMAGE/osdu-gcp:$CI_COMMIT_SHORT_SHA --set data.serviceAccountName=$OSDU_GCP_SERVICE-k8s"
   OSDU_GCP_HELM_CONFIG_SERVICE: dataset-config
   OSDU_GCP_HELM_DEPLOYMENT_SERVICE: dataset-deploy
 
@@ -37,14 +37,14 @@ include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/fossa-maven.yml"
 
-  - project: 'osdu/platform/ci-cd-pipelines'
-    file: 'cloud-providers/aws-global.yml'
+  - project: "osdu/platform/ci-cd-pipelines"
+    file: "cloud-providers/aws-global.yml"
 
-  - project: 'osdu/platform/ci-cd-pipelines'
-    file: 'cloud-providers/aws-maven.yml'
+  - project: "osdu/platform/ci-cd-pipelines"
+    file: "cloud-providers/aws-maven.yml"
 
-  - project: 'osdu/platform/ci-cd-pipelines'
-    file: 'cloud-providers/azure.yml'
+  - project: "osdu/platform/ci-cd-pipelines"
+    file: "cloud-providers/azure.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/ibm.yml"
@@ -52,9 +52,8 @@ include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/gitlab-ultimate.yml"
 
-  - project: 'osdu/platform/ci-cd-pipelines'
-    file: 'cloud-providers/osdu-gcp-gke.yml'
-
+  - project: "osdu/platform/ci-cd-pipelines"
+    file: "cloud-providers/osdu-gcp-gke.yml"
 
 # disable the eslint scanner
 # I think this is being generated from the presence of an HTML file, but there

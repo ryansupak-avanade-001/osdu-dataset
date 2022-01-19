@@ -34,12 +34,8 @@
 		<java.version>1.8</java.version>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
-		<springfox-version>2.7.0</springfox-version>
 		<tomcat_embed_core_version>9.0.54</tomcat_embed_core_version>
 		<log4j2.version>2.17.0</log4j2.version>
-		<!--
-		<springfox-version>2.9.2</springfox-version>
-		-->
 	</properties>
 
 	<dependencyManagement>
@@ -187,18 +183,6 @@
 			<artifactId>mockito-core</artifactId>
 			<version>3.0.0</version>
 			<scope>test</scope>
-		</dependency>
-
-		<!-- swagger dependencies -->
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger2</artifactId>
-			<version>${springfox-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-			<version>${springfox-version}</version>
 		</dependency>
     </dependencies>
 

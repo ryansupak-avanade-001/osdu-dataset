@@ -31,9 +31,4 @@ public class GcpConfigProperties {
 	private String redisGroupHost;
 	private Integer redisGroupPort;
 	private String dmsApiBase;
-	/**
-	 * TODO: remove property and fix PgOsmConfigurationProperties.partitionPropertiesPrefix after
-	 * Partition service migration to new approach (https://jiraeu.epam.com/browse/GONRG-3881)
-	 */
-	private String partitionPropertiesDelimiter;
 }
