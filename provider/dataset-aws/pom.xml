@@ -40,6 +40,13 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.opengroup.osdu</groupId>
+                <artifactId>os-core-common</artifactId>
+                <version>0.13.0-rc4</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-bom</artifactId>
                 <version>${aws.version}</version>
@@ -104,7 +111,6 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-commons</artifactId>
-            <version>2.1.10.RELEASE</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
