@@ -17,7 +17,6 @@
 
 package org.opengroup.osdu.dataset.provider.gcp.mappers.osm.config;
 
-import joptsimple.internal.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
@@ -37,7 +36,7 @@ public class DestinationProvider implements IDestinationProvider {
   @Override
   public Destination getDestination(String tenantName, String kindName) {
     TenantInfo tenantInfo = tenantFactory.getTenantInfo(tenantName);
-    return getDestination(tenantInfo, Strings.EMPTY, kindName);
+    return getDestination(tenantInfo, "", kindName);
   }
 
   @Override
