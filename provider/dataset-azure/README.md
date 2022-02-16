@@ -1,5 +1,7 @@
 # Dataset Service Azure implementation
 
+[![coverage report](https://community.opengroup.org/osdu/platform/system/dataset/badges/master/coverage.svg)](https://community.opengroup.org/osdu/platform/system/dataset/-/commits/master)
+
 ## Running Locally
 
 ### Requirements

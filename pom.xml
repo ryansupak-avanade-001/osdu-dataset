@@ -17,7 +17,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.opengroup.osdu</groupId>
 	<artifactId>os-dataset</artifactId>
-	<version>0.13.0-SNAPSHOT</version>
+	<version>0.14.0-SNAPSHOT</version>
 	<description>Root Dataset Registry Service project</description>
 
 	<properties>
@@ -26,14 +26,15 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<docker.image.prefix>opendes</docker.image.prefix>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<os-core-common.version>0.13.0-rc4</os-core-common.version>
+		<os-core-common.version>0.13.0</os-core-common.version>
 		<jackson.version>2.11.2</jackson.version>
 		<netty.version>4.1.51.Final</netty.version>
 		<snakeyaml.version>1.26</snakeyaml.version>
 		<commons-codec.version>1.14</commons-codec.version>
 		<nimbusds.version>7.9</nimbusds.version>
-		<log4j2.version>2.17.0</log4j2.version>
+		<log4j2.version>2.17.1</log4j2.version>
 		<springfox.version>3.0.0</springfox.version>
+		<json-smart.version>2.4.7</json-smart.version>
 	</properties>
 
 	<licenses>
@@ -102,6 +103,11 @@
 				<artifactId>snakeyaml</artifactId>
 				<version>${snakeyaml.version}</version>
 			</dependency> -->
+			<dependency>
+				<groupId>net.minidev</groupId>
+				<artifactId>json-smart</artifactId>
+				<version>${json-smart.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
