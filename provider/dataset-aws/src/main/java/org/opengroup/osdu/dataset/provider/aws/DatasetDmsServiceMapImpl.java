@@ -32,6 +32,7 @@ import org.opengroup.osdu.dataset.provider.aws.cache.DmsRegistrationCache;
 import org.opengroup.osdu.dataset.provider.aws.model.DynamoDmsRegistration;
 import org.opengroup.osdu.dataset.provider.aws.model.DmsRegistrations;
 import org.opengroup.osdu.dataset.provider.interfaces.IDatasetDmsServiceMap;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,7 @@ public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap {
     private String DMS_API_BASE;
 
     @Inject
+    @Qualifier("DmsRegistrationCache")
     DmsRegistrationCache cache;
 
     @Inject
@@ -78,7 +80,7 @@ public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap {
 
     protected DmsRegistrations getServicesInfoFromCacheOrDynamo(DpsHeaders headers) {
 		String cacheKey = DmsRegistrationCache.getCacheKey(headers);
-		DmsRegistrations dmsRegistrations = this.cache.get(cacheKey);
+		DmsRegistrations dmsRegistrations = (DmsRegistrations) this.cache.get(cacheKey);
 
 		if (dmsRegistrations == null) {			
 			try {
