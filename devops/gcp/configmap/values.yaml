@@ -9,7 +9,7 @@ data:
   redis_group_host: ""
   redis_group_port: 6379
   google_audiences: ""
-
+  spring_profiles_active: "gcp"
 
 conf:
   configmap: "dataset-config"
