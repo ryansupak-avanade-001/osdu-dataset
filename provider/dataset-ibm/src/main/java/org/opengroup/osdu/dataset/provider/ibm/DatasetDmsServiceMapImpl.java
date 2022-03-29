@@ -21,6 +21,9 @@ public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap {
     @Value("${FILE_API}")
     private String fileApi;
     
+    @Value("${FILE_COLLECTION_API}")
+    private String fileCollectionApi;
+    
     @PostConstruct
 	public void init() {
     	
@@ -28,12 +31,18 @@ public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap {
 		fileDmsProperties.setStagingLocationSupported(true);
 
 		resourceTypeToDmsServiceMap.put("dataset--File.*", fileDmsProperties);
-		resourceTypeToDmsServiceMap.put("dataset--FileCollection.*",fileDmsProperties);
+		resourceTypeToDmsServiceMap.put("dataset--FileCollection.*", getDmsServicePropertyForFileCollection());
 	}
 
     @Override
     public Map<String, DmsServiceProperties> getResourceTypeToDmsServiceMap() {
         return resourceTypeToDmsServiceMap;
+    }
+    
+    private DmsServiceProperties getDmsServicePropertyForFileCollection() {
+        DmsServiceProperties fileCollectionDmsProperties = new DmsServiceProperties(fileCollectionApi);
+        fileCollectionDmsProperties.setStagingLocationSupported(true);
+        return fileCollectionDmsProperties;
     }
     
 }
