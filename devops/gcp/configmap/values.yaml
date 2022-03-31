@@ -3,14 +3,17 @@
 # Declare variables to be passed into your templates.
 
 data:
+  # common
   log_level: "INFO"
+  spring_profiles_active: "gcp"
   file_dms_bucket: "file-dms-bucket"
   expiration_days: 1
   redis_group_host: ""
   redis_group_port: 6379
+  # gcp
   google_audiences: ""
-  spring_profiles_active: "gcp"
 
 conf:
   configmap: "dataset-config"
   app_name: "dataset"
+  on_prem_enabled: false

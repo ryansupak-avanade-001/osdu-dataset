@@ -11,5 +11,7 @@ data:
   EXPIRATION_DAYS: "{{ .Values.data.expiration_days }}"
   REDIS_GROUP_HOST: "{{ .Values.data.redis_group_host }}"
   REDIS_GROUP_PORT: "{{ .Values.data.redis_group_port }}"
-  GOOGLE_AUDIENCES: "{{ .Values.data.google_audiences }}"
   SPRING_PROFILES_ACTIVE: "{{ .Values.data.spring_profiles_active }}"
+  {{- if not .Values.conf.on_prem_enabled }}
+  GOOGLE_AUDIENCES: "{{ .Values.data.google_audiences }}"
+  {{- end }}
