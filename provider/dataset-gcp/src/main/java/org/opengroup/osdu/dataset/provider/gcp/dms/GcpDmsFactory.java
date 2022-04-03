@@ -25,19 +25,16 @@ import org.opengroup.osdu.dataset.dms.DmsServiceProperties;
 import org.opengroup.osdu.dataset.dms.IDmsFactory;
 import org.opengroup.osdu.dataset.dms.IDmsProvider;
 import org.opengroup.osdu.dataset.provider.gcp.model.dataset.GcpDmsServiceProperties;
-import org.opengroup.osdu.dataset.provider.gcp.service.IFileService;
 
 @RequiredArgsConstructor
 public class GcpDmsFactory implements IDmsFactory {
-
-  private final IFileService fileDmsService;
 
   private final IHttpClient httpClient = new HttpClient();
 
   // TODO: rewrite DmsProvider injection into DmsProvider
   @Override
   public IDmsProvider create(DpsHeaders headers, DmsServiceProperties dmsServiceRoute) {
-    return new GcpDmsService(fileDmsService, (GcpDmsServiceProperties) dmsServiceRoute,
+    return new GcpDmsService((GcpDmsServiceProperties) dmsServiceRoute,
         new GcpDmsRestService(dmsServiceRoute, httpClient, headers));
   }
 }

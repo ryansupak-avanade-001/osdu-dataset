@@ -20,12 +20,10 @@ package org.opengroup.osdu.dataset.provider.gcp.dms;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.apache.http.HttpStatus;
 import org.opengroup.osdu.core.common.dms.model.CopyDmsRequest;
 import org.opengroup.osdu.core.common.dms.model.CopyDmsResponse;
 import org.opengroup.osdu.core.common.dms.model.DatasetRetrievalProperties;
 import org.opengroup.osdu.core.common.dms.model.RetrievalInstructionsResponse;
-import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.dataset.dms.DmsException;
 import org.opengroup.osdu.dataset.dms.IDmsProvider;
 import org.opengroup.osdu.dataset.model.request.GetDatasetRegistryRequest;
@@ -33,12 +31,9 @@ import org.opengroup.osdu.dataset.model.response.DatasetRetrievalDeliveryItem;
 import org.opengroup.osdu.dataset.model.response.GetDatasetRetrievalInstructionsResponse;
 import org.opengroup.osdu.dataset.model.response.GetDatasetStorageInstructionsResponse;
 import org.opengroup.osdu.dataset.provider.gcp.model.dataset.GcpDmsServiceProperties;
-import org.opengroup.osdu.dataset.provider.gcp.service.IFileService;
 
 @RequiredArgsConstructor
 public class GcpDmsService implements IDmsProvider {
-
-  private final IFileService fileDmsService;
 
   private final GcpDmsServiceProperties dmsServiceProperties;
 
@@ -47,42 +42,26 @@ public class GcpDmsService implements IDmsProvider {
   // TODO: osdu.dataset.config.useRestDms property ignored in current implementation
   @Override
   public GetDatasetStorageInstructionsResponse getStorageInstructions() throws DmsException {
-    switch (dmsServiceProperties.getDataSetType()) {
-      case FILE:
-        return dmsRestService.getStorageInstructions();
-      case FILE_COLLECTION:
-        return fileDmsService.getCollectionUploadInstructions();
-      default:
-        throw new AppException(HttpStatus.SC_BAD_REQUEST, "Bad request",
-            "Invalid dataset provided");
-    }
+    return dmsRestService.getStorageInstructions();
   }
 
   @Override
   public GetDatasetRetrievalInstructionsResponse getDatasetRetrievalInstructions(
       GetDatasetRegistryRequest request)
       throws DmsException {
-    switch (dmsServiceProperties.getDataSetType()) {
-      case FILE:
-        RetrievalInstructionsResponse retrievalInstructions = dmsRestService.getRetrievalInstructions(request);
-        String providerKey = retrievalInstructions.getProviderKey();
+    RetrievalInstructionsResponse retrievalInstructions = dmsRestService.getRetrievalInstructions(request);
+    String providerKey = retrievalInstructions.getProviderKey();
 
-        List<DatasetRetrievalDeliveryItem> datasetRetrievalDeliveryItemList = new ArrayList<>();
+    List<DatasetRetrievalDeliveryItem> datasetRetrievalDeliveryItemList = new ArrayList<>();
 
-        for (DatasetRetrievalProperties properties : retrievalInstructions.getDatasets()) {
-          DatasetRetrievalDeliveryItem retrievalDeliveryItem = new DatasetRetrievalDeliveryItem(
-              properties.getDatasetRegistryId(), properties.getRetrievalProperties(),
-              providerKey);
-          datasetRetrievalDeliveryItemList.add(retrievalDeliveryItem);
-        }
-
-        return new GetDatasetRetrievalInstructionsResponse(datasetRetrievalDeliveryItemList);
-      case FILE_COLLECTION:
-        return fileDmsService.getCollectionRetrievalInstructions(request);
-      default:
-        throw new AppException(HttpStatus.SC_BAD_REQUEST, "Bad request",
-            "Invalid dataset provided");
+    for (DatasetRetrievalProperties properties : retrievalInstructions.getDatasets()) {
+      DatasetRetrievalDeliveryItem retrievalDeliveryItem = new DatasetRetrievalDeliveryItem(
+          properties.getDatasetRegistryId(), properties.getRetrievalProperties(),
+          providerKey);
+      datasetRetrievalDeliveryItemList.add(retrievalDeliveryItem);
     }
+
+    return new GetDatasetRetrievalInstructionsResponse(datasetRetrievalDeliveryItemList);
   }
 
   @Override
