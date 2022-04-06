@@ -34,7 +34,6 @@ Must have:
 | `EXPIRATION_DAYS` | ex `1` | expiration for signed urls & connection strings | no |  |
 | `REDIS_GROUP_HOST` |  ex `127.0.0.1` | Redis host for groups | no | https://console.cloud.google.com/memorystore/redis/instances |
 | `REDIS_GROUP_PORT` |  ex `1111` | Redis port | no | https://console.cloud.google.com/memorystore/redis/instances |
-| `osdu.dataset.config.useRestDms` | `true` | Allows to configure *DMS REST APIs usage.* Must be set to `true` for GCP provider because Dataset uses File Service. | no | - |
 | `DMS_API_BASE` | ex `http://localhost:8081/api/file/v2/files` | *Only for local usage.* Allows to override DMS service base url value from Datastore.  | no | - |
 
 These variables define service behavior, and are used to switch between `anthos` or `gcp` environments, their overriding and usage in mixed mode was not tested.
@@ -47,6 +46,39 @@ Usage of spring profiles is preferred.
 | `OBMDRIVER` | `minio` | Obm driver mode that defines which object storage will be used | no | - |
 | `OQMDRIVER` | `rabbitmq` | Oqm driver mode that defines which message broker will be used | no | - |
 | `SERVICE_TOKEN_PROVIDER` | `GCP` or `OPENID` |Service account token provider, `GCP` means use Google service account `OPEIND` means use OpenId provider like `Keycloak` | no | - |
+
+## Datastore configuration
+
+There must be a kind `DmsServiceProperties` in default namespace, with DMS configuration,
+Example:
+
+| name | apiKey | dmsServiceBaseUrl | isStagingLocationSupported | isStorageAllowed |
+| ---  | ---   |---| ---        | ---    |
+| `name=dataset--File.*` |   | `https://osdu-anthos.osdu.club/api/file/v2/files` | `true` | `true` |
+| `name=dataset--FileCollection.*` |   | `https://osdu-anthos.osdu.club/api/file/v2/file-collections` | `true` | `true` |
+
+You can use the `INSERT` script below to bootstrap the data with valid records: 
+```roomsql
+INSERT INTO public."DmsServiceProperties"(id, data)
+	VALUES 
+	('dataset--File.*', 
+	'{
+	  "apiKey": "",
+	  "datasetKind": "dataset--File.*",
+	  "isStorageAllowed": true,
+	  "dmsServiceBaseUrl": "https://osdu-anthos.osdu.club/api/file/v2/files",
+	  "isStagingLocationSupported": true
+	}'),
+	
+	('dataset--FileCollection.*', 
+	'{
+	  "apiKey": "",
+	  "datasetKind": "dataset--FileCollection.*",
+	  "isStorageAllowed": true,
+	  "dmsServiceBaseUrl": "https://osdu-anthos.osdu.club/api/file/v2/file-collections",
+	  "isStagingLocationSupported": true
+	}');
+```
 
 ### Properties set in Partition service:
 

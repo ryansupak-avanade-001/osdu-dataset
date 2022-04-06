@@ -33,7 +33,6 @@ Must have:
 | `EXPIRATION_DAYS` | ex `1` | expiration for signed urls & connection strings | no |  |
 | `REDIS_GROUP_HOST` |  ex `127.0.0.1` | Redis host for groups | no | https://console.cloud.google.com/memorystore/redis/instances |
 | `REDIS_GROUP_PORT` |  ex `1111` | Redis port | no | https://console.cloud.google.com/memorystore/redis/instances |
-| `osdu.dataset.config.useRestDms` | `true` | Allows to configure *DMS REST APIs usage.* Must be set to `true` for GCP provider because Dataset uses File Service. | no | - |
 | `DMS_API_BASE` | ex `http://localhost:8081/api/file/v2/files` | *Only for local usage.* Allows to override DMS service base url value from Datastore. | no | - |
 
 These variables define service behavior, and are used to switch between `anthos` or `gcp` environments, their overriding and usage in mixed mode was not tested.

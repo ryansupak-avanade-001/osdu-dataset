@@ -19,6 +19,7 @@ package org.opengroup.osdu.dataset.util;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.gax.paging.Page;
 import com.google.auth.Credentials;
@@ -39,6 +40,8 @@ import com.sun.jersey.api.client.WebResource.Builder;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
@@ -49,6 +52,7 @@ import org.opengroup.osdu.dataset.configuration.GcpConfig;
 import org.opengroup.osdu.dataset.configuration.MapperConfig;
 import org.opengroup.osdu.dataset.credentials.StorageServiceAccountCredentialsProvider;
 import org.opengroup.osdu.dataset.model.IntTestFileCollectionInstructionsItem;
+import org.opengroup.osdu.dataset.model.IntTestFileCollectionSigningOptionsItem;
 import org.opengroup.osdu.dataset.model.IntTestFileInstructionsItem;
 
 
@@ -91,7 +95,9 @@ public class CloudStorageUtilGcp extends CloudStorageUtil {
 
 		Storage instructionsBasedService = getStorageServiceFromInstruction(instructionsItem);
 
-		BlobId blobId = getBlobId(fileName, instructionsItem.getUnsignedUrl());
+		IntTestFileCollectionSigningOptionsItem signingOptions = instructionsItem.getSigningOptions();
+
+		BlobId blobId = BlobId.of(signingOptions.getBucket(), signingOptions.getFilepath() + fileName);
 		BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("text/plain").build();
 		Blob blob = instructionsBasedService.create(blobInfo);
 
@@ -100,7 +106,7 @@ public class CloudStorageUtilGcp extends CloudStorageUtil {
 		} catch (IOException e) {
 			log.log(Level.SEVERE, "Upload collection by instructions FAIL", e);
 		}
-		return instructionsItem.getUnsignedUrl();
+		return instructionsItem.getUrl();
 	}
 
 	public String downloadCloudFileUsingDeliveryItem(Object deliveryItem) {
@@ -115,28 +121,24 @@ public class CloudStorageUtilGcp extends CloudStorageUtil {
 	}
 
 	public String downloadCollectionFileUsingDeliveryItem(Object deliveryItem, String fileName) {
-		IntTestFileCollectionInstructionsItem instructionsItem = objectMapper
-			.convertValue(deliveryItem, IntTestFileCollectionInstructionsItem.class);
+		Map<String, Object> retrievalProperties = objectMapper.convertValue(deliveryItem,
+				new TypeReference<Map<String, Object>>() {});
 
-		Storage instructionsBasedService = getStorageServiceFromInstruction(instructionsItem);
+		List<IntTestFileInstructionsItem> collectionInstructionsItem = objectMapper
+				.convertValue(retrievalProperties.get("retrievalPropertiesList"), new TypeReference<List<IntTestFileInstructionsItem>>() {});
 
-		BlobId blobId = getBlobId(fileName, instructionsItem.getUnsignedUrl());
-		Blob blob = instructionsBasedService.get(blobId);
-		byte[] content = blob.getContent();
-		return new String(content, UTF_8);
-	}
+		IntTestFileInstructionsItem instructionsItem = collectionInstructionsItem.get(0);
 
-	@NotNull
-	private BlobId getBlobId(String fileName, String unsignedUrl) {
-		String[] gsPathParts = unsignedUrl.split("gs://");
-		String[] gsObjectKeyParts = gsPathParts[1].split("/");
-		String bucketName = gsObjectKeyParts[0];
-		String filePath = String.join("/", Arrays.copyOfRange(gsObjectKeyParts, 1, gsObjectKeyParts.length));
-		return BlobId.of(bucketName, filePath + "/" + fileName);
+		try {
+			return FileUtils.readFileFromUrl(instructionsItem.getSignedUrl());
+		} catch (IOException e) {
+			log.log(Level.SEVERE, "Download file by signed URL FAIL", e);
+		}
+		return null;
 	}
 
 	private Storage getStorageServiceFromInstruction(IntTestFileCollectionInstructionsItem instructionsItem) {
-		String token = instructionsItem.getConnectionString();
+		String token = instructionsItem.getSigningOptions().getConnectionString();
 		Credentials credentials = GoogleCredentials.create(new AccessToken(token, null));
 		return StorageOptions.newBuilder().setCredentials(credentials).build().getService();
 	}
