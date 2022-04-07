@@ -17,6 +17,8 @@
 
 package org.opengroup.osdu.dataset;
 
+import static org.opengroup.osdu.dataset.util.CloudStorageUtilGcp.COLLECTION_FILE_URI_TEMPLATE;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
@@ -247,7 +249,9 @@ public class TestDataset extends Dataset {
 
 		Assert.assertNotNull(collectionInstructionsItem.getSigningOptions().getConnectionString());
 
-		uploadedCloudFileUnsignedUrls.add(collectionInstructionsItem.getUrl());
+		uploadedCloudFileUnsignedUrls.add(String.format(COLLECTION_FILE_URI_TEMPLATE,
+				collectionInstructionsItem.getSigningOptions().getBucket(),
+				collectionInstructionsItem.getSigningOptions().getFilepath()));
 	}
 
 	private String createDatasetRegistry(String filename, String filepath)

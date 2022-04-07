@@ -39,14 +39,12 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.WebResource.Builder;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
 import lombok.extern.java.Log;
-import org.jetbrains.annotations.NotNull;
 import org.opengroup.osdu.dataset.CloudStorageUtil;
 import org.opengroup.osdu.dataset.configuration.GcpConfig;
 import org.opengroup.osdu.dataset.configuration.MapperConfig;
@@ -59,6 +57,7 @@ import org.opengroup.osdu.dataset.model.IntTestFileInstructionsItem;
 @Log
 public class CloudStorageUtilGcp extends CloudStorageUtil {
 
+	public static final String COLLECTION_FILE_URI_TEMPLATE = "gs://%s/%s";
 	private final ObjectMapper objectMapper;
 
 	private final Storage storage;
@@ -106,7 +105,8 @@ public class CloudStorageUtilGcp extends CloudStorageUtil {
 		} catch (IOException e) {
 			log.log(Level.SEVERE, "Upload collection by instructions FAIL", e);
 		}
-		return instructionsItem.getUrl();
+
+		return String.format(COLLECTION_FILE_URI_TEMPLATE, signingOptions.getBucket(), signingOptions.getFilepath());
 	}
 
 	public String downloadCloudFileUsingDeliveryItem(Object deliveryItem) {
