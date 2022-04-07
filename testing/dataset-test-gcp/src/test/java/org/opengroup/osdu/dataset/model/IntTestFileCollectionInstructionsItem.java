@@ -19,6 +19,7 @@ package org.opengroup.osdu.dataset.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,12 +31,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class IntTestFileCollectionInstructionsItem {
 
-	@JsonProperty("unsignedUrl")
-	private String unsignedUrl;
+	@JsonProperty("url")
+	private String url;
 
-	@JsonProperty("connectionString")
-	private String connectionString;
+	@JsonProperty("signingOptions")
+	private IntTestFileCollectionSigningOptionsItem signingOptions;
 
-	@JsonProperty("createdAt")
-	private Instant createdAt;
+	@JsonProperty("createdBy")
+	private String createdBy;
+
+	@JsonProperty("fileCollectionSource")
+	private String fileCollectionSource;
 }

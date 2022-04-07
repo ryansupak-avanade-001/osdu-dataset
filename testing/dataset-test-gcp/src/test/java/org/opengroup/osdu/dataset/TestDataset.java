@@ -17,11 +17,16 @@
 
 package org.opengroup.osdu.dataset;
 
+import static org.opengroup.osdu.dataset.util.CloudStorageUtilGcp.COLLECTION_FILE_URI_TEMPLATE;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.sun.jersey.api.client.ClientResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.apache.commons.text.StringSubstitutor;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -121,13 +126,16 @@ public class TestDataset extends Dataset {
 		//Step 2: Upload File
 		String fileName = "testFile.txt";
 		String fileContents = "Hello World!";
+		IntTestFileCollectionInstructionsItem instructionsItem = objectMapper.convertValue(
+				datasetInstructions.getStorageLocation(), IntTestFileCollectionInstructionsItem.class);
 		String unsignedUploadUrl = cloudStorageUtilGcp
 			.uploadCollectionUsingProvidedCredentials(fileName, datasetInstructions.getStorageLocation(),
 				fileContents);
 		uploadedCloudFileUnsignedUrls.add(unsignedUploadUrl);
 
 		//Step 3: Register File
-		String datasetRegistry = createDatasetRegistry(INPUT_DATASET_FILE_COLLECTION_JSON, unsignedUploadUrl);
+		String datasetRegistry = createDatasetRegistry(
+				INPUT_DATASET_FILE_COLLECTION_JSON,  "/" + instructionsItem.getSigningOptions().getFilepath());
 		String recordId = registerDataset(datasetRegistry);
 
 		//Step 4: Retrieve File and validate contents
@@ -205,12 +213,17 @@ public class TestDataset extends Dataset {
 	}
 
 	public void validate_CollectionRetrievalItem(IntTestDatasetRetrievalDeliveryItem deliveryItem) {
-		IntTestFileCollectionInstructionsItem collectionInstructionsItem = objectMapper
-			.convertValue(deliveryItem.getRetrievalProperties(), IntTestFileCollectionInstructionsItem.class);
+		Map<String, Object> retrievalProperties = objectMapper.convertValue(deliveryItem.getRetrievalProperties(),
+				new TypeReference<Map<String, Object>>() {});
 
-		Assert.assertNotNull(collectionInstructionsItem.getUnsignedUrl());
-		Assert.assertNotNull(collectionInstructionsItem.getConnectionString());
-		Assert.assertNotNull(collectionInstructionsItem.getCreatedAt());
+		List<IntTestFileInstructionsItem> collectionInstructionsItem = objectMapper
+			.convertValue(retrievalProperties.get("retrievalPropertiesList"), new TypeReference<List<IntTestFileInstructionsItem>>() {});
+
+		for (IntTestFileInstructionsItem item : collectionInstructionsItem){
+			Assert.assertNotNull(item.getSignedUrl());
+			Assert.assertNotNull(item.getFileSource());
+			Assert.assertNotNull(item.getCreatedBy());
+		}
 		Assert.assertEquals(deliveryItem.getProviderKey(), GcpTestUtils.providerKey);
 	}
 
@@ -229,14 +242,19 @@ public class TestDataset extends Dataset {
 		IntTestFileCollectionInstructionsItem collectionInstructionsItem = objectMapper
 			.convertValue(collectionInstructions, IntTestFileCollectionInstructionsItem.class);
 
-		Assert.assertNotNull(collectionInstructionsItem.getUnsignedUrl());
-		Assert.assertNotNull(collectionInstructionsItem.getConnectionString());
-		Assert.assertNotNull(collectionInstructionsItem.getCreatedAt());
+		Assert.assertNotNull(collectionInstructionsItem.getUrl());
+		Assert.assertNotNull(collectionInstructionsItem.getFileCollectionSource());
+		Assert.assertNotNull(collectionInstructionsItem.getCreatedBy());
+		Assert.assertNotNull(collectionInstructionsItem.getSigningOptions());
 
-		uploadedCloudFileUnsignedUrls.add(collectionInstructionsItem.getUnsignedUrl());
+		Assert.assertNotNull(collectionInstructionsItem.getSigningOptions().getConnectionString());
+
+		uploadedCloudFileUnsignedUrls.add(String.format(COLLECTION_FILE_URI_TEMPLATE,
+				collectionInstructionsItem.getSigningOptions().getBucket(),
+				collectionInstructionsItem.getSigningOptions().getFilepath()));
 	}
 
-	private String createDatasetRegistry(String filename, String unsignedUrl)
+	private String createDatasetRegistry(String filename, String filepath)
 		throws IOException {
 		String datasetRegistry = FileUtils.readFileFromResources(filename);
 		StringSubstitutor stringSubstitutor = new StringSubstitutor(
@@ -244,7 +262,7 @@ public class TestDataset extends Dataset {
 				"tenant", TenantUtils.getTenantName(),
 				"domain", TestUtils.getDomain(),
 				"kind-subtype", GcpConfig.getDatasetKindSubType(),
-				"unsigned_url", unsignedUrl,
+				"filepath", filepath,
 				"legal-tag", GcpConfig.getLegalTag())
 		);
 		return stringSubstitutor.replace(datasetRegistry);

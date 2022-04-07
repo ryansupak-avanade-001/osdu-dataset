@@ -20,7 +20,6 @@ package org.opengroup.osdu.dataset.provider.gcp.di;
 import lombok.RequiredArgsConstructor;
 import org.opengroup.osdu.dataset.dms.IDmsFactory;
 import org.opengroup.osdu.dataset.provider.gcp.dms.GcpDmsFactory;
-import org.opengroup.osdu.dataset.provider.gcp.service.IFileService;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
@@ -30,8 +29,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DmsClientFactory extends AbstractFactoryBean<IDmsFactory> {
 
-	private final IFileService fileDmsService;
-
 	@Override
 	public Class<?> getObjectType() {
 		return IDmsFactory.class;
@@ -39,6 +36,6 @@ public class DmsClientFactory extends AbstractFactoryBean<IDmsFactory> {
 
 	@Override
 	protected IDmsFactory createInstance() {
-		return new GcpDmsFactory(fileDmsService);
+		return new GcpDmsFactory();
 	}
 }

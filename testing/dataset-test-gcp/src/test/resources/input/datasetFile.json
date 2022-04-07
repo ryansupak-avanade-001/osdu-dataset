@@ -19,8 +19,8 @@
 				"ResourceDescription": "Trajectory For Wellbore xyz",
 				"DatasetProperties": {
 					"FileSourceInfo": {
-						"FileSource": "${unsigned_url}",
-						"PreLoadFilePath": "${unsigned_url}"
+						"FileSource": "${filepath}",
+						"PreLoadFilePath": "${filepath}"
 					}
 				}
 			},

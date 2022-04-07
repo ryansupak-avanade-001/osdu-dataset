@@ -18,7 +18,7 @@
 				"ResourceName": "trajectories - 1000.json",
 				"ResourceDescription": "Trajectory For Wellbore xyz",
 				"DatasetProperties": {
-					"FileCollectionPath": "${unsigned_url}"
+					"FileCollectionPath": "${filepath}"
 				}
 			},
 			"legal": {
