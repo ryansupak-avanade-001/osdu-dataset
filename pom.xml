@@ -17,7 +17,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.opengroup.osdu</groupId>
 	<artifactId>os-dataset</artifactId>
-	<version>0.14.0-SNAPSHOT</version>
+	<version>0.15.0-SNAPSHOT</version>
 	<description>Root Dataset Registry Service project</description>
 
 	<properties>
@@ -194,6 +194,25 @@
 		</pluginManagement>
 
 		<plugins>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.3</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>pl.project13.maven</groupId>
 				<artifactId>git-commit-id-plugin</artifactId>

@@ -33,8 +33,7 @@ Must have:
 | `EXPIRATION_DAYS` | ex `1` | expiration for signed urls & connection strings | no |  |
 | `REDIS_GROUP_HOST` |  ex `127.0.0.1` | Redis host for groups | no | https://console.cloud.google.com/memorystore/redis/instances |
 | `REDIS_GROUP_PORT` |  ex `1111` | Redis port | no | https://console.cloud.google.com/memorystore/redis/instances |
-| `osdu.dataset.config.useRestDms` | `true` OR `false` | Allows to configure *DMS REST APIs usage* | no | - |
-| `DMS_API_BASE` | ex `http://localhost:8081/api/file/v2/files` | *Only for local usage.* Allows to override DMS service base url value from Datastore.  | no | - |
+| `DMS_API_BASE` | ex `http://localhost:8081/api/file/v2/files` | *Only for local usage.* Allows to override DMS service base url value from Datastore. | no | - |
 
 These variables define service behavior, and are used to switch between `anthos` or `gcp` environments, their overriding and usage in mixed mode was not tested.
 Usage of spring profiles is preferred.
@@ -55,7 +54,7 @@ Example:
 | name | apiKey | dmsServiceBaseUrl | isStagingLocationSupported | isStorageAllowed |
 | ---  | ---   | ---         | ---        | ---    |
 | `name=dataset--File.*` |   | `https://community.gcp.gnrg-osdu.projects.epam.com/api/file/v2/files` | `true` | `true` |
-| `name=dataset--File.*` |   |  | `false` | `true` |
+| `name=dataset--FileCollection.*` |   | `https://community.gcp.gnrg-osdu.projects.epam.com/api/file/v2/file-collections` | `true` | `true` |
 
 
 ## GCS configuration
