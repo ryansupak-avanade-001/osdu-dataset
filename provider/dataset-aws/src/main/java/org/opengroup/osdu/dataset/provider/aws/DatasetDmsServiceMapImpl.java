@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.opengroup.osdu.core.aws.dynamodb.DynamoDBQueryHelperV2;
 import org.opengroup.osdu.core.aws.dynamodb.IDynamoDBQueryHelperFactory;
@@ -38,6 +39,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap {
 
     @Value("${DMS_API_BASE}")
@@ -51,7 +53,7 @@ public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap {
     DpsHeaders headers;
 
     @Inject
-	private JaxRsDpsLog logger;
+    private JaxRsDpsLog logger;
 
     @Value("${aws.parameter.prefix}")
     private String ssmParameterPrefix;
@@ -61,7 +63,7 @@ public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap {
 
     private DynamoDBQueryHelperV2 queryHelper;
 
-    @Inject    
+    @Inject
     private IDynamoDBQueryHelperFactory queryHelperFactory;
 
     @PostConstruct
@@ -73,49 +75,47 @@ public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap {
     @Override
     public Map<String, DmsServiceProperties> getResourceTypeToDmsServiceMap() {
 
-        DmsRegistrations dmsRegistrations = getServicesInfoFromCacheOrDynamo(headers);       
+        DmsRegistrations dmsRegistrations = getServicesInfoFromCacheOrDynamo(headers);
 
         return dmsRegistrations.getDynamoDmsRegistrations();
     }
 
     protected DmsRegistrations getServicesInfoFromCacheOrDynamo(DpsHeaders headers) {
-		String cacheKey = DmsRegistrationCache.getCacheKey(headers);
-		DmsRegistrations dmsRegistrations = (DmsRegistrations) this.cache.get(cacheKey);
+        String cacheKey = DmsRegistrationCache.getCacheKey(headers);
+        DmsRegistrations dmsRegistrations = (DmsRegistrations) this.cache.get(cacheKey);
 
-		if (dmsRegistrations == null) {			
-			try {
+        if (dmsRegistrations == null) {
+            try {
                 ArrayList<DynamoDmsRegistration> test = queryHelper.scanTable(DynamoDmsRegistration.class);
-        
-                HashMap<String, DmsServiceProperties> resourceTypeToDmsServiceMap = new HashMap<>();                
-        
+
+                HashMap<String, DmsServiceProperties> resourceTypeToDmsServiceMap = new HashMap<>();
+
                 for (DynamoDmsRegistration reg : test) {
 
                     String apiBase = "";
                     if (StringUtils.isNotEmpty(DMS_API_BASE)) {
                         apiBase = DMS_API_BASE;
-                    }
-                    else {
+                    } else {
                         apiBase = reg.getApiBase();
                     }
 
                     resourceTypeToDmsServiceMap.put(reg.getDatasetKind(), new DmsServiceProperties(
-                        StringUtils.join(apiBase, reg.getRoute()),
-                        reg.getIsStorageAllowed()
+                            StringUtils.join(apiBase, reg.getRoute()),
+                            reg.getIsStorageAllowed()
                     ));
                 }
 
                 dmsRegistrations = new DmsRegistrations(resourceTypeToDmsServiceMap);
+                this.cache.put(cacheKey, dmsRegistrations);
+                this.logger.info("DMS Registration cache miss");
 
-				this.cache.put(cacheKey, dmsRegistrations);
-				this.logger.info("DMS Registration cache miss");
+            } catch (Exception e) {
+                log.error("Error occured.", e);
+                throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), "Failed to get DMS Service Registrations");
+            }
+        }
 
-			} catch (Exception e) {
-				e.printStackTrace();				
-				throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), "Failed to get DMS Service Registrations");
-			}
-		}
+        return dmsRegistrations;
+    }
 
-		return dmsRegistrations;
-	}
-    
 }
