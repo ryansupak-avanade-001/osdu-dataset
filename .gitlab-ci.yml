@@ -27,7 +27,7 @@ variables:
   AZURE_SERVICE: dataset
   AZURE_BUILD_SUBDIR: provider/dataset-azure
   AZURE_TEST_SUBDIR: testing/dataset-test-azure
-  AZURE_COVERAGE_THRESHOLD: 0
+  AZURE_COVERAGE_THRESHOLD: $AZURE_CODE_COVERAGE_THRESHOLD
 
 include:
   - project: "osdu/platform/ci-cd-pipelines"
