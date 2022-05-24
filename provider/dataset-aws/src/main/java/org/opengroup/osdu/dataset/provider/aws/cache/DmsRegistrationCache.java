@@ -1,4 +1,4 @@
-// Copyright © 2021 Amazon Web Services
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,28 +19,24 @@ import org.opengroup.osdu.core.aws.cache.DummyCache;
 import org.opengroup.osdu.core.aws.ssm.K8sLocalParameterProvider;
 import org.opengroup.osdu.core.aws.ssm.K8sParameterNotFoundException;
 import org.opengroup.osdu.core.common.cache.ICache;
+import org.opengroup.osdu.core.common.cache.RedisCache;
 import org.opengroup.osdu.core.common.cache.VmCache;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
-
-import org.opengroup.osdu.core.common.cache.RedisCache;
 import org.opengroup.osdu.core.common.util.Crc32c;
+import org.opengroup.osdu.dataset.provider.aws.config.ProviderConfigurationBag;
 import org.opengroup.osdu.dataset.provider.aws.model.DmsRegistrations;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 @Component("DmsRegistrationCache")
 public class DmsRegistrationCache implements ICache<String, DmsRegistrations> {
-    @Value("${aws.elasticache.cluster.endpoint:null}")
-    String REDIS_SEARCH_HOST;
-    @Value("${aws.elasticache.cluster.port:null}")
-    String REDIS_SEARCH_PORT;
-    @Value("${aws.elasticache.cluster.key:null}")
-    String REDIS_SEARCH_KEY;
+
     private ICache cache;
 
-    public DmsRegistrationCache() throws K8sParameterNotFoundException, JsonProcessingException {
+    @Autowired
+    public DmsRegistrationCache(ProviderConfigurationBag providerConfigurationBag) throws K8sParameterNotFoundException, JsonProcessingException {
         K8sLocalParameterProvider provider = new K8sLocalParameterProvider();
         if (provider.getLocalMode()) {
             if (Boolean.parseBoolean(System.getenv("DISABLE_CACHE"))) {
@@ -48,22 +44,18 @@ public class DmsRegistrationCache implements ICache<String, DmsRegistrations> {
             }
             this.cache = new VmCache<>(60, 10);
         } else {
-            String host = provider.getParameterAsStringOrDefault("CACHE_CLUSTER_ENDPOINT", REDIS_SEARCH_HOST);
-            int port = Integer.parseInt(provider.getParameterAsStringOrDefault("CACHE_CLUSTER_PORT", REDIS_SEARCH_PORT));
+            String host = provider.getParameterAsStringOrDefault("CACHE_CLUSTER_ENDPOINT", providerConfigurationBag.redisSearchHost);
+            int port = Integer.parseInt(provider.getParameterAsStringOrDefault("CACHE_CLUSTER_PORT", providerConfigurationBag.redisSearchPort));
             Map<String, String> credential = provider.getCredentialsAsMap("CACHE_CLUSTER_KEY");
-            String password;
-            if (credential != null) {
-                password = credential.get("token");
-            } else {
-                password = REDIS_SEARCH_KEY;
-            }
+
+            String password = credential != null ? credential.get("token") : providerConfigurationBag.redisSearchKey;
             this.cache = new RedisCache(host, port, password, 60, String.class, DmsRegistrations.class);
         }
     }
 
     public static String getCacheKey(DpsHeaders headers) {
         String key = String.format("dms-registration:%s:%s", headers.getPartitionIdWithFallbackToAccountId(),
-                headers.getAuthorization());
+                                   headers.getAuthorization());
         return Crc32c.hashToBase64EncodedString(key);
     }
 

@@ -12,20 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package org.opengroup.osdu.dataset.provider.aws.model;
+package org.opengroup.osdu.dataset.provider.aws.dms;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.opengroup.osdu.core.common.http.HttpClient;
+import org.opengroup.osdu.core.common.http.IHttpClient;
+import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.dataset.dms.DmsServiceProperties;
+import org.opengroup.osdu.dataset.dms.IDmsFactory;
+import org.opengroup.osdu.dataset.dms.IDmsProvider;
 
-import java.util.HashMap;
-import java.util.Map;
+@RequiredArgsConstructor
+public class DmsFactory implements IDmsFactory {
+    private final IHttpClient httpClient = new HttpClient();
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class DmsRegistrations {
-
-    Map<String, DmsServiceProperties> dynamoDmsRegistrations = new HashMap<>();
+    @Override
+    public IDmsProvider create(DpsHeaders headers, DmsServiceProperties dmsServiceRoute) {
+        return new AwsDmsRestService(dmsServiceRoute, httpClient, headers);
+    }
 }
