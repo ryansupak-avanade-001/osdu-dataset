@@ -103,7 +103,7 @@ public class DatasetDmsApi {
 
 	@GetMapping(value={"/retrievalInstructions","/getRetrievalInstructions"})
 	@PreAuthorize("@authorizationFilter.hasRole('" + DeliveryRole.VIEWER + "')")
-	public ResponseEntity<Object> retrievalInstructions(
+	public ResponseEntity<Object> getRetrievalInstructions_get(
 			@RequestParam(value = "id") String datasetRegistryId) {
 
 		List<String> datasetRegistryIds = new ArrayList<>();
@@ -114,7 +114,7 @@ public class DatasetDmsApi {
 
 	@PostMapping(value={"/retrievalInstructions","/getRetrievalInstructions"})
 	@PreAuthorize("@authorizationFilter.hasRole('" + DeliveryRole.VIEWER + "')")
-	public ResponseEntity<Object> retrievalInstructions(
+	public ResponseEntity<Object> getRetrievalInstructions_post(
 			@RequestBody @Valid @NotNull GetDatasetRegistryRequest request) {
 
 		return getRetrievalInstructions(request.datasetRegistryIds);
