@@ -115,7 +115,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.8</version>
+			<version>1.18.22</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- swagger dependency -->
@@ -169,9 +169,9 @@
 
 	<modules>
 		<module>dataset-core</module>
-		<module>provider/dataset-aws</module>
+		<!--module>provider/dataset-aws</module>
 		<module>provider/dataset-ibm</module>
-		<module>provider/dataset-gcp</module>
+		<module>provider/dataset-gcp</module-->
 		<module>provider/dataset-azure</module>
   </modules>
 
