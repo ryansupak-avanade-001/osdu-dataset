@@ -9,8 +9,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @Getter
 @Setter
-public class OsduDatasetKindConfig {
-
+public class OsduDatasetKindConfig
+{
     private String file;
     private String fileCollection;
+    private String oData;
 }

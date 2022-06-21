@@ -41,28 +41,39 @@ public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap
     @PostConstruct
     public void init()
     {
-        System.out.println("this is a log (azure provider 2)!");
-
-        DmsServiceProperties fileDmsProperties = new DmsServiceProperties(osduApiConfig.getFile());
-        fileDmsProperties.setStagingLocationSupported(true);
 
         //TODO: replace this with static or dynamic registration of DMS
-        resourceTypeToDmsServiceMap.put(osduDatasetKindConfig.getFile(), fileDmsProperties);
+        resourceTypeToDmsServiceMap.put(osduDatasetKindConfig.getFile(), getDmsServicePropertyForFile());
         resourceTypeToDmsServiceMap.put(osduDatasetKindConfig.getFileCollection(), getDmsServicePropertyForFileCollection());
-
+        resourceTypeToDmsServiceMap.put(osduDatasetKindConfig.getOData(), getDmsServicePropertyForOData());
     }
 
     @Override
     public Map<String, DmsServiceProperties> getResourceTypeToDmsServiceMap()
     {
-        System.out.println("this is a log (azure provider)!");
+        System.out.println("DmsServiceMap contents are as follows:");
         System.out.println(resourceTypeToDmsServiceMap.toString());
         return resourceTypeToDmsServiceMap;
     }
 
-    private DmsServiceProperties getDmsServicePropertyForFileCollection() {
+    private DmsServiceProperties getDmsServicePropertyForFile()
+    {
+        DmsServiceProperties fileDmsProperties = new DmsServiceProperties(osduApiConfig.getFile());
+        fileDmsProperties.setStagingLocationSupported(true);
+        return fileDmsProperties;
+    }
+
+    private DmsServiceProperties getDmsServicePropertyForFileCollection()
+    {
         DmsServiceProperties fileCollectionDmsProperties = new DmsServiceProperties(osduApiConfig.getFileCollection());
         fileCollectionDmsProperties.setStagingLocationSupported(true);
         return fileCollectionDmsProperties;
+    }
+
+    private DmsServiceProperties getDmsServicePropertyForOData()
+    {
+        DmsServiceProperties oDataDmsProperties = new DmsServiceProperties(osduApiConfig.getOData());
+        oDataDmsProperties.setStagingLocationSupported(true);
+        return oDataDmsProperties;
     }
 }
