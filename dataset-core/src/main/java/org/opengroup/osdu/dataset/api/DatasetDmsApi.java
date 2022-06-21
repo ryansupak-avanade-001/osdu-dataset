@@ -123,13 +123,15 @@ public class DatasetDmsApi {
 
 	@PostMapping(value={"/testEndpoint"})
 	//@PreAuthorize("@authorizationFilter.hasRole('" + DeliveryRole.VIEWER + "')")
+	@PreAuthorize("@authorizationFilter.hasRole('" + DatasetConstants.DATASET_EDITOR_ROLE + "')")
 	public @Valid @NotNull String testEndpoint(@RequestBody @Valid @NotNull String request)
 	{
 		//return getRetrievalInstructions(request);
 		return request;
 	}
 
-	private ResponseEntity<Object> getRetrievalInstructions(List<String> datasetRegistryIds) {
+	private ResponseEntity<Object> getRetrievalInstructions(List<String> datasetRegistryIds)
+	{
 		Object response = this.datasetDmsService.getRetrievalInstructions(datasetRegistryIds);
 		this.auditLogger.readRetrievalInstructionsSuccess(Collections.singletonList(response.toString()));
 		return new ResponseEntity<>(response, HttpStatus.OK);
