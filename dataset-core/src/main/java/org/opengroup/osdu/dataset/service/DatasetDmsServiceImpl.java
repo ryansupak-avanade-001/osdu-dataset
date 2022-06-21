@@ -131,10 +131,13 @@ public class DatasetDmsServiceImpl implements DatasetDmsService {
     }
 
     @Override
-    public RetrievalInstructionsResponse getRetrievalInstructions(List<String> datasetRegistryIds) {
+    public RetrievalInstructionsResponse getRetrievalInstructions(List<String> datasetRegistryIds)
+    {
         Map<String, DmsServiceProperties> kindSubTypeToDmsServiceMap = dmsServiceMap.getResourceTypeToDmsServiceMap();
         HashMap<String, GetDatasetRegistryRequest> datasetRegistryRequestMap =
                 segregateDatasetIdsToDms(datasetRegistryIds, kindSubTypeToDmsServiceMap);
+
+
 
         RetrievalInstructionsResponse response = new RetrievalInstructionsResponse();
 

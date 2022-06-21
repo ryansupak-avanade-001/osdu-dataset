@@ -28,8 +28,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap {
-
+public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap
+{
     private final Map<String, DmsServiceProperties> resourceTypeToDmsServiceMap = new HashMap<>();
 
     @Autowired
@@ -39,17 +39,24 @@ public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap {
     OsduDatasetKindConfig osduDatasetKindConfig;
 
     @PostConstruct
-    public void init() {
+    public void init()
+    {
+        System.out.println("this is a log (azure provider 2)!");
+
         DmsServiceProperties fileDmsProperties = new DmsServiceProperties(osduApiConfig.getFile());
         fileDmsProperties.setStagingLocationSupported(true);
 
         //TODO: replace this with static or dynamic registration of DMS
         resourceTypeToDmsServiceMap.put(osduDatasetKindConfig.getFile(), fileDmsProperties);
         resourceTypeToDmsServiceMap.put(osduDatasetKindConfig.getFileCollection(), getDmsServicePropertyForFileCollection());
+
     }
 
     @Override
-    public Map<String, DmsServiceProperties> getResourceTypeToDmsServiceMap() {
+    public Map<String, DmsServiceProperties> getResourceTypeToDmsServiceMap()
+    {
+        System.out.println("this is a log (azure provider)!");
+        System.out.println(resourceTypeToDmsServiceMap.toString());
         return resourceTypeToDmsServiceMap;
     }
 
