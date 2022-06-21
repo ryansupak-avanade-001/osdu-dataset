@@ -76,6 +76,7 @@ public class DatasetDmsApi {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
+/*
 	@GetMapping("/getRetrievalInstructions")	
 	@PreAuthorize("@authorizationFilter.hasRole('" + DeliveryRole.VIEWER + "')")
 	public ResponseEntity<Object> getRetrievalInstructions( 
@@ -98,10 +99,11 @@ public class DatasetDmsApi {
 			this.auditLogger.readRetrievalInstructionsSuccess(Collections.singletonList(response.toString()));
 			return new ResponseEntity<Object>(response, HttpStatus.OK);
 	}
+*/
 
-	@GetMapping("/retrievalInstructions")
-	@PreAuthorize("@authorizationFilter.hasRole('" + DatasetConstants.DATASET_VIEWER_ROLE + "')")
-	public ResponseEntity<Object> retrievalInstructions(
+	@GetMapping(value={"/retrievalInstructions","/getRetrievalInstructions"})
+	@PreAuthorize("@authorizationFilter.hasRole('" + DeliveryRole.VIEWER + "')")
+	public ResponseEntity<Object> getRetrievalInstructions_get(
 			@RequestParam(value = "id") String datasetRegistryId) {
 
 		List<String> datasetRegistryIds = new ArrayList<>();
@@ -110,9 +112,9 @@ public class DatasetDmsApi {
 		return getRetrievalInstructions(datasetRegistryIds);
 	}
 
-	@PostMapping("/retrievalInstructions")
-	@PreAuthorize("@authorizationFilter.hasRole('" + DatasetConstants.DATASET_VIEWER_ROLE + "')")
-	public ResponseEntity<Object> retrievalInstructions(
+	@PostMapping(value={"/retrievalInstructions","/getRetrievalInstructions"})
+	@PreAuthorize("@authorizationFilter.hasRole('" + DeliveryRole.VIEWER + "')")
+	public ResponseEntity<Object> getRetrievalInstructions_post(
 			@RequestBody @Valid @NotNull GetDatasetRegistryRequest request) {
 
 		return getRetrievalInstructions(request.datasetRegistryIds);
