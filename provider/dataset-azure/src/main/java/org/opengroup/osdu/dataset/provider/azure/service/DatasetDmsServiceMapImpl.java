@@ -51,8 +51,9 @@ public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap
     @Override
     public Map<String, DmsServiceProperties> getResourceTypeToDmsServiceMap()
     {
-        System.out.println("DmsServiceMap contents are as follows:");
+        System.out.println("resourceTypeToDmsServiceMap contents are as follows:");
         System.out.println(resourceTypeToDmsServiceMap.toString());
+
         return resourceTypeToDmsServiceMap;
     }
 

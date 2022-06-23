@@ -113,7 +113,7 @@ public class DatasetDmsApi {
 	}
 
 	@PostMapping(value={"/retrievalInstructions","/getRetrievalInstructions"})
-	@PreAuthorize("@authorizationFilter.hasRole('" + DatasetConstants.DATASET_VIEWER_ROLE + "')")
+	//@PreAuthorize("@authorizationFilter.hasRole('" + DatasetConstants.DATASET_VIEWER_ROLE + "')")
 	public ResponseEntity<Object> retrievalInstructions_post(
 			@RequestBody @Valid @NotNull GetDatasetRegistryRequest request) {
 
@@ -123,9 +123,7 @@ public class DatasetDmsApi {
 
 	@PostMapping(value={"/testEndpoint"})
 
-	//@PreAuthorize("@authorizationFilter.hasRole('" + "service.delivery.viewer@opendes.contoso.com" + "')")
-	//@PreAuthorize("@authorizationFilter.hasRole('" + DeliveryRole.VIEWER + "')")
-	@PreAuthorize("@authorizationFilter.hasRole('" + DatasetConstants.DATASET_VIEWER_ROLE + "')")
+	@PreAuthorize("@authorizationFilter.hasRole('" + DeliveryRole.VIEWER + "')")
 	public @Valid @NotNull String testEndpoint(@RequestBody @Valid @NotNull String request)
 	{
 		//return getRetrievalInstructions(request);

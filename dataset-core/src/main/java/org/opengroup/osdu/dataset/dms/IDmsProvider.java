@@ -34,6 +34,8 @@ public interface IDmsProvider {
     // new retrieval
     default RetrievalInstructionsResponse getRetrievalInstructions(GetDatasetRegistryRequest request)
             throws DmsException {
+        System.out.println("debugeroo!");
+
         return null;
     }
 
