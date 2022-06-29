@@ -12,6 +12,5 @@ import org.springframework.context.annotation.Configuration;
 public class OsduApiConfig
 {
     String file;
-    String fileCollection;
     String oData;
 }

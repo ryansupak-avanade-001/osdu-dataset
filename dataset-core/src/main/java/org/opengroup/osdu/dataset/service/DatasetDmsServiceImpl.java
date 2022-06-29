@@ -112,12 +112,7 @@ public class DatasetDmsServiceImpl implements DatasetDmsService {
     @Override
     public GetDatasetRetrievalInstructionsResponse getDatasetRetrievalInstructions(List<String> datasetRegistryIds) {
 
-        //System.out.println("001!");
-
         Map<String, DmsServiceProperties> kindSubTypeToDmsServiceMap = dmsServiceMap.getResourceTypeToDmsServiceMap();
-
-        //System.out.println("kindSubTypeToDmsServiceMap contents are as follows:");
-        //System.out.println(kindSubTypeToDmsServiceMap.toString());
 
         HashMap<String, GetDatasetRegistryRequest> datasetRegistryRequestMap =
                 segregateDatasetIdsToDms(datasetRegistryIds, kindSubTypeToDmsServiceMap);
@@ -143,12 +138,8 @@ public class DatasetDmsServiceImpl implements DatasetDmsService {
     {
         Map<String, DmsServiceProperties> kindSubTypeToDmsServiceMap = dmsServiceMap.getResourceTypeToDmsServiceMap();
 
-
-
         HashMap<String, GetDatasetRegistryRequest> datasetRegistryRequestMap =
                 segregateDatasetIdsToDms(datasetRegistryIds, kindSubTypeToDmsServiceMap);
-
-
 
         RetrievalInstructionsResponse response = new RetrievalInstructionsResponse();
 

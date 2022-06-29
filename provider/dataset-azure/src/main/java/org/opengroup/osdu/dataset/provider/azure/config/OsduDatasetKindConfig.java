@@ -12,6 +12,5 @@ import org.springframework.context.annotation.Configuration;
 public class OsduDatasetKindConfig
 {
     private String file;
-    private String fileCollection;
     private String oData;
 }

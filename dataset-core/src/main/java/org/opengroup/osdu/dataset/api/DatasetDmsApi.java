@@ -113,7 +113,7 @@ public class DatasetDmsApi {
 	}
 
 	@PostMapping(value={"/retrievalInstructions","/getRetrievalInstructions"})
-	//@PreAuthorize("@authorizationFilter.hasRole('" + DatasetConstants.DATASET_VIEWER_ROLE + "')")
+	//@PreAuthorize("@authorizationFilter.hasRole('" + DeliveryRole.VIEWER + "')")
 	public ResponseEntity<Object> retrievalInstructions_post(
 			@RequestBody @Valid @NotNull GetDatasetRegistryRequest request) {
 
@@ -122,7 +122,6 @@ public class DatasetDmsApi {
 
 
 	@PostMapping(value={"/testEndpoint"})
-
 	@PreAuthorize("@authorizationFilter.hasRole('" + DeliveryRole.VIEWER + "')")
 	public @Valid @NotNull String testEndpoint(@RequestBody @Valid @NotNull String request)
 	{
