@@ -41,7 +41,6 @@ public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap
     @PostConstruct
     public void init()
     {
-
         //TODO: replace this with static or dynamic registration of DMS
         resourceTypeToDmsServiceMap.put(osduDatasetKindConfig.getFile(), getDmsServicePropertyForFile());
         resourceTypeToDmsServiceMap.put(osduDatasetKindConfig.getOData(), getDmsServicePropertyForOData());
@@ -50,9 +49,6 @@ public class DatasetDmsServiceMapImpl implements IDatasetDmsServiceMap
     @Override
     public Map<String, DmsServiceProperties> getResourceTypeToDmsServiceMap()
     {
-        System.out.println("resourceTypeToDmsServiceMap contents are as follows:");
-        System.out.println(resourceTypeToDmsServiceMap.toString());
-
         return resourceTypeToDmsServiceMap;
     }
 
