@@ -113,7 +113,7 @@ public class DatasetDmsApi {
 	}
 
 	@PostMapping(value={"/retrievalInstructions","/getRetrievalInstructions"})
-	//@PreAuthorize("@authorizationFilter.hasRole('" + DeliveryRole.VIEWER + "')")
+	@PreAuthorize("@authorizationFilter.hasRole('" + DeliveryRole.VIEWER + "')")
 	public ResponseEntity<Object> retrievalInstructions_post(
 			@RequestBody @Valid @NotNull GetDatasetRegistryRequest request) {
 
@@ -121,18 +121,21 @@ public class DatasetDmsApi {
 	}
 
 
+	/*
 	@PostMapping(value={"/testEndpoint"})
 	@PreAuthorize("@authorizationFilter.hasRole('" + DeliveryRole.VIEWER + "')")
-	public @Valid @NotNull String testEndpoint(@RequestBody @Valid @NotNull String request)
+	public String testEndpoint(@RequestBody String request)
 	{
 		//return getRetrievalInstructions(request);
 		return request;
 	}
+	*/
+
 
 	private ResponseEntity<Object> getRetrievalInstructions(List<String> datasetRegistryIds)
 	{
 		Object response = this.datasetDmsService.getRetrievalInstructions(datasetRegistryIds);
-		this.auditLogger.readRetrievalInstructionsSuccess(Collections.singletonList(response.toString()));
+		//this.auditLogger.readRetrievalInstructionsSuccess(Collections.singletonList(response.toString()));
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
