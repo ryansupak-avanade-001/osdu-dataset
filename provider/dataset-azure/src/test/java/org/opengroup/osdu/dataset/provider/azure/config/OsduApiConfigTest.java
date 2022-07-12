@@ -30,10 +30,8 @@ public class OsduApiConfigTest {
         OsduApiConfig config = new OsduApiConfig();
 
         config.setFile(FILE);
-        config.setFileCollection(FILE_COLLECTION);
 
         assertEquals(FILE, config.getFile());
-        assertEquals(FILE_COLLECTION, config.getFileCollection());
     }
 
 }

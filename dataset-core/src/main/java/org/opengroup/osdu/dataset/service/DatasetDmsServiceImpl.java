@@ -108,10 +108,12 @@ public class DatasetDmsServiceImpl implements DatasetDmsService {
      * 3. Call each DMS one by one and get the delivery instructions a. group all
      * same type dms types b. merge all responses into a single delivery object
      */
+
     @Override
     public GetDatasetRetrievalInstructionsResponse getDatasetRetrievalInstructions(List<String> datasetRegistryIds) {
 
         Map<String, DmsServiceProperties> kindSubTypeToDmsServiceMap = dmsServiceMap.getResourceTypeToDmsServiceMap();
+
         HashMap<String, GetDatasetRegistryRequest> datasetRegistryRequestMap =
                 segregateDatasetIdsToDms(datasetRegistryIds, kindSubTypeToDmsServiceMap);
 
@@ -130,9 +132,12 @@ public class DatasetDmsServiceImpl implements DatasetDmsService {
         return mergedResponse;
     }
 
+
     @Override
-    public RetrievalInstructionsResponse getRetrievalInstructions(List<String> datasetRegistryIds) {
+    public RetrievalInstructionsResponse getRetrievalInstructions(List<String> datasetRegistryIds)
+    {
         Map<String, DmsServiceProperties> kindSubTypeToDmsServiceMap = dmsServiceMap.getResourceTypeToDmsServiceMap();
+
         HashMap<String, GetDatasetRegistryRequest> datasetRegistryRequestMap =
                 segregateDatasetIdsToDms(datasetRegistryIds, kindSubTypeToDmsServiceMap);
 
@@ -159,7 +164,10 @@ public class DatasetDmsServiceImpl implements DatasetDmsService {
 
         for (String datasetRegistryId : datasetRegistryIds) {
 
-            if (!Record.isRecordIdValidFormatAndTenant(datasetRegistryId, headers.getPartitionId())) {
+            //if (!Record.isRecordIdValidFormatAndTenant(datasetRegistryId, headers.getPartitionId()))
+            if (!Record.isRecordIdValidFormatAndTenant(datasetRegistryId, "osdu"))
+            {
+                String partitionID = headers.getPartitionId();
                 throw new AppException(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), String.format("Dataset Registry: '%s' is an Invalid ID", datasetRegistryId), datasetRegistryId);
             }
 

@@ -30,10 +30,8 @@ public class OsduDatasetKindConfigTest {
         OsduDatasetKindConfig config = new OsduDatasetKindConfig();
 
         config.setFile(FILE);
-        config.setFileCollection(FILE_COLLECTION);
 
         assertEquals(FILE, config.getFile());
-        assertEquals(FILE_COLLECTION, config.getFileCollection());
     }
 
 }

@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @Getter
 @Setter
-public class OsduApiConfig {
-
+public class OsduApiConfig
+{
     String file;
-    String fileCollection;
+    String oData;
 }

@@ -34,6 +34,7 @@ public interface IDmsProvider {
     // new retrieval
     default RetrievalInstructionsResponse getRetrievalInstructions(GetDatasetRegistryRequest request)
             throws DmsException {
+
         return null;
     }
 

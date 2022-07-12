@@ -53,9 +53,6 @@ public class DatasetDmsServiceMapImplTest {
         initMocks(this);
 
         when(osduApiConfig.getFile()).thenReturn(FILE);
-        when(osduApiConfig.getFileCollection()).thenReturn(FILE_COLLECTION);
-
-        when(osduDatasetKindConfig.getFileCollection()).thenReturn(FILE_COLLECTION);
     }
 
     @Test
@@ -65,8 +62,6 @@ public class DatasetDmsServiceMapImplTest {
 
         verify(osduApiConfig, times(1)).getFile();
         verify(osduDatasetKindConfig, times(1)).getFile();
-        verify(osduApiConfig, times(1)).getFileCollection();
-        verify(osduDatasetKindConfig, times(1)).getFileCollection();
     }
 
     @Test
